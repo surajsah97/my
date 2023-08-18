@@ -1,0 +1,67 @@
+{
+    "userStatus": {
+        "active": 1,
+        "inactive": 2,
+        "blocked": 3
+    },
+ 
+    "verify": {
+        "notVerify": 0,
+        "verify": 1
+    },
+    "role": {
+        "guest": 0,
+        "user": 1
+    },
+    
+    "uploadPath": "public/uploads/",
+    "uploadAccessPath": "uploads/",
+    "api": {
+        "verifyOtp": "Otp verification successfully.",
+        "verifyOtpFail": "Otp verification failed.",
+        "loginSuccess": "Login successfull.",
+        "userNotFound": "User not found.",
+        "loginFail": "Login failed. You can reset your password by clicking forgot password link.",
+        "phoneNotVerify": "Mobile number is not verified",
+        "sendOtpSuccess": "OTP sent successfully",
+        "sendOtpFail": "OTP Failed",
+        "changePasswordSuccess": "password changed successfully",
+        "changePasswordFail": "Failed to change password.",
+        "matchPasswordFail": "Old Password does not match",
+        "registerSuccess": "Registration successfully",
+        "registerFail": "Already registered with same number or email.",
+        "getUserDetailsSuccess": "User Details Successfully.",
+        "getUserDetailsFail": "User Details Failed.",
+        "getDetailsSuccess": "Get Details Successfully.",
+        "getDetailsFail": "Get Detail Details Failed.",
+        "addSupportTypeSuccess": "Support ticket Successfully.",
+        "addSupportTypeFail": "Support ticket Failed.",
+        "notificationListFail": "Notification List Failed.",
+        "membershipListSuccess": "Membership List Successfully.",
+        "membershipListFail": "Membership List Failed.",
+        "blocked": "Your account has been blocked by admin"
+    },
+    "responseCode": {
+        "success": 200,
+        "error": 0,
+        "exception": 500,
+        "notFoud": 404,
+        "alreadyExist": 409
+    },
+    "nearestRange": {
+        "range": 5000,
+        "number": 5,
+        "nearRideNumber": 2
+    },
+    
+    "token": {
+        "apiTokenExpiry": "30d"
+    },
+    "pushNotifications": {
+        "newDriverMembership": "New Membership request",
+        "newDriverMembershipDetails": "Thanks for buying our membership plan.",
+        "subscriptionReminder": "Subscription Reminder",
+        "subscriptionReminderDetails": "Your subscription is going to expire soon"
+    }
+   
+}

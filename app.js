@@ -1,0 +1,66 @@
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var morgan = require('morgan');
+
+require('dotenv').config({
+    path: `./env-files/${process.env.ENV || 'dev'}.env`,
+});
+
+// profiling for the servers
+console.log('current env:', process.env.ENV);
+global.APPDIR = path.resolve(__dirname).toString();
+global.CONFIGS = require('./configs/config.json');
+
+
+//correcting swagger host and base path
+
+
+// connect mongodb
+require('./models/dbConnections');
+
+var app = express();
+var morgan = require('morgan')
+app.use(morgan("tiny"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+
+console.log("here")
+
+
+
+
+// request cros
+app.use(function (req, res, next) {
+    
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+    res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,authToken,Authorization,Content-Type,Accept");
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    next();
+});
+
+console.log("version", process.env.VERSION)
+
+app.use('/v' + process.env.VERSION + '/user/', require('./route/User_R'));
+
+// catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//     next(createError(404));
+// });
+
+// error handler
+// app.use(function (err, req, res, next) {
+//     // render the error page
+//     res.status(err.status || 500);
+//     res.render('error', {
+//         message: err.message,
+//         error: err
+//     })
+// });
+
+module.exports = app;
