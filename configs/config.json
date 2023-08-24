@@ -1,4 +1,7 @@
 {
+    "pass":{
+        "saltround":10
+    },
     "userStatus": {
         "active": 1,
         "inactive": 2,
@@ -19,16 +22,16 @@
     "api": {
         "verifyOtp": "Otp verification successfully.",
         "verifyOtpFail": "Otp verification failed.",
-        "loginSuccess": "Login successfull.",
+        "loginSuccess": "Login successful.",
         "userNotFound": "User not found.",
-        "loginFail": "Login failed. You can reset your password by clicking forgot password link.",
+        "loginFail": "Login failed wrong password.",
         "phoneNotVerify": "Mobile number is not verified",
         "sendOtpSuccess": "OTP sent successfully",
         "sendOtpFail": "OTP Failed",
         "changePasswordSuccess": "password changed successfully",
         "changePasswordFail": "Failed to change password.",
         "matchPasswordFail": "Old Password does not match",
-        "registerSuccess": "Registration successfully",
+        "registerSuccess": "User registration successful.",
         "registerFail": "Already registered with same number or email.",
         "getUserDetailsSuccess": "User Details Successfully.",
         "getUserDetailsFail": "User Details Failed.",
@@ -45,6 +48,7 @@
         "success": 200,
         "error": 0,
         "exception": 500,
+        "Unauthorized":401 ,
         "notFoud": 404,
         "alreadyExist": 409
     },
