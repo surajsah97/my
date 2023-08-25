@@ -5,11 +5,11 @@ var usersSchema = new Schema(
     {
         name: {
             type: String,
-            required: [true,"Please enter name."]
+            // required: [true,"Please enter name."]
         },
         email: {
             type: String,
-            required: [true, "Please enter email."]
+            // required: [true, "Please enter email."]
         },
         mobile: {
             type: Number,
@@ -17,12 +17,25 @@ var usersSchema = new Schema(
         },
         password: {
             type: String,
-            required: [true, "Please enter Password."]
+            // required: [true, "Please enter Password."]
+        },
+        Otp: {
+            type: Number,
+            required: true
+        },
+        OtpsendDate: {
+            type: Date,
+            required: true
+        },
+        isVerified: {
+            type: Boolean,
+            default: false
         },
         userType: {
             type: String,
             enum: ['1', '2'],
-            default: '1'
+            required:true
+            // default: '1'
         }, location: {
             type: { type: String },
             coordinates: [],
@@ -30,7 +43,7 @@ var usersSchema = new Schema(
         activeStatus: {
             type: String,
             enum: ['0', '1', '2'],
-            default: '0'
+            default: '1'
         }
     },
     {
