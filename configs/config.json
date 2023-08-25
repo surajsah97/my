@@ -2,6 +2,9 @@
     "pass":{
         "saltround":10
     },
+    "OtpTimeLimit": {
+        "limit": 2
+    },
     "userStatus": {
         "active": 1,
         "inactive": 2,
@@ -13,8 +16,8 @@
         "verify": 1
     },
     "role": {
-        "guest": 0,
-        "user": 1
+        "guest": 1,
+        "user": 2
     },
     
     "uploadPath": "public/uploads/",
@@ -22,6 +25,7 @@
     "api": {
         "verifyOtp": "Otp verification successfully.",
         "verifyOtpFail": "Otp verification failed.",
+        "verifyOtpexp": "Otp expired.",
         "loginSuccess": "Login successful.",
         "userNotFound": "User not found.",
         "loginFail": "Login failed wrong password.",
