@@ -46,7 +46,10 @@
         "notificationListFail": "Notification List Failed.",
         "membershipListSuccess": "Membership List Successfully.",
         "membershipListFail": "Membership List Failed.",
-        "blocked": "Your account has been blocked by admin"
+        "blocked": "Your account has been blocked by admin",
+        "categoryalreadyadded":"Category already added. Please try another name.",
+        "categoryadded": "Category added Successfully.",
+        "categoryUpdated": "Category updated Successfully."
     },
     "responseCode": {
         "success": 200,
