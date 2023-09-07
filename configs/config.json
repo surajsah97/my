@@ -49,7 +49,13 @@
         "blocked": "Your account has been blocked by admin",
         "categoryalreadyadded":"Category already added. Please try another name.",
         "categoryadded": "Category added Successfully.",
-        "categoryUpdated": "Category updated Successfully."
+        "categoryUpdated": "Category updated Successfully.",
+        "categoryInactive": "Category inactive or not found.",
+        "categoryDelete": "Category deleted Successfully.",
+        "Subcategoryalreadyadded": "subCategory already added. Please try another name.",
+        "Subcategoryadded": "subCategory added Successfully.",
+        "SubcategoryUpdated": "subCategory updated Successfully.",
+        "SubcategoryDelete": "subCategory deleted Successfully."
     },
     "responseCode": {
         "success": 200,
