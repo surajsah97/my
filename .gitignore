@@ -9,7 +9,7 @@
 /bazel-out
 # /public/uploads
 info.log
-dbConnections.js
+# dbConnections.js
 
 # dependencies
 node_modules/
