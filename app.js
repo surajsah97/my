@@ -48,6 +48,7 @@ console.log("version", process.env.VERSION)
 
 app.use('/v' + process.env.VERSION + '/user/', require('./route/User_R'));
 app.use('/v' + process.env.VERSION + '/catSubcat/', require('./route/catSubcat_R'));
+app.use('/v' + process.env.VERSION + '/product/', require('./route/product_R'));
 
 // catch 404 and forward to error handler
 // app.use(function (req, res, next) {
