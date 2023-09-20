@@ -72,4 +72,84 @@ module.exports = {
             })
         }
     },
+
+    productListFront: async (req, res) => {
+        try {
+            var productData = await ProductModel.aggregate([
+                {
+                    $match: { activeStatus: "1" }
+                },
+                {
+                    $lookup:
+                    {
+                        from: "category",
+                        localField: "categoryId",
+                        foreignField: "_id",
+                        as: "category"
+                    }
+                },
+                { $unwind: '$category' },
+                { $unset: 'categoryId' },
+                {
+                    $lookup:
+                    {
+                        from: "subcategory",
+                        localField: "subCategoryId",
+                        foreignField: "_id",
+                        as: "subcategory"
+                    }
+                },
+                { $unwind: '$subcategory'},
+                { $unset: 'subCategoryId' },
+                { $project: { _id: "$_id", productName: "$productName", productImage: "$productImage", productPrice: "$productPrice", productUOM: "$productUOM", productDes: "$productDes", productInventory: "$productInventory", activeStatus: "$activeStatus", createdAt: "$createdAt", updatedAt: "$updatedAt", subCategory: "$subcategory.subCategory", category: "$category.category" } }
+                
+            ]);
+            res.send(productData);
+        } catch (error) {
+            console.log(error);
+            res.status(global.CONFIGS.responseCode.exception).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+
+    productListAdmin: async (req, res) => {
+        try {
+            var productData = await ProductModel.aggregate([
+                
+                {
+                    $lookup:
+                    {
+                        from: "category",
+                        localField: "categoryId",
+                        foreignField: "_id",
+                        as: "category"
+                    }
+                },
+                { $unwind: '$category' },
+                { $unset: 'categoryId' },
+                {
+                    $lookup:
+                    {
+                        from: "subcategory",
+                        localField: "subCategoryId",
+                        foreignField: "_id",
+                        as: "subcategory"
+                    }
+                },
+                { $unwind: '$subcategory' },
+                { $unset: 'subCategoryId' },
+                { $project: { _id: "$_id", productName: "$productName", productImage: "$productImage", productPrice: "$productPrice", productUOM: "$productUOM", productDes: "$productDes", productInventory: "$productInventory", activeStatus: "$activeStatus", createdAt: "$createdAt", updatedAt: "$updatedAt", subCategory: "$subcategory.subCategory", category: "$category.category" } }
+
+            ]);
+            res.send(productData);
+        } catch (error) {
+            console.log(error);
+            res.status(global.CONFIGS.responseCode.exception).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
 }

@@ -31,6 +31,33 @@ module.exports = {
             })
         }
     },
+    addSub: async (req, res) => {
+        try {
+            if (req.files) {
+                // console.log(req.files)
+                req.body.productImage = `uploads/${req.files.productImage[0].originalname}`
+            }
+            var find_prod = await SubModel.findOne({ productName: req.body.productName });
+            if (find_prod) {
+                return res.status(global.CONFIGS.responseCode.alreadyExist).json({
+                    success: false,
+                    message: global.CONFIGS.api.categoryalreadyadded,
+                })
+            }
+            var create_prod = await SubModel.create(req.body);
+            return res.status(global.CONFIGS.responseCode.success).json({
+                success: true,
+                message: global.CONFIGS.api.categoryadded,
+                data: create_prod
+            })
+        } catch (error) {
+            console.log(error);
+            res.status(global.CONFIGS.responseCode.exception).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
 
     updateSub: async (req, res) => {
         try {
