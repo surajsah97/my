@@ -21,8 +21,6 @@ var cpUpload = upload1.fields([
 
 router.post("/addProduct", cpUpload, cat.addProduct)
 router.post("/updateProduct", cpUpload, cat.updateProduct)
-router.get("/productListFront", cat.productListFront)
-router.get("/productListAdmin", cat.productListAdmin)
 
 
 module.exports = router;
