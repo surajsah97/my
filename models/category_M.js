@@ -16,7 +16,6 @@ var categorySchema = new Schema(
     {
         collection: constants.CategoryModel,
         versionKey: false,
-        // autoIndex: false,
         timestamps: true
     }
 );

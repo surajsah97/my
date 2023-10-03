@@ -16,17 +16,12 @@ module.exports = {
                     message: global.CONFIGS.api.registerFail,
                 })
             }
-            // const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
-            // const hash = await bcrypt.hashSync(req.body.password, salt);
     
             var createuser = await UserModel.create({
                 "Otp": common.randomNumber(),
                 "OtpsendDate": new Date(),
                 "userType": req.body.userType,
-                // "name": req.body.name,
-                // "email": req.body.email,
                 "mobile": req.body.mobile,
-                // "password": hash,
             });
             if (createuser ) {
                 

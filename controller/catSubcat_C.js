@@ -92,7 +92,6 @@ module.exports = {
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.categoryDelete,
-                // data: find_cat
             })
         } catch (error) {
             console.log(error);
@@ -200,7 +199,6 @@ module.exports = {
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.SubcategoryDelete,
-                // data: find_cat
             })
         } catch (error) {
             console.log(error);
