@@ -12,10 +12,6 @@ console.log('current env:', process.env.ENV);
 global.APPDIR = path.resolve(__dirname).toString();
 global.CONFIGS = require('./configs/config.json');
 
-
-//correcting swagger host and base path
-
-
 // connect mongodb
 require('./models/dbConnections');
 
@@ -26,13 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-
 console.log("here")
-
-
-
 
 // request cros
 app.use(function (req, res, next) {
@@ -49,20 +39,5 @@ console.log("version", process.env.VERSION)
 app.use('/v' + process.env.VERSION + '/user/', require('./route/User_R'));
 app.use('/v' + process.env.VERSION + '/catSubcat/', require('./route/catSubcat_R'));
 app.use('/v' + process.env.VERSION + '/product/', require('./route/product_R'));
-
-// catch 404 and forward to error handler
-// app.use(function (req, res, next) {
-//     next(createError(404));
-// });
-
-// error handler
-// app.use(function (err, req, res, next) {
-//     // render the error page
-//     res.status(err.status || 500);
-//     res.render('error', {
-//         message: err.message,
-//         error: err
-//     })
-// });
 
 module.exports = app;

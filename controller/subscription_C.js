@@ -34,7 +34,6 @@ module.exports = {
     addSub: async (req, res) => {
         try {
             if (req.files) {
-                // console.log(req.files)
                 req.body.productImage = `uploads/${req.files.productImage[0].originalname}`
             }
             var find_prod = await SubModel.findOne({ productName: req.body.productName });

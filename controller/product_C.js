@@ -7,7 +7,6 @@ module.exports = {
     addProduct: async (req, res) => {
         try {
             if (req.files) {
-                // console.log(req.files)
                 req.body.productImage = `uploads/${req.files.productImage[0].originalname}`
             }
             var find_prod = await ProductModel.findOne({ productName: req.body.productName });
