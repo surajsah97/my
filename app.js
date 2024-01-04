@@ -2,6 +2,8 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var morgan = require('morgan');
+var customError = require('./middleware/customerror');
+var globalError = require('./controller/error_C')
 
 require('dotenv').config({
     path: `./env-files/${process.env.ENV || 'dev'}.env`,
@@ -39,5 +41,11 @@ console.log("version", process.env.VERSION)
 app.use('/v' + process.env.VERSION + '/user/', require('./route/User_R'));
 app.use('/v' + process.env.VERSION + '/catSubcat/', require('./route/catSubcat_R'));
 app.use('/v' + process.env.VERSION + '/product/', require('./route/product_R'));
+app.all('*', (req, res, next) => {
+    const err = new customError(`can't find this(${req.originalUrl}) URL on server`, 404);
+    next(err);
+})
+
+app.use(globalError);
 
 module.exports = app;

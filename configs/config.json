@@ -23,6 +23,7 @@
     "uploadPath": "public/uploads/",
     "uploadAccessPath": "uploads/",
     "api": {
+        "tokenError":"Token expired or invalid.",
         "verifyOtp": "Otp verification successfully.",
         "verifyOtpFail": "Otp verification failed.",
         "verifyOtpexp": "Otp expired.",
@@ -63,7 +64,8 @@
         "exception": 500,
         "Unauthorized":401 ,
         "notFoud": 404,
-        "alreadyExist": 409
+        "alreadyExist": 409,
+        "noContent":204
     },
     "nearestRange": {
         "range": 5000,

@@ -5,11 +5,13 @@ var subCategorySchema = new Schema(
     {
         subCategory: {
             type: String,
-            require: true
+            required: true,
+            trim:true
         },
         categoryId: {
-            type: String,
-            require: true
+            type: Schema.Types.ObjectId,
+            ref: constants.CategoryModel,
+            required: true
         },
         activeStatus: {
             type: String,

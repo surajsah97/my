@@ -3,14 +3,22 @@ const router = express.Router();
 const User = require("../controller/User_C")
 const Auth = require("../middleware/auth");
 
-router.post("/UserSingup", User.UserSingup)
-router.post("/login", User.login)
-router.post("/VerifieUser", User.VerifieUser)
-router.post("/reSendOtp", User.reSendOtp)
-router.post("/resetPass", User.resetPass)
-router.post("/forgetPass", User.forgetPass)
-router.post("/changePass", Auth.apiValidateToken, User.changePass)
-router.post("/updateUserProfile", Auth.apiValidateToken, User.updateUserProfile)
+const errorfun = (func) => {
+    return (req, res, next) => {
+        func(req, res, next).catch(err => next(err));
+    }
+}
+
+router.post("/UserSingup", errorfun(User.UserSingup))
+router.post("/login", errorfun(User.login))
+router.put("/VerifieUser", errorfun(User.VerifieUser))
+router.put("/reSendOtp", errorfun(User.reSendOtp))
+router.put("/resetPass", errorfun(User.resetPass))
+router.put("/forgetPass", errorfun(User.forgetPass))
+router.put("/changePass", Auth.apiValidateToken, errorfun(User.changePass))
+router.put("/updateUserProfile", Auth.apiValidateToken, errorfun(User.updateUserProfile))
+router.get("/getUserProfile", Auth.apiValidateToken, errorfun(User.getUserProfile))
+
 
 
 module.exports = router;
