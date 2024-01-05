@@ -6,7 +6,7 @@ const common = require("../service/commonFunction");
 var customError = require('../middleware/customerror');
 
 module.exports = {
-    addCategory: async (req, res) => {
+    addCategory: async (req, res, next) => {
             var find_cat = await CategoryModel.findOne({ category: req.body.category });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
@@ -20,20 +20,20 @@ module.exports = {
             })
     },
 
-    updateCategory: async (req, res) => {
-            var find_cat = await CategoryModel.findOne({ category: req.body.category, _id: { $nin: [req.body.id] }  });
+    updateCategory: async (req, res, next) => {
+            var find_cat = await CategoryModel.findOne({ category: req.body.category, _id: { $nin: [req.params.id] }  });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
                 next(err);
             }
-            var create_cat = await CategoryModel.updateOne({_id:req.body.id},req.body);
+            var create_cat = await CategoryModel.updateOne({ _id: req.params.id},req.body);
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.categoryUpdated,
             })
     },
 
-    categoryList: async (req, res) => {
+    categoryList: async (req, res, next) => {
             var find_cat = await CategoryModel.find({});
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
@@ -42,7 +42,7 @@ module.exports = {
             })
     },
 
-    categoryListFront: async (req, res) => {
+    categoryListFront: async (req, res, next) => {
             var find_cat = await CategoryModel.find({ activeStatus :"1"});
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
@@ -51,7 +51,7 @@ module.exports = {
             })
     },
 
-    categoryDelete: async (req, res) => {
+    categoryDelete: async (req, res, next) => {
             var find_cat = await CategoryModel.deleteOne({_id:req.params.id});
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
@@ -62,7 +62,7 @@ module.exports = {
 
      // SubCat api //
     
-    addSubCategory: async (req, res) => {
+    addSubCategory: async (req, res, next) => {
             var find_cat = await CategoryModel.findOne({ _id: req.body.categoryId, activeStatus:"1" });
             if (!find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.alreadyExist);
@@ -81,7 +81,7 @@ module.exports = {
             })
     },
 
-    updateSubCategory: async (req, res) => {
+    updateSubCategory: async (req, res, next) => {
             var find_cat = await SubCategoryModel.findOne({ category: req.body.category, _id: { $nin: [req.body.id] } });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.Subcategoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
@@ -94,7 +94,7 @@ module.exports = {
             })
     },
 
-    SubcategoryList: async (req, res) => {
+    SubcategoryList: async (req, res, next) => {
             var find_cat = await SubCategoryModel.find({});
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
@@ -103,7 +103,7 @@ module.exports = {
             })
     },
 
-    SubcategoryListFront: async (req, res) => {
+    SubcategoryListFront: async (req, res, next) => {
             var find_cat = await SubCategoryModel.find({ activeStatus: "1" });
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
@@ -112,7 +112,7 @@ module.exports = {
             })
     },
 
-    SubcategoryDelete: async (req, res) => {
+    SubcategoryDelete: async (req, res, next) => {
             var find_cat = await SubCategoryModel.deleteOne({ _id: req.params.id });
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,

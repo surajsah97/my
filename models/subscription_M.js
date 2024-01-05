@@ -44,7 +44,7 @@ var productSchema = new Schema(
         }
     },
     {
-        collection: constants.ProductModel,
+        collection: constants.SubModel,
         versionKey: false,
         timestamps: true,
         toObject: { virtuals: true, getters: true },
@@ -54,4 +54,4 @@ var productSchema = new Schema(
 
 productSchema.index({ 'createdAt': -1 });
 
-mongoose.model(constants.ProductModel, productSchema);
+mongoose.model(constants.SubModel, productSchema);

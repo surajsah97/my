@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router();
 const path = require("path")
-const cat = require("../controller/product_C")
-const Auth = require("../middleware/auth");
+const cat = require("../../controller/product_C")
+const Auth = require("../../middleware/auth");
 const multer = require("multer");
 
 const localStorage = multer.diskStorage({
@@ -21,8 +21,6 @@ var cpUpload = upload1.fields([
 
 router.post("/addProduct", cpUpload, cat.addProduct)
 router.post("/updateProduct", cpUpload, cat.updateProduct)
-router.get("/productListFront", cat.productListFront)
-router.get("/productListAdmin", cat.productListAdmin)
 
 
 module.exports = router;

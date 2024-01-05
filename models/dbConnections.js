@@ -4,7 +4,7 @@ mongoose.Promise = global.Promise;
 var connectMongoose = function () {
     // mongoose.set('useNewUrlParser', true);
     // mongoose.set('useUnifiedTopology', true);
-    mongoose.connect(process.env.DBURI).then(connection => {
+    mongoose.connect(process.env.DBURI, { maxPoolSize: 10 }).then(connection => {
         console.log('Connected to MongoDB')
     }).catch(error => {
         console.log(error.message);

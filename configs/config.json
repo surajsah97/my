@@ -3,7 +3,7 @@
         "saltround":10
     },
     "OtpTimeLimit": {
-        "limit": 2
+        "limit": 5
     },
     "userStatus": {
         "active": 1,
@@ -56,7 +56,13 @@
         "Subcategoryalreadyadded": "subCategory already added. Please try another name.",
         "Subcategoryadded": "subCategory added Successfully.",
         "SubcategoryUpdated": "subCategory updated Successfully.",
-        "SubcategoryDelete": "subCategory deleted Successfully."
+        "SubcategoryDelete": "subCategory deleted Successfully.",
+        "Productalreadyadded": "Product already added. Please try another name.",
+        "Productadded": "Product added Successfully.",
+        "ProductUpdated": "Product updated Successfully.",
+        "getProductSuccess": "Get product list Successfully.",
+        "ProductNotfound": "Product notFoud Successfully.",
+        "ProductDelete": "Product deleted Successfully."
     },
     "responseCode": {
         "success": 200,

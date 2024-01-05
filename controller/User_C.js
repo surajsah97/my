@@ -86,7 +86,7 @@ module.exports = {
         })
     },
 
-    VerifieUser: async (req, res) => {
+    VerifieUser: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
@@ -138,7 +138,7 @@ module.exports = {
         }
     },
 
-    reSendOtp: async (req, res) => {
+    reSendOtp: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
@@ -159,7 +159,7 @@ module.exports = {
         })
     },
 
-    forgetPass: async (req, res) => {
+    forgetPass: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
@@ -179,7 +179,7 @@ module.exports = {
         })
     },
 
-    resetPass: async (req, res) => {
+    resetPass: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
@@ -206,7 +206,7 @@ module.exports = {
         })
     },
 
-    changePass: async (req, res) => {
+    changePass: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
@@ -314,6 +314,43 @@ module.exports = {
             },
         })
         
+    },
+
+    getUserAdmin: async (req, res, next) => {
+        const limit = parseInt(req.query.limit) || 20; // docs in single page
+        const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+        const skip = (pageNo - 1) * limit;
+
+        var find_user = await UserModel.aggregate([
+            {
+                $match: { $or: [{ activeStatus:"1"   }] }
+            },
+            {
+                $sort: {
+                    _id: -1
+                }
+            },
+            {
+                '$facet': {
+                    metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+                    data: [{ $skip: skip }, { $limit: limit }] // add projection here wish you re-shape the docs
+                }
+            }
+
+        ]);
+        return res.send(find_user)
+        if (find_user[0].data.length == 0) {
+            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
+            next(err);
+        }
+        var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.getUserDetailsSuccess,
+            totalPage: totalPage,
+            data: find_user[0].data
+        })
+
     },
 
 }
