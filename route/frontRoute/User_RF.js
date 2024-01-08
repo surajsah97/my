@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const User = require("../../controller/User_C")
 const Auth = require("../../middleware/auth");
+const firebase = require('../../service/firebase/firebaseFunctions');
 
 const errorfun = (func) => {
     return (req, res, next) => {
@@ -19,7 +20,7 @@ router.put("/changePass", Auth.apiValidateToken, errorfun(User.changePass))
 router.put("/updateUserProfile", Auth.apiValidateToken, errorfun(User.updateUserProfile))
 router.get("/getUserProfile", Auth.apiValidateToken, errorfun(User.getUserProfile))
 
-
+router.get("/firebasesms", firebase.firebasesms)
 
 
 
