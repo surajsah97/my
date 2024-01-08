@@ -2,6 +2,8 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var morgan = require('morgan');
+var customError = require('./middleware/customerror');
+var globalError = require('./controller/error_C')
 
 require('dotenv').config({
     path: `./env-files/${process.env.ENV || 'dev'}.env`,
@@ -36,8 +38,20 @@ app.use(function (req, res, next) {
 
 console.log("version", process.env.VERSION)
 
-app.use('/v' + process.env.VERSION + '/user/', require('./route/User_R'));
-app.use('/v' + process.env.VERSION + '/catSubcat/', require('./route/catSubcat_R'));
-app.use('/v' + process.env.VERSION + '/product/', require('./route/product_R'));
+app.use('/v' + process.env.VERSION + '/front/user/', require('./route/frontRoute/User_RF'));
+app.use('/v' + process.env.VERSION + '/admin/user/', require('./route/adminRoute/User_RA'));
+
+app.use('/v' + process.env.VERSION + '/front/catsubcat/', require('./route/frontRoute/catSubcat_RF'));
+app.use('/v' + process.env.VERSION + '/admin/catsubcat/', require('./route/adminRoute/catSubcat_RA'));
+
+app.use('/v' + process.env.VERSION + '/front/product/', require('./route/frontRoute/product_RF'));
+app.use('/v' + process.env.VERSION + '/admin/product/', require('./route/adminRoute/product_RA'));
+
+app.all('*', (req, res, next) => {
+    const err = new customError(`can't find this(${req.originalUrl}) URL on server`, 404);
+    next(err);
+})
+
+app.use(globalError);
 
 module.exports = app;

@@ -5,7 +5,8 @@ var categorySchema = new Schema(
     {
         category: {
             type: String,
-            require: true
+            required: true,
+            trim:true
         },
         activeStatus: {
             type: String,

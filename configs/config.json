@@ -3,7 +3,7 @@
         "saltround":10
     },
     "OtpTimeLimit": {
-        "limit": 2
+        "limit": 5
     },
     "userStatus": {
         "active": 1,
@@ -23,6 +23,7 @@
     "uploadPath": "public/uploads/",
     "uploadAccessPath": "uploads/",
     "api": {
+        "tokenError":"Token expired or invalid.",
         "verifyOtp": "Otp verification successfully.",
         "verifyOtpFail": "Otp verification failed.",
         "verifyOtpexp": "Otp expired.",
@@ -55,7 +56,13 @@
         "Subcategoryalreadyadded": "subCategory already added. Please try another name.",
         "Subcategoryadded": "subCategory added Successfully.",
         "SubcategoryUpdated": "subCategory updated Successfully.",
-        "SubcategoryDelete": "subCategory deleted Successfully."
+        "SubcategoryDelete": "subCategory deleted Successfully.",
+        "Productalreadyadded": "Product already added. Please try another name.",
+        "Productadded": "Product added Successfully.",
+        "ProductUpdated": "Product updated Successfully.",
+        "getProductSuccess": "Get product list Successfully.",
+        "ProductNotfound": "Product notFoud Successfully.",
+        "ProductDelete": "Product deleted Successfully."
     },
     "responseCode": {
         "success": 200,
@@ -63,7 +70,8 @@
         "exception": 500,
         "Unauthorized":401 ,
         "notFoud": 404,
-        "alreadyExist": 409
+        "alreadyExist": 409,
+        "noContent":204
     },
     "nearestRange": {
         "range": 5000,

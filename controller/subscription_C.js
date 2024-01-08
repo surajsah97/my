@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
-const SubModel = mongoose.model(constants.ProductModel);
+const SubModel = mongoose.model(constants.SubModel);
 const common = require("../service/commonFunction");
 
 module.exports = {
