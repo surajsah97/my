@@ -47,6 +47,9 @@ app.use('/v' + process.env.VERSION + '/admin/catsubcat/', require('./route/admin
 app.use('/v' + process.env.VERSION + '/front/product/', require('./route/frontRoute/product_RF'));
 app.use('/v' + process.env.VERSION + '/admin/product/', require('./route/adminRoute/product_RA'));
 
+app.use('/v' + process.env.VERSION + '/front/subplan/', require('./route/frontRoute/subscriptionPlan_RF'));
+app.use('/v' + process.env.VERSION + '/admin/subplan/', require('./route/adminRoute/subscriptionPlan_RA'));
+
 app.all('*', (req, res, next) => {
     const err = new customError(`can't find this(${req.originalUrl}) URL on server`, 404);
     next(err);
