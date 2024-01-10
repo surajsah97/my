@@ -5,31 +5,18 @@ const common = require("../service/commonFunction");
 
 module.exports = {
     addSub: async (req, res) => {
-        try {
-            if (req.files) {
-                // console.log(req.files)
-                req.body.productImage = `uploads/${req.files.productImage[0].originalname}`
-            }
-            var find_prod = await SubModel.findOne({ productName: req.body.productName });
-            if (find_prod) {
-                return res.status(global.CONFIGS.responseCode.alreadyExist).json({
-                    success: false,
-                    message: global.CONFIGS.api.categoryalreadyadded,
-                })
-            }
-            var create_prod = await SubModel.create(req.body);
-            return res.status(global.CONFIGS.responseCode.success).json({
-                success: true,
-                message: global.CONFIGS.api.categoryadded,
-                data: create_prod
-            })
-        } catch (error) {
-            console.log(error);
-            res.status(global.CONFIGS.responseCode.exception).json({
-                success: false,
-                message: error.message
-            })
+
+        var find_prod = await ProductModel.findOne({ productName: req.body.productName });
+        if (find_prod) {
+            const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
+            next(err);
         }
+        var create_prod = await ProductModel.create(req.body);
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.Productadded,
+            data: create_prod
+        })
     },
     addSub: async (req, res) => {
         try {
@@ -98,4 +85,6 @@ module.exports = {
             })
         }
     },
+
+    
 }

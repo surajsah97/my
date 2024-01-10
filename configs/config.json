@@ -62,7 +62,13 @@
         "ProductUpdated": "Product updated Successfully.",
         "getProductSuccess": "Get product list Successfully.",
         "ProductNotfound": "Product notFoud Successfully.",
-        "ProductDelete": "Product deleted Successfully."
+        "ProductDelete": "Product deleted Successfully.",
+        "subscriptionPlanalreadyadded": "Subscription plan already added. Please try another name.",
+        "subscriptionPlanadded": "Subscription plan added Successfully.",
+        "subscriptionPlanUpdated": "Subscription plan updated Successfully.",
+        "subscriptionPlanList": "Subscription plan list Successfully.",
+        "subscriptionPlanInactive": "Subscription plan inactive or not found.",
+        "subscriptionPlanDelete": "Subscription plan deleted Successfully."
     },
     "responseCode": {
         "success": 200,
