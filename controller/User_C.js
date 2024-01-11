@@ -337,7 +337,7 @@ module.exports = {
             }
 
         ]);
-        return res.send(find_user)
+        // return res.send(find_user)
         if (find_user[0].data.length == 0) {
             const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
             next(err);

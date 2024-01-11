@@ -6,4 +6,5 @@ exports.SubCategoryModel = "subcategory";
 exports.ProductModel = "product";
 exports.SubModel = "subscription";
 exports.subscriptionPlanModel = "subscriptionplan";
+exports.CheckOutModel = "subcheckout";
 

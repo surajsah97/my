@@ -50,6 +50,9 @@ app.use('/v' + process.env.VERSION + '/admin/product/', require('./route/adminRo
 app.use('/v' + process.env.VERSION + '/front/subplan/', require('./route/frontRoute/subscriptionPlan_RF'));
 app.use('/v' + process.env.VERSION + '/admin/subplan/', require('./route/adminRoute/subscriptionPlan_RA'));
 
+app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
+// app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
+
 app.all('*', (req, res, next) => {
     const err = new customError(`can't find this(${req.originalUrl}) URL on server`, 404);
     next(err);
