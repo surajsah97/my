@@ -30,7 +30,11 @@ var productSchema = new Schema(
             type: String,
             enum: ['Active', 'Inactive', 'Expired'],
             default: 'Active'
-        }
+        },
+        price: {
+            type: Number,
+            required: [true, "Please enter price."]
+        },
     },
     {
         collection: constants.SubModel,
@@ -41,6 +45,6 @@ var productSchema = new Schema(
     }
 );
 
-productSchema.index({ 'createdAt': -1 });
+// productSchema.index({ 'createdAt': -1 });
 
 mongoose.model(constants.SubModel, productSchema);

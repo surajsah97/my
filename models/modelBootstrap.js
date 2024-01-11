@@ -4,3 +4,4 @@ require('./subCategory_M');
 require('./product_M');
 require('./userSubscription_M');
 require('./subscriptionPlan_M');
+require('./checkout_M');
