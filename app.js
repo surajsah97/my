@@ -1,6 +1,8 @@
 var createError = require('http-errors');
 var express = require('express');
+const cors = require("cors");
 var path = require('path');
+const cookieParser = require("cookie-parser");
 var morgan = require('morgan');
 var customError = require('./middleware/customerror');
 var globalError = require('./controller/error_C')
@@ -27,14 +29,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 console.log("here")
 
 // request cros
-app.use(function (req, res, next) {
+// app.use(function (req, res, next) {
     
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-    res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,authToken,Authorization,Content-Type,Accept");
-    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    next();
-});
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+//     res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,authToken,Authorization,Content-Type,Accept");
+//     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+//     next();
+// });
+
+const corsOptions = {
+    origin: ["*"],
+    credentials: true, //access-control-allow-credentials:true
+    optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 console.log("version", process.env.VERSION)
 
@@ -52,6 +63,9 @@ app.use('/v' + process.env.VERSION + '/admin/subplan/', require('./route/adminRo
 
 app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
 // app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
+
+// app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
+app.use('/v' + process.env.VERSION + '/admin/adminauth/', require('./route/adminRoute/admin_RA'));
 
 app.all('*', (req, res, next) => {
     const err = new customError(`can't find this(${req.originalUrl}) URL on server`, 404);

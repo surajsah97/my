@@ -20,7 +20,7 @@ router.route('/category/:id')
 
 // subCategory router //
 router.route('/subcategory/')
-    .get(errorfun(cat.SubcategoryList))
+    .get(Auth.adminValidateToken, cat.SubcategoryList)
     .post(errorfun(cat.addSubCategory))
 
 router.route('/subcategory/:id')
