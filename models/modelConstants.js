@@ -7,4 +7,7 @@ exports.ProductModel = "product";
 exports.SubModel = "subscription";
 exports.subscriptionPlanModel = "subscriptionplan";
 exports.CheckOutModel = "subcheckout";
-
+exports.BikeBrandModel = "bikebrand";
+exports.BikeModelModel = "bikemodel";
+exports.TruckBrandModel = "truckbrand";
+exports.TruckModelModel = "truckmodel";

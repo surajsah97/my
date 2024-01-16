@@ -67,6 +67,9 @@ app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontR
 // app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
 app.use('/v' + process.env.VERSION + '/admin/adminauth/', require('./route/adminRoute/admin_RA'));
 
+app.use('/v' + process.env.VERSION + '/admin/truckbrand/', require('./route/adminRoute/TruckBrand_RA'));
+app.use('/v' + process.env.VERSION + '/admin/truckmodel/', require('./route/adminRoute/TruckModel_RA'));
+
 app.all('*', (req, res, next) => {
     const err = new customError(`can't find this(${req.originalUrl}) URL on server`, 404);
     next(err);
