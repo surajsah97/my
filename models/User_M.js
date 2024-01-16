@@ -33,7 +33,7 @@ var usersSchema = new Schema(
         },
         userType: {
             type: String,
-            enum: ['1', '2'],
+            enum: ['Admin', 'User', 'Guest', 'Rider', 'Driver'],
             required:true
             // default: '1'
         }, location: {
@@ -58,12 +58,5 @@ var usersSchema = new Schema(
 usersSchema.index({ location: "2dsphere" });
 usersSchema.index({ 'createdAt': -1 });
 
-// function avatarGetter(avatar) {
-//     if (avatar) {
-//         return process.env.WEBURL + '/' + avatar;
-//     } else {
-//         return process.env.WEBURL + '/images/user2-160x160.jpg';
-//     }
-// }
 
 mongoose.model(constants.UserModel, usersSchema);
