@@ -5,3 +5,7 @@ require('./product_M');
 require('./userSubscription_M');
 require('./subscriptionPlan_M');
 require('./checkout_M');
+require('./BikeBrand_M');
+require('./BikeModel_M');
+require('./TruckBrand_M');
+require('./TruckModel_M');

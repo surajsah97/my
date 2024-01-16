@@ -24,6 +24,8 @@ var upload1 = multer({ storage: localStorage });
 var cpUpload = upload1.fields([
     { name: 'productImage', maxCount: 1 },
 ])
+
+
 router.route('/')
     .get(errorfun(cat.productListAdmin))
     .post(cpUpload, errorfun(cat.addProduct))
