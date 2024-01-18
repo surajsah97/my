@@ -1,16 +1,16 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
-const TruckBrandModel = mongoose.model(constants.TruckBrandModel);
+const BikeBrandModel = mongoose.model(constants.BikeBrandModel);
 var customError = require('../middleware/customerror');
 
 module.exports = {
     addBrand: async (req, res, next) => {
-        var find_brand = await TruckBrandModel.findOne({ truckBrand: req.body.truckBrand });
+        var find_brand = await BikeBrandModel.findOne({ bikeBrand: req.body.bikeBrand });
         if (find_brand) {
             const err = new customError(global.CONFIGS.api.brandalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             next(err);
         }
-        var create_brand = await TruckBrandModel.create(req.body);
+        var create_brand = await BikeBrandModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.brandadded,
@@ -19,12 +19,12 @@ module.exports = {
     },
 
     updateBrand: async (req, res, next) => {
-        var find_brand = await TruckBrandModel.findOne({ truckBrand: req.body.truckBrand, _id: { $nin: [req.params.id] } });
+        var find_brand = await BikeBrandModel.findOne({ bikeBrand: req.body.bikeBrand, _id: { $nin: [req.params.id] } });
         if (find_brand) {
             const err = new customError(global.CONFIGS.api.brandalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             next(err);
         }
-        var update_brand = await TruckBrandModel.updateOne({ _id: req.params.id }, req.body);
+        var update_brand = await BikeBrandModel.updateOne({ _id: req.params.id }, req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.brandUpdated,
@@ -32,7 +32,7 @@ module.exports = {
     },
 
     brandList: async (req, res, next) => {
-        var find_brand = await TruckBrandModel.find({}).sort({ truckBrand : 1});
+        var find_brand = await BikeBrandModel.find({}).sort({ bikeBrand: 1 });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getBrandSuccess,
@@ -41,7 +41,7 @@ module.exports = {
     },
 
     brandListFront: async (req, res, next) => {
-        var find_brand = await TruckBrandModel.find({ activeStatus: "1" }).sort({ truckBrand: 1 });
+        var find_brand = await BikeBrandModel.find({ activeStatus: "1" }).sort({ bikeBrand: 1 });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getBrandSuccess,
@@ -50,7 +50,7 @@ module.exports = {
     },
 
     brandDelete: async (req, res, next) => {
-        var delete_brand = await TruckBrandModel.deleteOne({ _id: req.params.id });
+        var delete_brand = await BikeBrandModel.deleteOne({ _id: req.params.id });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.brandDelete,

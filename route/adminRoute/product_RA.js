@@ -13,7 +13,7 @@ const errorfun = (func) => {
 
 const localStorage = multer.diskStorage({
     destination: (req, res, next) => {
-        next(null, path.join(__dirname, '../../public/uploads'))
+        next(null, path.join(__dirname, '../../public/uploads/products'))
     },
     filename: (req, file, next) => {
         next(null, file.originalname)

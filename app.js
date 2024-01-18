@@ -70,6 +70,9 @@ app.use('/v' + process.env.VERSION + '/admin/adminauth/', require('./route/admin
 app.use('/v' + process.env.VERSION + '/admin/truckbrand/', require('./route/adminRoute/TruckBrand_RA'));
 app.use('/v' + process.env.VERSION + '/admin/truckmodel/', require('./route/adminRoute/TruckModel_RA'));
 
+app.use('/v' + process.env.VERSION + '/admin/bikebrand/', require('./route/adminRoute/BikeBrand_RA'));
+app.use('/v' + process.env.VERSION + '/admin/bikemodel/', require('./route/adminRoute/BikeModel_RA'));
+
 app.use('/v' + process.env.VERSION + '/admin/notification/', require('./route/adminRoute/notification_RA'));
 
 app.all('*', (req, res, next) => {

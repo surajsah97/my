@@ -22,18 +22,6 @@ let userAppMessaging = ( message) => {
             console.log(error);
         });
 };
-let driverAppMessaging = (registrationToken, message) => {
-    console.log("----------------message ", message);
-    driverAppAdmin
-        .messaging()
-        .send(registrationToken, message, notification_options)
-        .then((response) => {
-            // logger.info('Driver Notification sent successfully ' + JSON.stringify(response));
-            console.log("Driver Notification sent successfully", (response));
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-};
-module.exports = { userAppMessaging, driverAppMessaging };
+
+module.exports = { userAppMessaging };
 

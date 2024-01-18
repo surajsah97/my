@@ -1,24 +1,24 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
-const TruckBrandModel = mongoose.model(constants.TruckBrandModel);
-const TruckModelModel = mongoose.model(constants.TruckModelModel);
+const BikeBrandModel = mongoose.model(constants.BikeBrandModel);
+const BikeModelModel = mongoose.model(constants.BikeModelModel);
 const common = require("../service/commonFunction");
 var customError = require('../middleware/customerror');
 
 module.exports = {
 
     addmodel: async (req, res, next) => {
-        var find_brand = await TruckBrandModel.findOne({ _id: req.body.truckBrandId, activeStatus: "1" });
+        var find_brand = await BikeBrandModel.findOne({ _id: req.body.bikeBrandId, activeStatus: "1" });
         if (!find_brand) {
             const err = new customError(global.CONFIGS.api.brandInactive, global.CONFIGS.responseCode.alreadyExist);
             next(err);
         }
-        var find_model = await TruckModelModel.findOne({ truckModel: req.body.truckModel });
+        var find_model = await BikeModelModel.findOne({ bikeModel: req.body.bikeModel });
         if (find_model) {
             const err = new customError(global.CONFIGS.api.modelalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             next(err);
         }
-        var create_model = await TruckModelModel.create(req.body);
+        var create_model = await BikeModelModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.modeladded,
@@ -27,12 +27,12 @@ module.exports = {
     },
 
     updateModel: async (req, res, next) => {
-        var find_model = await TruckModelModel.findOne({ truckModel: req.body.truckModel, _id: { $nin: [req.params.id] } });
+        var find_model = await BikeModelModel.findOne({ bikeModel: req.body.bikeModel, _id: { $nin: [req.params.id] } });
         if (find_model) {
             const err = new customError(global.CONFIGS.api.modelalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             next(err);
         }
-        var update_model = await TruckModelModel.updateOne({ _id: req.params.id }, req.body);
+        var update_model = await BikeModelModel.updateOne({ _id: req.params.id }, req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.modelUpdated,
@@ -40,7 +40,7 @@ module.exports = {
     },
 
     modelList: async (req, res, next) => {
-        var find_model = await TruckModelModel.find({}).sort({ truckModel : 1});
+        var find_model = await BikeModelModel.find({}).sort({ bikeModel: 1 });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getModelSuccess,
@@ -49,7 +49,7 @@ module.exports = {
     },
 
     modelListFront: async (req, res, next) => {
-        var find_model = await TruckModelModel.find({ activeStatus: "1" }).sort({ truckModel: 1 });
+        var find_model = await BikeModelModel.find({ activeStatus: "1" }).sort({ bikeModel: 1 });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getModelSuccess,
@@ -58,7 +58,7 @@ module.exports = {
     },
 
     modelDelete: async (req, res, next) => {
-        var delete_model = await TruckModelModel.deleteOne({ _id: req.params.id });
+        var delete_model = await BikeModelModel.deleteOne({ _id: req.params.id });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.modelDelete,
