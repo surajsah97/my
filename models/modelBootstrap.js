@@ -7,5 +7,7 @@ require('./subscriptionPlan_M');
 require('./checkout_M');
 require('./BikeBrand_M');
 require('./BikeModel_M');
+require('./BikeDetails_M');
 require('./TruckBrand_M');
 require('./TruckModel_M');
+require('./Truckdetails_M');

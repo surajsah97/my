@@ -68,7 +68,18 @@
         "subscriptionPlanUpdated": "Subscription plan updated Successfully.",
         "subscriptionPlanList": "Subscription plan list Successfully.",
         "subscriptionPlanInactive": "Subscription plan inactive or not found.",
-        "subscriptionPlanDelete": "Subscription plan deleted Successfully."
+        "subscriptionPlanDelete": "Subscription plan deleted Successfully.",
+        "brandalreadyadded": "Brand already added. Please try another name.",
+        "brandadded": "Brand added Successfully.",
+        "brandUpdated": "Brand updated Successfully.",
+        "getBrandSuccess": "Get brand list Successfully.",
+        "brandInactive": "Brand inactive or not found.",
+        "brandDelete": "Brand deleted Successfully.",
+        "modelalreadyadded": "Model already added. Please try another name.",
+        "modeladded": "Model added Successfully.",
+        "getModelSuccess": "Get model list Successfully.",
+        "modelUpdated": "Model updated Successfully.",
+        "modelDelete": "Model deleted Successfully."
     },
     "responseCode": {
         "success": 200,
