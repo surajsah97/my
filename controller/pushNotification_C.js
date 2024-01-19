@@ -3,7 +3,7 @@ var { userAppMessaging } = require('../service/firebase/notification');
 module.exports = {
     testnotification : async (req, res, next) => {
         
-        var tokenArray = ["eFLegB0rQk6QZyjxavntYm:APA91bGaITiAwCeKwov5MRxMwVygXZDDuPl2P0iuEepJHe7Wb4T6e46gbw-7FgaTfXzOnkm51oWNmkMjkWFQiknAEknfj6FjCN3dBi4TG-2Fz--wIKFygZw4fkDvBgHy5VYzOa9e4i2J"];
+        var tokenArray = ["dbPBdLwASM-8YP5R7WwB-J:APA91bFSIZN4Ji6PJtEQzxqWMK-HHOayWsPfsmTouSmT6WawUZgSflpZ86wm8ncgv2ehvlmSCjyCpxvtRRBn_rrF5cKtkpSEe8puiGTXGgVZ8q8Y0xW8psqXDqCLnwGZm8OEyCGXibp8"];
         
         if (tokenArray.length > 0) {
             var data = {
@@ -42,6 +42,7 @@ async function sendPush(data) {
             },
             android: {
                 notification: {
+                    imageUrl: 'https://i.postimg.cc/BbK4N6QR/winter-hat-3662360.png',
                     click_action: data.click_action, // Replace with the action to be performed when the notification is clicked
                     channel_id: "com.dhudhu"// Replace with the Android channel ID
                 },
@@ -51,8 +52,17 @@ async function sendPush(data) {
                 payload: {
                     aps: {
                         sound: 'default',
-                        badge: 1
+                        badge: 1,
+                        'mutable-content': 1
                     }
+                },
+                fcm_options: {
+                    image: 'https://i.postimg.cc/BbK4N6QR/winter-hat-3662360.png'
+                }
+            },
+            webpush: {
+                headers: {
+                    image: 'https://i.postimg.cc/BbK4N6QR/winter-hat-3662360.png'
                 }
             },
             // priority: 'high' // Set the priority to 'high' or 'normal'
