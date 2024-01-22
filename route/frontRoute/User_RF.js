@@ -22,6 +22,4 @@ router.get("/getUserProfile", Auth.apiValidateToken, errorfun(User.getUserProfil
 
 router.get("/firebasesms", firebase.firebasesms)
 
-
-
 module.exports = router;

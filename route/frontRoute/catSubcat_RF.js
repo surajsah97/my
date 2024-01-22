@@ -17,5 +17,4 @@ router.route('/category/')
 router.route('/subcategory/')
     .get(errorfun(cat.SubcategoryListFront))
 
-
 module.exports = router;

@@ -9,9 +9,7 @@ const errorfun = (func) => {
     }
 }
 
-
 router.route('/')
     .post(errorfun(checkOut.checkOut))
-
 
 module.exports = router;
