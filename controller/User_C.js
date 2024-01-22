@@ -91,18 +91,18 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
             next(err);
         }
-        if (find_user.Otp != req.body.Otp) {
+        if (req.body.verifyOtp === false || req.body.verifyOtp === undefined) {
             const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
             next(err);
         }
-        var timediff = common.datediff(find_user.OtpsendDate);
-        console.log("timediff= ",timediff);
-        if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
-            const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
-        }
-        if (find_user.userType == global.CONFIGS.role.user) {
-            var update_user = await UserModel.updateOne({ _id: find_user._id }, { isVerified: true });
+        // var timediff = common.datediff(find_user.OtpsendDate);
+        // console.log("timediff= ",timediff);
+        // if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
+        //     const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
+        //     next(err);
+        // }
+        if (req.body.verifyOtp === false) {
+            var update_user = await UserModel.updateOne({ _id: find_user._id }, { isVerified: req.body.verifyOtp });
             const payload = { mobile: find_user.mobile, _id: find_user._id };
             const options = {
                 expiresIn: global.CONFIGS.token.apiTokenExpiry,
@@ -118,23 +118,12 @@ module.exports = {
                 data: {
                     "UserId": find_user._id,
                     "userType": find_user.userType,
-                "activeStatus": find_user.activeStatus,
+                    "activeStatus": find_user.activeStatus,
                     "token": token
                 },
             })
-
-        } else {
-            var update_user = await UserModel.updateOne({ _id: find_user._id }, { isVerified: true });
-            return res.status(global.CONFIGS.responseCode.success).json({
-                success: true,
-                message: global.CONFIGS.api.verifyOtp,
-                data: {
-                    "UserId": find_user._id,
-                    "userType": find_user.userType,
-                    "activeStatus": find_user.activeStatus,
-                },
-            })
         }
+        
     },
 
     reSendOtp: async (req, res, next) => {
@@ -228,11 +217,11 @@ module.exports = {
 
     updateUserProfile: async (req, res, next) => {
         console.log(req.body);
-        var find_user1 = await UserModel.findOne({ _id: req.body.UserId, userType: "1" });
-        if (find_user1) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
-        }
+        // var find_user1 = await UserModel.findOne({ _id: req.body.UserId, userType: "1" });
+        // if (find_user1) {
+        //     const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+        //     next(err);
+        // }
         var find_user = await UserModel.findOne({ _id: req.body.UserId });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
@@ -277,11 +266,7 @@ module.exports = {
 
     getUserProfile: async (req, res, next) => {
         console.log(req.body);
-        var find_user1 = await UserModel.findOne({ _id: req.query.UserId, userType: "1" });
-        if (find_user1) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
-        }
+        
         var find_user = await UserModel.findOne({ _id: req.query.UserId });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
@@ -303,9 +288,8 @@ module.exports = {
             message: global.CONFIGS.api.registerSuccess,
             data: {
                 "UserId": find_user2._id,
-                "Otp": find_user2.Otp,
                 "name": find_user2.name,
-                "email": find_user2.email,
+                "email": find_user2.email || '',
                 "mobile": find_user2.mobile,
                 "userType": find_user2.userType,
                 "activeStatus": find_user2.activeStatus,
