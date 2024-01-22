@@ -11,3 +11,4 @@ require('./BikeDetails_M');
 require('./TruckBrand_M');
 require('./TruckModel_M');
 require('./Truckdetails_M');
+require('./Driver_M');

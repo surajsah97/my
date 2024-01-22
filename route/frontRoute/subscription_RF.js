@@ -22,5 +22,4 @@ var cpUpload = upload1.fields([
 router.post("/addProduct", cpUpload, cat.addProduct)
 router.post("/updateProduct", cpUpload, cat.updateProduct)
 
-
 module.exports = router;

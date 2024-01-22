@@ -25,7 +25,6 @@ var cpUpload = upload1.fields([
     { name: 'productImage', maxCount: 1 },
 ])
 
-
 router.route('/')
     .get(errorfun(cat.productListAdmin))
     .post(cpUpload, errorfun(cat.addProduct))
@@ -33,8 +32,5 @@ router.route('/')
 router.route('/:id')
     .put(cpUpload, errorfun(cat.updateProduct))
     .delete(errorfun(cat.deleteProduct))
-
-
-
 
 module.exports = router;

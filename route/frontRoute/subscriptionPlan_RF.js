@@ -9,9 +9,7 @@ const errorfun = (func) => {
     }
 }
 
-
 router.route('/')
     .get(errorfun(subplan.subscriptionPlanListFront))
-
 
 module.exports = router;

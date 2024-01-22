@@ -11,9 +11,7 @@ const errorfun = (func) => {
     }
 }
 
-
 router.route('/')
     .get(errorfun(cat.productListFront))
-
 
 module.exports = router;

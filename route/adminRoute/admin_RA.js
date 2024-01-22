@@ -8,11 +8,11 @@ const errorfun = (func) => {
         func(req, res, next).catch(err => next(err));
     }
 }
+
 router.route('/login')
     .post(errorfun(Admin.login));
+    
 router.route('/singup')
     .post(errorfun(Admin.adminSingup));
-
-
 
 module.exports = router;

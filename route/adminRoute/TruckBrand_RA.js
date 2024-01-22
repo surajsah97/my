@@ -9,7 +9,6 @@ const errorfun = (func) => {
     }
 }
 
-// category router //
 router.route('/')
     .get(errorfun(Brand.brandList))
     .post(errorfun(Brand.addBrand))
@@ -17,7 +16,5 @@ router.route('/')
 router.route('/:id')
     .put(errorfun(Brand.updateBrand))
     .delete(errorfun(Brand.brandDelete))
-
-
 
 module.exports = router;

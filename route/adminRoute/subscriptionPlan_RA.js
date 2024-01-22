@@ -9,7 +9,6 @@ const errorfun = (func) => {
     }
 }
 
-// category router //
 router.route('/')
     .get(errorfun(subplan.subscriptionPlanList))
     .post(errorfun(subplan.addsubscriptionPlan))
@@ -17,6 +16,5 @@ router.route('/')
 router.route('/:id')
     .put(errorfun(subplan.updatesubscriptionPlan))
     .delete(errorfun(subplan.subscriptionPlanDelete))
-
 
 module.exports = router;

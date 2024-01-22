@@ -9,7 +9,6 @@ const errorfun = (func) => {
     }
 }
 
-// category router //
 router.route('/')
     .get(errorfun(Model.modelList))
     .post(errorfun(Model.addmodel))
@@ -17,7 +16,5 @@ router.route('/')
 router.route('/:id')
     .put(errorfun(Model.updateModel))
     .delete(errorfun(Model.modelDelete))
-
-
 
 module.exports = router;
