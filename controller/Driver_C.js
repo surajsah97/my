@@ -1,6 +1,9 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
-const UserModel = mongoose.model(constants.UserModel);
+const DriverModel = mongoose.model(constants.DriverModel);
+const DriverDocModel = mongoose.model(constants.DriverDocModel);
+const DriverAddressModel = mongoose.model(constants.DriverAddressModel);
+const DriverBankDetailsModel = mongoose.model(constants.DriverBankDetailsModel);
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const common = require("../service/commonFunction");
@@ -8,6 +11,63 @@ var customError = require('../middleware/customerror');
 
 
 module.exports = {
+
+    addVehicle: async (req, res, next) => {
+        console.log(req.files)
+        var passportImg = {};
+        var emiratesIdImg = {};
+        var licenseImg = {};
+        if (req.files.passportImgFront && req.files.passportImgBack) {
+            passportImg.frontImg = `uploads/driver/${req.files.passportImgFront[0].filename}`
+            passportImg.frontImg = `uploads/driver/${req.files.passportImgBack[0].filename}`
+            req.body.passportImg = passportImg;
+        }
+        if (req.files.emiratesIdImgFront && req.files.emiratesIdImgBack) {
+            emiratesIdImg.frontImg = `uploads/driver/${req.files.emiratesIdImgFront[0].filename}`
+            emiratesIdImg.frontImg = `uploads/driver/${req.files.emiratesIdImgBack[0].filename}`
+            req.body.emiratesIdImg = emiratesIdImg;
+        }
+        if (req.files.licenseImgFront && req.files.licenseImgBack) {
+            licenseImg.frontImg = `uploads/driver/${req.files.licenseImgFront[0].filename}`
+            licenseImg.frontImg = `uploads/driver/${req.files.licenseImgBack[0].filename}`
+            req.body.licenseImg = licenseImg;
+        }
+        if (req.files.visaImg) {
+            req.body.visaImg = `uploads/driver/${req.files.visaImg[0].filename}`
+        }
+        if (req.files.driverImg) {
+            req.body.driverImg = `uploads/driver/${req.files.driverImg[0].filename}`
+        }
+        
+        var find_Driver = await DriverModel.findOne({
+            $or: [
+                { mobile: req.body.mobile },
+                { licenseNumber: req.body.licenseNumber },
+                { visaNumber: req.body.visaNumber },
+                { emiratesId: req.body.emiratesId }
+            ]
+        });
+        if (find_Driver) {
+            const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
+            next(err);
+        }
+        const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
+        const hash = await bcrypt.hashSync(req.body.password, salt);
+        req.body.password = hash;
+
+        var create_driver = await BikeModel.create(req.body);
+        if (create_driver) {
+            req.body.driverId = create_driver._id;
+            var create_doc = await DriverDocModel.create(req.body);
+            var create_bankDetails = await DriverBankDetailsModel.create(req.body);
+        }
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.Productadded,
+            data: create_vehicle
+        })
+    },
+
     login: async (req, res, next) => {
 
         var find_user1 = await UserModel.findOne({ mobile: req.body.mobile, userType: "1" });

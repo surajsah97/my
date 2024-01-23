@@ -58,7 +58,7 @@ var bikeSchema = new Schema(
             required: [true, "Please enter vehicle mulkiya validity."]
         },
         mulkiyaDocImg: {
-            type: [{
+            type: {
                 frontImg: {
                     type: String,
                     required: [true, "Please enter mulkiy front Image."]
@@ -67,10 +67,10 @@ var bikeSchema = new Schema(
                     type: String,
                     required: [true, "Please enter mulkiy back Image."]
                 }
-            }]
+            }
         },
         vehicleImage: {
-            type: [{
+            type: {
                 frontImage: {
                     type: String,
                     required: [true, "Please enter vehicle front Image."]
@@ -87,7 +87,7 @@ var bikeSchema = new Schema(
                     type: String,
                     required: [true, "Please enter vehicle right Image."]
                 }
-            }]
+            }
         },
         activeStatus: {
             type: String,

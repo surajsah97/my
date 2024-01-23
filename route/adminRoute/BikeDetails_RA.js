@@ -16,23 +16,28 @@ const localStorage = multer.diskStorage({
         next(null, path.join(__dirname, '../../public/uploads/bike'))
     },
     filename: (req, file, next) => {
-        next(null, file.originalname)
+        next(null, Date.now() +"-" +file.originalname )
     }
 });
 var upload1 = multer({ storage: localStorage });
 /* GET home page. */
 var cpUpload = upload1.fields([
-    { name: 'productImage', maxCount: 1 },
+    { name: 'mulkiyaImgFront', maxCount: 1 },
+    { name: 'mulkiyaImgBack', maxCount: 1 },
+    { name: 'vehicleImgFront', maxCount: 1 },
+    { name: 'vehicleImgBack', maxCount: 1 },
+    { name: 'vehicleImgLeft', maxCount: 1 },
+    { name: 'vehicleImgRight', maxCount: 1 },
 ])
 
 
 router.route('/')
-    .get(errorfun(BikeDetails.productListAdmin))
-    .post(cpUpload, errorfun(BikeDetails.addProduct))
+    .get(errorfun(BikeDetails.vehicleListAdmin))
+    .post(cpUpload, errorfun(BikeDetails.addVehicle))
 
 router.route('/:id')
-    .put(cpUpload, errorfun(BikeDetails.updateProduct))
-    .delete(errorfun(BikeDetails.deleteProduct))
+    .put(cpUpload, errorfun(BikeDetails.updateVehicle))
+    .delete(errorfun(BikeDetails.deletevehicle))
 
 
 

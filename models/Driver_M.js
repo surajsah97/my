@@ -59,6 +59,37 @@ var driverSchema = new Schema(
             type: String,
             required: [true, "Please enter Password."]
         },
+        licenseNumber: {
+            type: String,
+            required: [true, "Please enter License Number."]
+        },
+        licenseCity: {
+            type: String,
+            required: [true, "Please enter License Issuance City."]
+        },
+        licenseType: {
+            type: String,
+            required: [true, "Please enter License Type."]
+        },
+        licenseValidity: {
+            type: Date,
+            required: [true, "Please enter License Validity."]
+        },
+        docId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.DriverModel,
+            required: [true, "Please enter Insurance Validity."]
+        },
+        addressId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.DriverAddressModel,
+            required: [true, "Please enter Insurance Validity."]
+        },
+        bankDetailsId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.DriverBankDetailsModel,
+            required: [true, "Please enter Insurance Validity."]
+        },
         isVerified: {
             type: Boolean,
             default: false

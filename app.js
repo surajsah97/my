@@ -75,6 +75,8 @@ app.use('/v' + process.env.VERSION + '/admin/bikemodel/', require('./route/admin
 
 app.use('/v' + process.env.VERSION + '/admin/notification/', require('./route/adminRoute/notification_RA'));
 
+app.use('/v' + process.env.VERSION + '/admin/bike/', require('./route/adminRoute/BikeDetails_RA'));
+
 app.all('*', (req, res, next) => {
     const err = new customError(`can't find this(${req.originalUrl}) URL on server`, 404);
     next(err);

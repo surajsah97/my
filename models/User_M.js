@@ -33,7 +33,7 @@ var usersSchema = new Schema(
         },
         userType: {
             type: String,
-            enum: ['Admin', 'User', 'Guest', 'Rider', 'Driver'],
+            enum: ['Admin', 'User', 'Guest'],
             required:true
             // default: '1'
         }, location: {
