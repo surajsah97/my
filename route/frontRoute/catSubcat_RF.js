@@ -1,6 +1,6 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
-const cat = require("../../controller/catSubcat_C")
+const cat = require("../../controller/catSubcat_C");
 const Auth = require("../../middleware/auth");
 
 const errorfun = (func) => {

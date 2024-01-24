@@ -66,6 +66,26 @@ var DriverAddressSchema = new Schema(
                 },
             }
         },
+        emergencyContact: {
+            type: {
+                namr: {
+                    type: String,
+                    required: true,
+                    trim: true
+                },
+                relation: {
+                    type: String,
+                    required: true,
+                    trim: true
+                },
+                mobile: {
+                    type: Number,
+                    required: true,
+                    trim: true
+                },
+            }
+        
+        },
         driverId: {
             type: Schema.Types.ObjectId,
             ref: constants.DriverModel,

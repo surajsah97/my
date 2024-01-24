@@ -36,7 +36,7 @@ var driverSchema = new Schema(
             required: [true, "Please enter visa number."]
         },
         visaValidity: {
-            type: String,
+            type: Date,
             required: [true, "Please enter visa validity."]
         },
         emiratesId: {
@@ -52,7 +52,7 @@ var driverSchema = new Schema(
             required: [true, "Please enter Insurance Comp."]
         },
         insuranceValidity: {
-            type: String,
+            type: Date,
             required: [true, "Please enter Insurance Validity."]
         },
         password: {
@@ -77,22 +77,22 @@ var driverSchema = new Schema(
         },
         docId: {
             type: Schema.Types.ObjectId,
-            ref: constants.DriverModel,
-            required: [true, "Please enter Insurance Validity."]
+            ref: constants.DriverDocModel,
+            // required: [true, "Please enter Insurance Validity."]
         },
         addressId: {
             type: Schema.Types.ObjectId,
             ref: constants.DriverAddressModel,
-            required: [true, "Please enter Insurance Validity."]
+            // required: [true, "Please enter Insurance Validity."]
         },
         bankDetailsId: {
             type: Schema.Types.ObjectId,
             ref: constants.DriverBankDetailsModel,
-            required: [true, "Please enter Insurance Validity."]
+            // required: [true, "Please enter Insurance Validity."]
         },
         isVerified: {
             type: Boolean,
-            default: false
+            default: true
         },
         driverType: {
             type: String,
