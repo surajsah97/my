@@ -1,6 +1,6 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
-const checkOut = require("../../controller/checkOut_C")
+const checkOut = require("../../controller/checkOut_C");
 const Auth = require("../../middleware/auth");
 
 const errorfun = (func) => {

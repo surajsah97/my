@@ -14,3 +14,6 @@ exports.TruckBrandModel = "truckbrand";
 exports.TruckModelModel = "truckmodel";
 exports.TruckModel = "truckdetails";
 exports.DriverModel = "driverdetails";
+exports.DriverBankDetailsModel = "driverbankdetails";
+exports.DriverAddressModel = "driveraddress";
+exports.DriverDocModel = "driverdoc";
