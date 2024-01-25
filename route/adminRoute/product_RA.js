@@ -26,11 +26,11 @@ var cpUpload = upload1.fields([
 ])
 
 router.route('/')
-    .get(errorfun(cat.productListAdmin))
-    .post(cpUpload, errorfun(cat.addProduct))
+    .get(Auth.adminValidateToken, errorfun(cat.productListAdmin))
+    .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addProduct))
 
 router.route('/:id')
-    .put(cpUpload, errorfun(cat.updateProduct))
-    .delete(errorfun(cat.deleteProduct))
+    .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateProduct))
+    .delete(Auth.adminValidateToken, errorfun(cat.deleteProduct))
 
 module.exports = router;

@@ -14,7 +14,7 @@ module.exports = {
         var find_user = await UserModel.findOne({ $or: [{ email: req.body.email }, { mobile: req.body.mobile }] });
         if (find_user) {
             const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
     
         var createuser = await UserModel.create({
@@ -35,6 +35,68 @@ module.exports = {
                 },
             })
         } 
+    },
+
+    VerifieUser: async (req, res, next) => {
+        var find_user = await UserModel.findOne({ mobile: req.body.mobile });
+        if (!find_user) {
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            return next(err);
+        }
+        if (req.body.verifyOtp === false || req.body.verifyOtp === undefined) {
+            const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
+            return next(err);
+        }
+        // var timediff = common.datediff(find_user.OtpsendDate);
+        // console.log("timediff= ",timediff);
+        // if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
+        //     const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
+        //     next(err);
+        // }
+        if (req.body.verifyOtp === true) {
+            var update_user = await UserModel.updateOne({ _id: find_user._id }, { isVerified: req.body.verifyOtp });
+            const payload = { mobile: find_user.mobile, _id: find_user._id };
+            const options = {
+                expiresIn: global.CONFIGS.token.apiTokenExpiry,
+                issuer: "Dudhu",
+            };
+            const secret = process.env.SECRETKEY;
+            const token = await jwt.sign(payload, secret, options);
+
+            console.log(token)
+            return res.status(global.CONFIGS.responseCode.success).json({
+                success: true,
+                message: global.CONFIGS.api.verifyOtp,
+                data: {
+                    "UserId": find_user._id,
+                    "userType": find_user.userType,
+                    "activeStatus": find_user.activeStatus,
+                    "token": token
+                },
+            })
+        }
+
+    },
+
+    reSendOtp: async (req, res, next) => {
+        var find_user = await UserModel.findOne({ mobile: req.body.mobile });
+        if (!find_user) {
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            next(err);
+
+        }
+        var otp = common.randomNumber();
+        var update_user = await UserModel.updateOne({ _id: find_user._id }, {
+            Otp: otp,
+            OtpsendDate: new Date(),
+        });
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.sendOtpSuccess,
+            data: {
+                "Otp": otp
+            },
+        })
     },
 
     login: async (req, res, next) => {
@@ -85,67 +147,7 @@ module.exports = {
         })
     },
 
-    VerifieUser: async (req, res, next) => {
-        var find_user = await UserModel.findOne({ mobile: req.body.mobile });
-        if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
-        }
-        if (req.body.verifyOtp === false || req.body.verifyOtp === undefined) {
-            const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
-        }
-        // var timediff = common.datediff(find_user.OtpsendDate);
-        // console.log("timediff= ",timediff);
-        // if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
-        //     const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
-        //     next(err);
-        // }
-        if (req.body.verifyOtp === false) {
-            var update_user = await UserModel.updateOne({ _id: find_user._id }, { isVerified: req.body.verifyOtp });
-            const payload = { mobile: find_user.mobile, _id: find_user._id };
-            const options = {
-                expiresIn: global.CONFIGS.token.apiTokenExpiry,
-                issuer: "Dudhu",
-            };
-            const secret = process.env.SECRETKEY;
-            const token = await jwt.sign(payload, secret, options);
-
-            console.log(token)
-            return res.status(global.CONFIGS.responseCode.success).json({
-                success: true,
-                message: global.CONFIGS.api.verifyOtp,
-                data: {
-                    "UserId": find_user._id,
-                    "userType": find_user.userType,
-                    "activeStatus": find_user.activeStatus,
-                    "token": token
-                },
-            })
-        }
-        
-    },
-
-    reSendOtp: async (req, res, next) => {
-        var find_user = await UserModel.findOne({ mobile: req.body.mobile });
-        if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
-                
-        }
-        var otp = common.randomNumber();
-        var update_user = await UserModel.updateOne({ _id: find_user._id }, {
-            Otp: otp,
-            OtpsendDate: new Date(),
-        });
-        return res.status(global.CONFIGS.responseCode.success).json({
-            success: true,
-            message: global.CONFIGS.api.sendOtpSuccess,
-            data: {
-                "Otp": otp
-            },
-        })
-    },
+    
 
     forgetPass: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
@@ -171,17 +173,25 @@ module.exports = {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
-        if (find_user.Otp != req.body.Otp) {
+        // if (find_user.Otp != req.body.Otp) {
+        //     const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
+        //     next(err);
+        // }
+        // var timediff = common.datediff(find_user.OtpsendDate);
+        // console.log("timediff= ", timediff);
+        // if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
+        //     const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
+        //     next(err);
+        // }
+        if (req.body.verifyOtp === false || req.body.verifyOtp === undefined) {
             const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
+            return next(err);
         }
-        var timediff = common.datediff(find_user.OtpsendDate);
-        console.log("timediff= ", timediff);
-        if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
-            const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
+        if (req.body.password !== req.body.confPass) {
+            const err = new customError(global.CONFIGS.api.matchPasswordFail, global.CONFIGS.responseCode.Unauthorized);
+            return next(err);
         }
             
         const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);

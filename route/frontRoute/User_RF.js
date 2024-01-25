@@ -10,15 +10,15 @@ const errorfun = (func) => {
     }
 }
 
-router.post("/UserSingup", errorfun(User.UserSingup))
+router.post("/usersingup", errorfun(User.UserSingup))
 router.post("/login", errorfun(User.login))
-router.put("/VerifieUser", errorfun(User.VerifieUser))
-router.put("/reSendOtp", errorfun(User.reSendOtp))
-router.put("/resetPass", errorfun(User.resetPass))
-router.put("/forgetPass", errorfun(User.forgetPass))
-router.put("/changePass", Auth.apiValidateToken, errorfun(User.changePass))
-router.put("/updateUserProfile", Auth.apiValidateToken, errorfun(User.updateUserProfile))
-router.get("/getUserProfile", Auth.apiValidateToken, errorfun(User.getUserProfile))
+router.put("/verifieuser", errorfun(User.VerifieUser))
+router.put("/resendotp", errorfun(User.reSendOtp))
+router.put("/resetpass", errorfun(User.resetPass))
+router.put("/forgetpass", errorfun(User.forgetPass))
+router.put("/changepass", Auth.apiValidateToken, errorfun(User.changePass))
+router.put("/updateuserprofile", Auth.apiValidateToken, errorfun(User.updateUserProfile))
+router.get("/getuserprofile", Auth.apiValidateToken, errorfun(User.getUserProfile))
 
 router.get("/firebasesms", firebase.firebasesms)
 

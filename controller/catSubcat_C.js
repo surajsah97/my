@@ -10,7 +10,7 @@ module.exports = {
             var find_cat = await CategoryModel.findOne({ category: req.body.category });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-                next(err);
+                return next(err);
             }
             var create_cat = await CategoryModel.create(req.body);
             return res.status(global.CONFIGS.responseCode.success).json({
@@ -24,7 +24,7 @@ module.exports = {
             var find_cat = await CategoryModel.findOne({ category: req.body.category, _id: { $nin: [req.params.id] }  });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-                next(err);
+                return next(err);
             }
             var create_cat = await CategoryModel.updateOne({ _id: req.params.id},req.body);
             return res.status(global.CONFIGS.responseCode.success).json({
@@ -66,12 +66,12 @@ module.exports = {
             var find_cat = await CategoryModel.findOne({ _id: req.body.categoryId, activeStatus:"1" });
             if (!find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.alreadyExist);
-                next(err);
+                return next(err);
             }
             var find_Subcat = await SubCategoryModel.findOne({ subCategory: req.body.subCategory });
             if (find_Subcat) {
                 const err = new customError(global.CONFIGS.api.Subcategoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-                next(err);
+                return next(err);
             }
             var create_subcat = await SubCategoryModel.create(req.body);
             return res.status(global.CONFIGS.responseCode.success).json({
@@ -82,12 +82,12 @@ module.exports = {
     },
 
     updateSubCategory: async (req, res, next) => {
-            var find_cat = await SubCategoryModel.findOne({ category: req.body.category, _id: { $nin: [req.body.id] } });
+        var find_cat = await SubCategoryModel.findOne({ subCategory: req.body.subCategory, _id: { $nin: [req.params.id] } });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.Subcategoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-                next(err);
+                return next(err);
             }
-            var create_cat = await SubCategoryModel.updateOne({ _id: req.body.id }, req.body);
+            var create_cat = await SubCategoryModel.updateOne({ _id: req.params.id }, req.body);
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.SubcategoryUpdated,

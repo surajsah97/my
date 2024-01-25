@@ -11,12 +11,12 @@ module.exports = {
         var find_brand = await BikeBrandModel.findOne({ _id: req.body.bikeBrandId, activeStatus: "1" });
         if (!find_brand) {
             const err = new customError(global.CONFIGS.api.brandInactive, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
         var find_model = await BikeModelModel.findOne({ bikeModel: req.body.bikeModel });
         if (find_model) {
             const err = new customError(global.CONFIGS.api.modelalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
         var create_model = await BikeModelModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
@@ -30,7 +30,7 @@ module.exports = {
         var find_model = await BikeModelModel.findOne({ bikeModel: req.body.bikeModel, _id: { $nin: [req.params.id] } });
         if (find_model) {
             const err = new customError(global.CONFIGS.api.modelalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
         var update_model = await BikeModelModel.updateOne({ _id: req.params.id }, req.body);
         return res.status(global.CONFIGS.responseCode.success).json({

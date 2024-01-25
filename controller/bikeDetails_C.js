@@ -13,7 +13,7 @@ module.exports = {
             mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`
             mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`
             req.body.mulkiyaDocImg = mulkiyaDocImg;
-            return res.send(req.body)
+            // return res.send(req.body)
         }
         if (req.files.vehicleImgFront && req.files.vehicleImgBack && req.files.vehicleImgLeft && req.files.vehicleImgRight) {
             vehicleImage.frontImage = `uploads/bike/${req.files.vehicleImgFront[0].filename}`
@@ -21,12 +21,12 @@ module.exports = {
             vehicleImage.leftImage = `uploads/bike/${req.files.vehicleImgLeft[0].filename}`
             vehicleImage.rightImage = `uploads/bike/${req.files.vehicleImgRight[0].filename}`
             req.body.vehicleImage = vehicleImage;
-            return res.send(req.body)
+            // return res.send(req.body)
         }
         var find_vehicle = await BikeModel.findOne({ chasisNumber: req.body.chasisNumber });
         if (find_vehicle) {
             const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
         var create_vehicle = await BikeModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
@@ -56,7 +56,7 @@ module.exports = {
         var find_vehicle = await BikeModel.findOne({ chasisNumber: req.body.chasisNumber, _id: { $nin: [req.params.id] } });
         if (find_vehicle) {
             const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
         var update_vehicle = await BikeModel.updateOne({ _id: req.params.id }, req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
@@ -117,7 +117,7 @@ module.exports = {
         ]);
         if (bikeData[0].data.length == 0) {
             const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
         var totalPage = Math.ceil(parseInt(bikeData[0].metadata[0].total) / limit);
         return res.status(global.CONFIGS.responseCode.success).json({
@@ -167,7 +167,7 @@ module.exports = {
         ]);
         if (bikeData[0].data.length == 0) {
             const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
         var totalPage = Math.ceil(parseInt(bikeData[0].metadata[0].total) / limit);
         return res.status(global.CONFIGS.responseCode.success).json({

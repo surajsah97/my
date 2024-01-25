@@ -11,20 +11,20 @@ const errorfun = (func) => {
 
 // category router //
 router.route('/category/')
-    .get(errorfun(cat.categoryList))
-    .post(errorfun(cat.addCategory))
+    .get(Auth.adminValidateToken, errorfun(cat.categoryList))
+    .post(Auth.adminValidateToken, errorfun(cat.addCategory))
 
 router.route('/category/:id')
-    .put(errorfun(cat.updateCategory))
-    .delete(errorfun(cat.categoryDelete))
+    .put(Auth.adminValidateToken, errorfun(cat.updateCategory))
+    .delete(Auth.adminValidateToken, errorfun(cat.categoryDelete))
 
 // subCategory router //
 router.route('/subcategory/')
     .get(Auth.adminValidateToken, cat.SubcategoryList)
-    .post(errorfun(cat.addSubCategory))
+    .post(Auth.adminValidateToken, errorfun(cat.addSubCategory))
 
 router.route('/subcategory/:id')
-    .put(errorfun(cat.updateSubCategory))
-    .delete(errorfun(cat.SubcategoryDelete))
+    .put(Auth.adminValidateToken, errorfun(cat.updateSubCategory))
+    .delete(Auth.adminValidateToken, errorfun(cat.SubcategoryDelete))
 
 module.exports = router;
