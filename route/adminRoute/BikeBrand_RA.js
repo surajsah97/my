@@ -10,11 +10,11 @@ const errorfun = (func) => {
 }
 
 router.route('/')
-    .get(errorfun(Brand.brandList))
-    .post(errorfun(Brand.addBrand))
+    .get(Auth.adminValidateToken, errorfun(Brand.brandList))
+    .post(Auth.adminValidateToken, errorfun(Brand.addBrand))
 
 router.route('/:id')
-    .put(errorfun(Brand.updateBrand))
-    .delete(errorfun(Brand.brandDelete))
+    .put(Auth.adminValidateToken, errorfun(Brand.updateBrand))
+    .delete(Auth.adminValidateToken, errorfun(Brand.brandDelete))
 
 module.exports = router;

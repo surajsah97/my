@@ -10,11 +10,11 @@ const errorfun = (func) => {
 }
 
 router.route('/')
-    .get(errorfun(subplan.subscriptionPlanList))
-    .post(errorfun(subplan.addsubscriptionPlan))
+    .get(Auth.adminValidateToken, errorfun(subplan.subscriptionPlanList))
+    .post(Auth.adminValidateToken, errorfun(subplan.addsubscriptionPlan))
 
 router.route('/:id')
-    .put(errorfun(subplan.updatesubscriptionPlan))
-    .delete(errorfun(subplan.subscriptionPlanDelete))
+    .put(Auth.adminValidateToken, errorfun(subplan.updatesubscriptionPlan))
+    .delete(Auth.adminValidateToken, errorfun(subplan.subscriptionPlanDelete))
 
 module.exports = router;

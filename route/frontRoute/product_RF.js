@@ -12,6 +12,6 @@ const errorfun = (func) => {
 }
 
 router.route('/')
-    .get(errorfun(cat.productListFront))
+    .get(Auth.apiValidateToken, errorfun(cat.productListFront))
 
 module.exports = router;

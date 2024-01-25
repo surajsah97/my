@@ -10,6 +10,6 @@ const errorfun = (func) => {
 }
 
 router.route('/')
-    .post(errorfun(checkOut.checkOut))
+    .post(Auth.apiValidateToken, errorfun(checkOut.checkOut))
 
 module.exports = router;

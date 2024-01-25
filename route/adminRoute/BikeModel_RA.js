@@ -10,11 +10,11 @@ const errorfun = (func) => {
 }
 
 router.route('/')
-    .get(errorfun(Model.modelList))
-    .post(errorfun(Model.addmodel))
+    .get(Auth.adminValidateToken, errorfun(Model.modelList))
+    .post(Auth.adminValidateToken, errorfun(Model.addmodel))
 
 router.route('/:id')
-    .put(errorfun(Model.updateModel))
-    .delete(errorfun(Model.modelDelete))
+    .put(Auth.adminValidateToken, errorfun(Model.updateModel))
+    .delete(Auth.adminValidateToken, errorfun(Model.modelDelete))
 
 module.exports = router;

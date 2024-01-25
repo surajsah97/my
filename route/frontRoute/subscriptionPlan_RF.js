@@ -10,6 +10,6 @@ const errorfun = (func) => {
 }
 
 router.route('/')
-    .get(errorfun(subplan.subscriptionPlanListFront))
+    .get(Auth.apiValidateToken, errorfun(subplan.subscriptionPlanListFront))
 
 module.exports = router;

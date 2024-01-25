@@ -14,7 +14,7 @@ module.exports = {
         var find_user = await UserModel.findOne({ $or: [{ email: req.body.email }, { mobile: req.body.mobile }] });
         if (find_user) {
             const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
         const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
         const hash = await bcrypt.hashSync(req.body.password, salt);
@@ -55,17 +55,17 @@ module.exports = {
         console.log(find_user)
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
 
         if (find_user.isVerified === false) {
             const err = new customError(global.CONFIGS.api.phoneNotVerify, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
+            return next(err);
         }
         const match = await bcrypt.compare(req.body.password, find_user.password);
         if (!match) {
             const err = new customError(global.CONFIGS.api.loginFail, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
+            return next(err);
         }
         const payload = { email: find_user.email, _id: find_user._id, userType:find_user.userType };
         const options = {

@@ -7,12 +7,12 @@ var customError = require('../middleware/customerror');
 module.exports = {
     addProduct: async (req, res, next) => {
             if (req.files) {
-                req.body.productImage = `uploads/${req.files.productImage[0].originalname}`
+                req.body.productImage = `uploads/products/${req.files.productImage[0].originalname}`
             }
             var find_prod = await ProductModel.findOne({ productName: req.body.productName });
             if (find_prod) {
                 const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-                next(err);
+                return next(err);
             }
             var create_prod = await ProductModel.create(req.body);
             return res.status(global.CONFIGS.responseCode.success).json({
@@ -26,7 +26,7 @@ module.exports = {
             var find_prod = await ProductModel.findOne({ productName: req.body.productName, _id: { $nin: [req.params.id] } });
             if (find_prod) {
                 const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-                next(err);
+                return next(err);
             }
             var update_prod = await ProductModel.updateOne({ _id: req.params.id }, req.body);
             return res.status(global.CONFIGS.responseCode.success).json({
@@ -87,7 +87,7 @@ module.exports = {
             ]);
             if (productData[0].data.length == 0) {
                 const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
-                next(err);
+                return next(err);
             }
             var totalPage = Math.ceil(parseInt(productData[0].metadata[0].total) / limit);
             return res.status(global.CONFIGS.responseCode.success).json({
@@ -137,7 +137,7 @@ module.exports = {
             ]);
             if (productData[0].data.length == 0) {
                 const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
-                next(err);
+                return next(err);
             }
             var totalPage = Math.ceil(parseInt(productData[0].metadata[0].total) / limit);
             return res.status(global.CONFIGS.responseCode.success).json({
