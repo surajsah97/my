@@ -104,7 +104,11 @@ module.exports = {
     },
 
     SubcategoryListFront: async (req, res, next) => {
-            var find_cat = await SubCategoryModel.find({ activeStatus: "1" });
+        var query = { activeStatus: "1" }
+        if (req.query.categoryId != undefined) {
+            query.categoryId = req.query.categoryId 
+        }
+            var find_cat = await SubCategoryModel.find();
             return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.SubcategoryUpdated,
