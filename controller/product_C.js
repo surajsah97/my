@@ -3,6 +3,7 @@ const constants = require("../models/modelConstants");
 const ProductModel = mongoose.model(constants.ProductModel);
 const common = require("../service/commonFunction");
 var customError = require('../middleware/customerror');
+const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
     addProduct: async (req, res, next) => {
@@ -48,11 +49,18 @@ module.exports = {
     productListFront: async (req, res, next) => {
             const limit = parseInt(req.query.limit) || 20; // docs in single page
             const pageNo = parseInt(req.query.pageNo) || 1; //  page number
-            const skip = (pageNo - 1) * limit;
+        const skip = (pageNo - 1) * limit;
+        var query = { activeStatus: "1" }
+        if (req.query.categoryId != undefined) {
+            query.categoryId = new ObjectId(req.query.categoryId) 
+        }
+        if (req.query.subCategoryId != undefined) {
+            query.subCategoryId = new ObjectId(req.query.subCategoryId)
+        }
 
             var productData = await ProductModel.aggregate([
                 {
-                    $match: { activeStatus: "1" }
+                    $match: query
                 },
                 {
                     $lookup:
