@@ -47,12 +47,6 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
             return next(err);
         }
-        // var timediff = common.datediff(find_user.OtpsendDate);
-        // console.log("timediff= ",timediff);
-        // if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
-        //     const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
-        //     next(err);
-        // }
         if (req.body.verifyOtp === true) {
             var update_user = await UserModel.updateOne({ _id: find_user._id }, { isVerified: req.body.verifyOtp });
             const payload = { mobile: find_user.mobile, _id: find_user._id };
@@ -82,7 +76,7 @@ module.exports = {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
 
         }
         var otp = common.randomNumber();
@@ -101,27 +95,20 @@ module.exports = {
 
     login: async (req, res, next) => {
 
-        var find_user1 = await UserModel.findOne({ mobile: req.body.mobile, userType:"1" });
-        if (find_user1) {
-            return res.status(global.CONFIGS.responseCode.notFoud).json({
-                success: false,
-                message: global.CONFIGS.api.userNotFound,
-            })
-        }
-        var find_user = await UserModel.findOne({ mobile: req.body.mobile });
+        var find_user = await UserModel.findOne({ mobile: req.body.mobile ,userType: req.body.userType });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
             
         if (find_user.isVerified === false) {
             const err = new customError(global.CONFIGS.api.phoneNotVerify, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
+            return next(err);
         }
         const match = await bcrypt.compare(req.body.password, find_user.password);
         if (!match) {
             const err = new customError(global.CONFIGS.api.loginFail, global.CONFIGS.responseCode.Unauthorized);
-            next(err);
+            return next(err);
         }
         const payload = { mobile: find_user.mobile, _id: find_user._id };
         const options = {
@@ -153,7 +140,7 @@ module.exports = {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
         var otp = common.randomNumber();
         var update_user = await UserModel.updateOne({ _id: find_user._id }, {
@@ -175,16 +162,7 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
             return next(err);
         }
-        // if (find_user.Otp != req.body.Otp) {
-        //     const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
-        //     next(err);
-        // }
-        // var timediff = common.datediff(find_user.OtpsendDate);
-        // console.log("timediff= ", timediff);
-        // if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
-        //     const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
-        //     next(err);
-        // }
+        
         if (req.body.verifyOtp === false || req.body.verifyOtp === undefined) {
             const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
             return next(err);
@@ -208,7 +186,7 @@ module.exports = {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
         const match = await bcrypt.compare(req.body.oldPassword, find_user.password);
         if (!match) {
@@ -227,15 +205,11 @@ module.exports = {
 
     updateUserProfile: async (req, res, next) => {
         console.log(req.body);
-        // var find_user1 = await UserModel.findOne({ _id: req.body.UserId, userType: "1" });
-        // if (find_user1) {
-        //     const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-        //     next(err);
-        // }
+        
         var find_user = await UserModel.findOne({ _id: req.body.UserId });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
         const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
         const hash = await bcrypt.hashSync(req.body.password, salt);
@@ -280,7 +254,7 @@ module.exports = {
         var find_user = await UserModel.findOne({ _id: req.query.UserId });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
         
         var find_user2 = await UserModel.findOne({ _id: req.query.UserId });
@@ -334,7 +308,7 @@ module.exports = {
         // return res.send(find_user)
         if (find_user[0].data.length == 0) {
             const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
-            next(err);
+            return next(err);
         }
         var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
         return res.status(global.CONFIGS.responseCode.success).json({
