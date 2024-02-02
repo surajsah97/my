@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../../controller/User_C")
 const Auth = require("../../middleware/auth");
 const firebase = require('../../service/firebase/firebaseFunctions');
+const map = require("../../controller/UserAddress_C")
 
 const errorfun = (func) => {
     return (req, res, next) => {
@@ -21,5 +22,6 @@ router.put("/updateuserprofile", Auth.apiValidateToken, errorfun(User.updateUser
 router.get("/getuserprofile", Auth.apiValidateToken, errorfun(User.getUserProfile))
 
 router.get("/firebasesms", firebase.firebasesms)
+router.get("/map", map.googlemap)
 
 module.exports = router;

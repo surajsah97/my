@@ -17,3 +17,4 @@ exports.DriverModel = "driverdetails";
 exports.DriverBankDetailsModel = "driverbankdetails";
 exports.DriverAddressModel = "driveraddress";
 exports.DriverDocModel = "driverdoc";
+exports.UserAddressModel = "useraddress";

@@ -8,7 +8,7 @@ var customError = require('./middleware/customerror');
 var globalError = require('./controller/error_C')
 
 require('dotenv').config({
-    path: `./env-files/${process.env.ENV || 'dev'}.env`,
+    path: `./env-files/.env.${process.env.NODE_ENV}`,
 });
 
 // profiling for the servers

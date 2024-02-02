@@ -15,3 +15,4 @@ require('./Driver_M');
 require('./DriverAddress_M');
 require('./DriverBankDeatils_M');
 require('./DriverDoc_M');
+require('./UserAddress_M');
