@@ -41,6 +41,7 @@
         "getUserDetailsSuccess": "User Details Successfully.",
         "getUserDetailsFail": "User Details Failed.",
         "getDetailsSuccess": "Get Details Successfully.",
+        "userDelete": "User deleted Successfully.",
         "getDetailsFail": "Get Detail Details Failed.",
         "addSupportTypeSuccess": "Support ticket Successfully.",
         "addSupportTypeFail": "Support ticket Failed.",
