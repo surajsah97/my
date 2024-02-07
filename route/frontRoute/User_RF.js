@@ -20,7 +20,7 @@ router.put("/forgetpass", errorfun(User.forgetPass))
 router.put("/changepass", Auth.apiValidateToken, errorfun(User.changePass))
 router.put("/updateuserprofile", Auth.apiValidateToken, errorfun(User.updateUserProfile))
 router.get("/getuserprofile", Auth.apiValidateToken, errorfun(User.getUserProfile))
-
+router.delete("/deleteuser/:id", Auth.apiValidateToken, errorfun(User.deleteUser))
 router.get("/firebasesms", firebase.firebasesms)
 router.get("/map", map.googlemap)
 

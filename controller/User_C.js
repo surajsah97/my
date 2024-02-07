@@ -249,6 +249,23 @@ module.exports = {
         }
     },
 
+    deleteUser: async (req, res, next) => {
+        console.log(req.body);
+
+        var find_user = await UserModel.findOne({ _id: req.params.id });
+        if (!find_user) {
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            return next(err);
+        }
+
+        var delete_user = await UserModel.deleteOne({ _id: req.params.id });
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.userDelete,
+        })
+
+    },
+
     getUserProfile: async (req, res, next) => {
         console.log(req.body);
         
