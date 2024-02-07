@@ -11,7 +11,8 @@ module.exports = {
 
     UserSingup:  async (req, res, next) => {
         console.log(req.body);
-        var find_user = await UserModel.findOne({ $or: [{ email: req.body.email }, { mobile: req.body.mobile }] });
+        var find_user = await UserModel.findOne({ mobile: req.body.mobile });
+        console.log(find_user)
         if (find_user) {
             const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
             return next(err);
