@@ -40,6 +40,14 @@ var usersSchema = new Schema(
             type: { type: String },
             coordinates: [],
         },
+        userImage: {
+            type: String,
+            // required: [true, "Please enter product image."]
+        },
+        DOB: {
+            type: Date,
+            required: [true, "Please enter date of birth."]
+        },
         activeStatus: {
             type: String,
             enum: ['0', '1', '2'],
