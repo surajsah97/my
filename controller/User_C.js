@@ -206,20 +206,28 @@ module.exports = {
 
     updateUserProfile: async (req, res, next) => {
         console.log(req.body);
-        
+        if (req.files) {
+            req.body.userImage = `uploads/user/${req.files.userImage[0].originalname}`
+        }
         var find_user = await UserModel.findOne({ _id: req.body.UserId });
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
             return next(err);
         }
-        const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
-        const hash = await bcrypt.hashSync(req.body.password, salt);
+        if (req.body.password != undefined) {
+            const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
+            const hash = await bcrypt.hashSync(req.body.password, salt);
+            req.body.password = hash;
+        }
+        // if (req.body.mobile != find_user.mobile) {
+        //     const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+        //     return next(err);
+        // }
+        
 
-        var createuser = await UserModel.updateOne({_id:find_user._id},{
-            "name": req.body.name,
-            "email": req.body.email,
-            "password": hash,
-        });
+        var createuser = await UserModel.updateOne({_id:find_user._id},
+            req.body
+        );
         if (createuser) {
             var find_user2 = await UserModel.findOne({ _id: req.body.UserId });
             const payload = { mobile: find_user2.mobile, _id: find_user2._id };
