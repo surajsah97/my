@@ -4,6 +4,7 @@ const common = require("../service/commonFunction");
 const UserAddressModel = mongoose.model(constants.UserAddressModel);
 var customError = require('../middleware/customerror');
 const NodeGeocoder = require('node-geocoder');
+const ObjectId = mongoose.Types.ObjectId;
 
 const options = {
     provider: 'google',
@@ -34,6 +35,10 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
             return next(err);
         }
+        req.body.location = {
+            "type": "Point",
+            "coordinates": [req.body.long, req.body.lat]
+        };
         var createAddress = await UserAddressModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
@@ -48,12 +53,55 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
             return next(err);
         }
+        req.body.location = {
+            "type": "Point",
+            "coordinates": [req.body.long, req.body.lat]
+        };
         var createAddress = await UserAddressModel.updateOne({_id:req.params.id},req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.registerSuccess,
             // data: createAddress,
         })
+    },
+    getAddress: async (req, res, next) => {
+        // console.log(req.body);
+        var find_user = await UserAddressModel.aggregate([
+            {
+                $match: { activeStatus: "1", userId: new ObjectId(req.query.userId) }
+            },
+            {
+                $lookup:
+                {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "users"
+                }
+            },
+            { $unwind: '$users' },
+            { $unset: 'userId' },
+            { $project: { _id: "$_id", houseNo: "$houseNo", buildingName: "$buildingName", city: "$city", landmark: "$landmark", country: "$country", activeStatus: "$activeStatus", location: "$location", lat: "$lat", long: "$long", name: "$users.name", mobile: "$users.mobile" } },
+            {
+                $sort: {
+                    _id: -1
+                }
+            },
+        ]);
+        // return res.send(find_user)
+        if (find_user.length == 0) {
+            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
+            return next(err);
+        }
+        // var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.getUserDetailsSuccess,
+            // totalPage: totalPage,
+            data: find_user
+        })
+
+
     },
     deleteaddress: async (req, res, next) => {
         var find_address = await UserAddressModel.findOne({ _id: req.params.id });

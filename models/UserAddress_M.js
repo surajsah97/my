@@ -37,6 +37,25 @@ var UserAddressSchema = new Schema(
             type: String,
             enum: ['0', '1'],
             default: '1'
+        },
+        location: {
+            type: {
+                type: String, // Don't do `{ location: { type: String } }`
+                enum: ['Point'], // 'location.type' must be 'Point'
+                required: true
+            },
+            coordinates: {
+                type: [Number],
+                required: true
+            }
+        },
+        lat: {
+            type: Number,
+            required:true
+        },
+        long: {
+            type: Number,
+            required: true
         }
     },
     {
@@ -46,5 +65,6 @@ var UserAddressSchema = new Schema(
         timestamps: true
     }
 );
+UserAddressSchema.index({ location: "2dsphere" });
 let address = mongoose.model(constants.UserAddressModel, UserAddressSchema);
 module.exports = address;
