@@ -46,7 +46,7 @@ var usersSchema = new Schema(
         },
         DOB: {
             type: Date,
-            required: [true, "Please enter date of birth."]
+            // required: [true, "Please enter date of birth."]
         },
         activeStatus: {
             type: String,
