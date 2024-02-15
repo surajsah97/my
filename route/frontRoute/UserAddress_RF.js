@@ -10,13 +10,13 @@ const errorfun = (func) => {
         func(req, res, next).catch(err => next(err));
     }
 }
-
+router.route('/googlemap').get(errorfun(userAddress.googlemap));
 router.route('/')
-    .get(Auth.adminValidateToken, errorfun(userAddress.getAddress))
-    .post(Auth.adminValidateToken, errorfun(userAddress.addAddress))
+    .get(Auth.apiValidateToken, errorfun(userAddress.getAddress))
+    .post(Auth.apiValidateToken, errorfun(userAddress.addAddress))
 
 router.route('/:id')
-    .put(Auth.adminValidateToken, errorfun(userAddress.updateAddress))
-    .delete(Auth.adminValidateToken, errorfun(userAddress.deleteaddress))
+    .put(Auth.apiValidateToken, errorfun(userAddress.updateAddress))
+    .delete(Auth.apiValidateToken, errorfun(userAddress.deleteaddress))
 
 module.exports = router;
