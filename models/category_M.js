@@ -8,6 +8,11 @@ var categorySchema = new Schema(
             required: true,
             trim:true
         },
+        categoryImg: {
+            type: String,
+            required: true,
+            trim: true
+        },
         activeStatus: {
             type: String,
             enum: ['0', '1'],

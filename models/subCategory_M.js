@@ -13,6 +13,11 @@ var subCategorySchema = new Schema(
             ref: constants.CategoryModel,
             required: true
         },
+        subCategoryImg: {
+            type: String,
+            required: true,
+            trim: true
+        },
         activeStatus: {
             type: String,
             enum: ['0', '1'],

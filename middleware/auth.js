@@ -10,7 +10,8 @@ const errorfun = (func) => {
     }
 }
 
-const apiValidateToken = errorfun( async function (req, res, next) {
+const apiValidateToken = errorfun(async function (req, res, next) {
+    console.log("req.headers = ",req.headers)
     var accessToken = req.headers['access-token'];
     var decode = await jwt.verify(accessToken, process.env.SECRETKEY);
         

@@ -7,6 +7,10 @@ var customError = require('../middleware/customerror');
 
 module.exports = {
     addCategory: async (req, res, next) => {
+        if (req.files.categoryImg ) {
+            var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`
+            req.body.categoryImg = categoryImage;
+        }
             var find_cat = await CategoryModel.findOne({ category: req.body.category });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
@@ -21,6 +25,10 @@ module.exports = {
     },
 
     updateCategory: async (req, res, next) => {
+        if (req.files.categoryImg) {
+            var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`
+            req.body.categoryImg = categoryImage;
+        }
             var find_cat = await CategoryModel.findOne({ category: req.body.category, _id: { $nin: [req.params.id] }  });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);
@@ -63,6 +71,10 @@ module.exports = {
      // SubCat api //
     
     addSubCategory: async (req, res, next) => {
+        if (req.files.subCategoryImg) {
+            var categoryImage = `uploads/catsubcat/${req.files.subCategoryImg[0].filename}`
+            req.body.subCategoryImg = categoryImage;
+        }
             var find_cat = await CategoryModel.findOne({ _id: req.body.categoryId, activeStatus:"1" });
             if (!find_cat) {
                 const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.alreadyExist);
@@ -82,6 +94,10 @@ module.exports = {
     },
 
     updateSubCategory: async (req, res, next) => {
+        if (req.files.subCategoryImg) {
+            var categoryImage = `uploads/catsubcat/${req.files.subCategoryImg[0].filename}`
+            req.body.subCategoryImg = categoryImage;
+        }
         var find_cat = await SubCategoryModel.findOne({ subCategory: req.body.subCategory, _id: { $nin: [req.params.id] } });
             if (find_cat) {
                 const err = new customError(global.CONFIGS.api.Subcategoryalreadyadded, global.CONFIGS.responseCode.alreadyExist);

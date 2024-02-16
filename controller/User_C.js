@@ -207,7 +207,7 @@ module.exports = {
     updateUserProfile: async (req, res, next) => {
         console.log(req.body);
         if (req.files) {
-            req.body.userImage = `uploads/user/${req.files.userImage[0].originalname}`
+            req.body.userImage = `uploads/user/${req.files.userImage[0].filename}`
         }
         var find_user = await UserModel.findOne({ _id: req.body.UserId });
         if (!find_user) {
