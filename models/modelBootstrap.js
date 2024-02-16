@@ -1,4 +1,5 @@
 require('./User_M');
+require('./tempUser_M')
 require('./category_M');
 require('./subCategory_M');
 require('./product_M');
