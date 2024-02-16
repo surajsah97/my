@@ -1,6 +1,7 @@
 // User (Common For All) //
 
 exports.UserModel = "users";
+exports.TempUserModel= "tempuser"
 exports.CategoryModel = "category";
 exports.SubCategoryModel = "subcategory";
 exports.ProductModel = "product";

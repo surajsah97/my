@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
 const UserModel = mongoose.model(constants.UserModel);
+const TempUserModel = mongoose.model(constants.TempUserModel);
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const common = require("../service/commonFunction");
@@ -18,7 +19,7 @@ module.exports = {
             return next(err);
         }
     
-        var createuser = await UserModel.create({
+        var createuser = await TempUserModel.create({
             "Otp": common.randomNumber(),
             "OtpsendDate": new Date(),
             "userType": req.body.userType,
@@ -39,7 +40,7 @@ module.exports = {
     },
 
     VerifieUser: async (req, res, next) => {
-        var find_user = await UserModel.findOne({ mobile: req.body.mobile });
+        var find_user = await TempUserModel.findOne({ mobile: req.body.mobile }).sort({_id:-1});
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
             return next(err);
@@ -49,8 +50,14 @@ module.exports = {
             return next(err);
         }
         if (req.body.verifyOtp === true) {
-            var update_user = await UserModel.updateOne({ _id: find_user._id }, { isVerified: req.body.verifyOtp });
-            const payload = { mobile: find_user.mobile, _id: find_user._id };
+            var update_user = await UserModel.create({
+                "Otp": common.randomNumber(),
+                "OtpsendDate": new Date(),
+                "userType": find_user.userType,
+                "mobile": find_user.mobile,
+                "isVerified": req.body.verifyOtp
+            });
+            const payload = { mobile: update_user.mobile, _id: update_user._id };
             const options = {
                 expiresIn: global.CONFIGS.token.apiTokenExpiry,
                 issuer: "Dudhu",
@@ -63,9 +70,9 @@ module.exports = {
                 success: true,
                 message: global.CONFIGS.api.verifyOtp,
                 data: {
-                    "UserId": find_user._id,
-                    "userType": find_user.userType,
-                    "activeStatus": find_user.activeStatus,
+                    "UserId": update_user._id,
+                    "userType": update_user.userType,
+                    "activeStatus": update_user.activeStatus,
                     "token": token
                 },
             })
