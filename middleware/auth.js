@@ -42,5 +42,5 @@ const adminValidateToken = errorfun(async function (req, res, next) {
 
 module.exports = {
     apiValidateToken,
-    adminValidateToken
+    adminValidateToken,errorfun
 }

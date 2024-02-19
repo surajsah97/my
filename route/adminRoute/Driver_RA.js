@@ -5,11 +5,8 @@ const Driver = require("../../controller/Driver_C")
 const Auth = require("../../middleware/auth");
 const multer = require("multer");
 
-const errorfun = (func) => {
-    return (req, res, next) => {
-        func(req, res, next).catch(err => next(err));
-    }
-}
+const errorfun=require("../../middleware/catchAsyncErrors")
+
 
 const localStorage = multer.diskStorage({
     destination: (req, res, next) => {

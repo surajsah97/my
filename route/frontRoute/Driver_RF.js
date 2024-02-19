@@ -4,12 +4,7 @@ const Driver = require("../../controller/Driver_C")
 const Auth = require("../../middleware/auth");
 const firebase = require('../../service/firebase/firebaseFunctions');
 
-const errorfun = (func) => {
-    return (req, res, next) => {
-        func(req, res, next).catch(err => next(err));
-    }
-}
-
+const errorfun=require("../../middleware/catchAsyncErrors")
 
 router.post("/login", errorfun(Driver.login))
 router.put("/reSendOtp", errorfun(Driver.reSendOtp))

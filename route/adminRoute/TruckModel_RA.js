@@ -3,11 +3,8 @@ const router = express.Router();
 const Model = require("../../controller/truckModel_C")
 const Auth = require("../../middleware/auth");
 
-const errorfun = (func) => {
-    return (req, res, next) => {
-        func(req, res, next).catch(err => next(err));
-    }
-}
+const errorfun=require("../../middleware/catchAsyncErrors")
+
 
 router.route('/')
     .get(errorfun(Model.modelList))
