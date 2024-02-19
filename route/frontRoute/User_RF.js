@@ -7,11 +7,7 @@ const map = require("../../controller/UserAddress_C")
 const multer = require("multer");
 const path = require("path")
 
-const errorfun = (func) => {
-    return (req, res, next) => {
-        func(req, res, next).catch(err => next(err));
-    }
-}
+const errorfun=require("../../middleware/catchAsyncErrors")
 
 const localStorage = multer.diskStorage({
     destination: (req, res, next) => {
@@ -39,5 +35,4 @@ router.get("/getuserprofile", Auth.apiValidateToken, errorfun(User.getUserProfil
 router.delete("/deleteuser/:id", Auth.apiValidateToken, errorfun(User.deleteUser))
 router.get("/firebasesms", firebase.firebasesms)
 router.get("/map", map.googlemap)
-
 module.exports = router;

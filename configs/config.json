@@ -1,111 +1,109 @@
 {
-    "pass":{
-        "saltround":10
-    },
-    "OtpTimeLimit": {
-        "limit": 5
-    },
-    "userStatus": {
-        "active": 1,
-        "inactive": 2,
-        "blocked": 3
-    },
- 
-    "verify": {
-        "notVerify": 0,
-        "verify": 1
-    },
-    "role": {
-        "guest": 1,
-        "user": 2
-    },
-    
-    "uploadPath": "public/uploads/",
-    "uploadAccessPath": "uploads/",
-    "api": {
-        "tokenError":"Token expired or invalid.",
-        "verifyOtp": "Otp verification successfully.",
-        "verifyOtpFail": "Otp verification failed.",
-        "verifyOtpexp": "Otp expired.",
-        "loginSuccess": "Login successful.",
-        "userNotFound": "User not found.",
-        "loginFail": "Login failed wrong password.",
-        "phoneNotVerify": "Mobile number is not verified",
-        "sendOtpSuccess": "OTP sent successfully",
-        "sendOtpFail": "OTP Failed",
-        "changePasswordSuccess": "password changed successfully",
-        "changePasswordFail": "Failed to change password.",
-        "matchPasswordFail": "Old Password does not match",
-        "registerSuccess": "User registration successful.",
-        "registerFail": "Already registered with same number or email.",
-        "getUserDetailsSuccess": "User Details Successfully.",
-        "getUserDetailsFail": "User Details Failed.",
-        "getDetailsSuccess": "Get Details Successfully.",
-        "userDelete": "User deleted Successfully.",
-        "getDetailsFail": "Get Detail Details Failed.",
-        "addSupportTypeSuccess": "Support ticket Successfully.",
-        "addSupportTypeFail": "Support ticket Failed.",
-        "notificationListFail": "Notification List Failed.",
-        "membershipListSuccess": "Membership List Successfully.",
-        "membershipListFail": "Membership List Failed.",
-        "blocked": "Your account has been blocked by admin",
-        "categoryalreadyadded":"Category already added. Please try another name.",
-        "categoryadded": "Category added Successfully.",
-        "categoryUpdated": "Category updated Successfully.",
-        "categoryInactive": "Category inactive or not found.",
-        "categoryDelete": "Category deleted Successfully.",
-        "Subcategoryalreadyadded": "subCategory already added. Please try another name.",
-        "Subcategoryadded": "subCategory added Successfully.",
-        "SubcategoryUpdated": "subCategory updated Successfully.",
-        "SubcategoryDelete": "subCategory deleted Successfully.",
-        "Productalreadyadded": "Product already added. Please try another name.",
-        "Productadded": "Product added Successfully.",
-        "ProductUpdated": "Product updated Successfully.",
-        "getProductSuccess": "Get product list Successfully.",
-        "ProductNotfound": "Product notFoud Successfully.",
-        "ProductDelete": "Product deleted Successfully.",
-        "subscriptionPlanalreadyadded": "Subscription plan already added. Please try another name.",
-        "subscriptionPlanadded": "Subscription plan added Successfully.",
-        "subscriptionPlanUpdated": "Subscription plan updated Successfully.",
-        "subscriptionPlanList": "Subscription plan list Successfully.",
-        "subscriptionPlanInactive": "Subscription plan inactive or not found.",
-        "subscriptionPlanDelete": "Subscription plan deleted Successfully.",
-        "brandalreadyadded": "Brand already added. Please try another name.",
-        "brandadded": "Brand added Successfully.",
-        "brandUpdated": "Brand updated Successfully.",
-        "getBrandSuccess": "Get brand list Successfully.",
-        "brandInactive": "Brand inactive or not found.",
-        "brandDelete": "Brand deleted Successfully.",
-        "modelalreadyadded": "Model already added. Please try another name.",
-        "modeladded": "Model added Successfully.",
-        "getModelSuccess": "Get model list Successfully.",
-        "modelUpdated": "Model updated Successfully.",
-        "modelDelete": "Model deleted Successfully."
-    },
-    "responseCode": {
-        "success": 200,
-        "error": 0,
-        "exception": 500,
-        "Unauthorized":401 ,
-        "notFoud": 404,
-        "alreadyExist": 409,
-        "noContent":204
-    },
-    "nearestRange": {
-        "range": 5000,
-        "number": 5,
-        "nearRideNumber": 2
-    },
-    
-    "token": {
-        "apiTokenExpiry": "30d"
-    },
-    "pushNotifications": {
-        "newDriverMembership": "New Membership request",
-        "newDriverMembershipDetails": "Thanks for buying our membership plan.",
-        "subscriptionReminder": "Subscription Reminder",
-        "subscriptionReminderDetails": "Your subscription is going to expire soon"
-    }
-    
-   
+  "pass": {
+    "saltround": 10
+  },
+  "OtpTimeLimit": {
+    "limit": 5
+  },
+  "userStatus": {
+    "active": 1,
+    "inactive": 2,
+    "blocked": 3
+  },
+
+  "verify": {
+    "notVerify": 0,
+    "verify": 1
+  },
+  "role": {
+    "guest": 1,
+    "user": 2
+  },
+
+  "uploadPath": "public/uploads/",
+  "uploadAccessPath": "uploads/",
+  "api": {
+    "tokenError": "Token expired or invalid.",
+    "verifyOtp": "Otp verification successfully.",
+    "verifyOtpFail": "Otp verification failed.",
+    "verifyOtpexp": "Otp expired.",
+    "loginSuccess": "Login successful.",
+    "userNotFound": "User not found.",
+    "loginFail": "Login failed wrong password.",
+    "phoneNotVerify": "Mobile number is not verified",
+    "sendOtpSuccess": "OTP sent successfully",
+    "sendOtpFail": "OTP Failed",
+    "changePasswordSuccess": "password changed successfully",
+    "changePasswordFail": "Failed to change password.",
+    "matchPasswordFail": "Old Password does not match",
+    "registerSuccess": "User registration successful.",
+    "registerFail": "Already registered with same number or email.",
+    "getUserDetailsSuccess": "User Details Successfully.",
+    "getUserDetailsFail": "User Details Failed.",
+    "getDetailsSuccess": "Get Details Successfully.",
+    "userDelete": "User deleted Successfully.",
+    "getDetailsFail": "Get Detail Details Failed.",
+    "addSupportTypeSuccess": "Support ticket Successfully.",
+    "addSupportTypeFail": "Support ticket Failed.",
+    "notificationListFail": "Notification List Failed.",
+    "membershipListSuccess": "Membership List Successfully.",
+    "membershipListFail": "Membership List Failed.",
+    "blocked": "Your account has been blocked by admin",
+    "categoryalreadyadded": "Category already added. Please try another name.",
+    "categoryadded": "Category added Successfully.",
+    "categoryUpdated": "Category updated Successfully.",
+    "categoryInactive": "Category inactive or not found.",
+    "categoryDelete": "Category deleted Successfully.",
+    "Subcategoryalreadyadded": "subCategory already added. Please try another name.",
+    "Subcategoryadded": "subCategory added Successfully.",
+    "SubcategoryUpdated": "subCategory updated Successfully.",
+    "SubcategoryDelete": "subCategory deleted Successfully.",
+    "Productalreadyadded": "Product already added. Please try another name.",
+    "Productadded": "Product added Successfully.",
+    "ProductUpdated": "Product updated Successfully.",
+    "getProductSuccess": "Get product list Successfully.",
+    "ProductNotfound": "Product notFoud Successfully.",
+    "ProductDelete": "Product deleted Successfully.",
+    "subscriptionPlanalreadyadded": "Subscription plan already added. Please try another name.",
+    "subscriptionPlanadded": "Subscription plan added Successfully.",
+    "subscriptionPlanUpdated": "Subscription plan updated Successfully.",
+    "subscriptionPlanList": "Subscription plan list Successfully.",
+    "subscriptionPlanInactive": "Subscription plan inactive or not found.",
+    "subscriptionPlanDelete": "Subscription plan deleted Successfully.",
+    "brandalreadyadded": "Brand already added. Please try another name.",
+    "brandadded": "Brand added Successfully.",
+    "brandUpdated": "Brand updated Successfully.",
+    "getBrandSuccess": "Get brand list Successfully.",
+    "brandInactive": "Brand inactive or not found.",
+    "brandDelete": "Brand deleted Successfully.",
+    "modelalreadyadded": "Model already added. Please try another name.",
+    "modeladded": "Model added Successfully.",
+    "getModelSuccess": "Get model list Successfully.",
+    "modelUpdated": "Model updated Successfully.",
+    "modelDelete": "Model deleted Successfully."
+  },
+  "responseCode": {
+    "success": 200,
+    "error": 0,
+    "exception": 500,
+    "Unauthorized": 401,
+    "notFoud": 404,
+    "alreadyExist": 409,
+    "noContent": 204
+  },
+  "nearestRange": {
+    "range": 5000,
+    "number": 5,
+    "nearRideNumber": 2
+  },
+
+  "token": {
+    "apiTokenExpiry": "30d"
+  },
+  "pushNotifications": {
+    "newDriverMembership": "New Membership request",
+    "newDriverMembershipDetails": "Thanks for buying our membership plan.",
+    "subscriptionReminder": "Subscription Reminder",
+    "subscriptionReminderDetails": "Your subscription is going to expire soon"
+  }
 }

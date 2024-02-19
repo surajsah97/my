@@ -5,11 +5,7 @@ const userAddress = require("../../controller/UserAddress_C")
 const Auth = require("../../middleware/auth");
 const multer = require("multer");
 
-const errorfun = (func) => {
-    return (req, res, next) => {
-        func(req, res, next).catch(err => next(err));
-    }
-}
+const errorfun=require("../../middleware/catchAsyncErrors")
 router.route('/googlemap').get(errorfun(userAddress.googlemap));
 router.route('/')
     .get(Auth.apiValidateToken, errorfun(userAddress.getAddress))

@@ -138,6 +138,5 @@ module.exports = {
                 success: true,
                 message: global.CONFIGS.api.SubcategoryDelete,
             })
-    },
-    
+    },   
 }
