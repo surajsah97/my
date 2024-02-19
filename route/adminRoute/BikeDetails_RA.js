@@ -25,8 +25,15 @@ var cpUpload = upload1.fields([
     { name: 'vehicleImgBack', maxCount: 1 },
     { name: 'vehicleImgLeft', maxCount: 1 },
     { name: 'vehicleImgRight', maxCount: 1 },
+     { name: 'passportImgFront', maxCount: 1 },
+    { name: 'passportImgBack', maxCount: 1 },
+    { name: 'emiratesIdImgFront', maxCount: 1 },
+    { name: 'emiratesIdImgBack', maxCount: 1 },
+    { name: 'licenseImgFront', maxCount: 1 },
+    { name: 'licenseImgBack', maxCount: 1 },
+    { name: 'visaImg', maxCount: 1 },
+    { name: 'driverImg', maxCount: 1 },
 ])
-
 
 router.route('/')
     .get(errorfun(BikeDetails.vehicleListAdmin))

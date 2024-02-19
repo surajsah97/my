@@ -34,7 +34,7 @@ var bikeSchema = new Schema(
             required: [true, "Please enter vehicle color."]
         },
         vehicleYear: {
-            type: String,
+            type: Date,
             required: [true, "Please enter vehicle year."]
         },
         vehicleAge: {
@@ -42,15 +42,15 @@ var bikeSchema = new Schema(
             required: [true, "Please enter vehicle age."]
         },
         chasisNumber: {
-            type: Date,
+            type: String,
             required: [true, "Please enter chasis number."]
         },
-        insuranceValidity: {
-            type: String,
+        bikeInsuranceValidity: {
+            type: Date,
             required: [true, "Please enter insurance validity."]
         },
         fitnessValidity: {
-            type: String,
+            type: Date,
             required: [true, "Please enter vehicle fitness validity."]
         },
         mulkiyaValidity: {

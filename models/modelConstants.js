@@ -15,6 +15,7 @@ exports.TruckBrandModel = "truckbrand";
 exports.TruckModelModel = "truckmodel";
 exports.TruckModel = "truckdetails";
 exports.DriverModel = "driverdetails";
+exports.BikeDriverModel="bikedriverdetails";
 exports.DriverBankDetailsModel = "driverbankdetails";
 exports.DriverAddressModel = "driveraddress";
 exports.DriverDocModel = "driverdoc";

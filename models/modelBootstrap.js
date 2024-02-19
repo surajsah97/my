@@ -1,5 +1,5 @@
 require('./User_M');
-require('./tempUser_M')
+require('./tempUser_M');
 require('./category_M');
 require('./subCategory_M');
 require('./product_M');
@@ -17,3 +17,4 @@ require('./DriverAddress_M');
 require('./DriverBankDeatils_M');
 require('./DriverDoc_M');
 require('./UserAddress_M');
+require("./BikeDriver_M")
