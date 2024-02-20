@@ -10,30 +10,10 @@ const DriverAddressModel = mongoose.model(constants.DriverAddressModel);
 const DriverBankDetailsModel = mongoose.model(constants.DriverBankDetailsModel);
 
 module.exports = {
+  /** */
   addVehicle: async (req, res, next) => {
-    console.log(req.files);
-    var mulkiyaDocImg = {};
-    var vehicleImage = {};
-    if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
-      mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`;
-      mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`;
-      req.body.mulkiyaDocImg = mulkiyaDocImg;
-      // return res.send(req.body)
-    }
-    if (
-      req.files.vehicleImgFront &&
-      req.files.vehicleImgBack &&
-      req.files.vehicleImgLeft &&
-      req.files.vehicleImgRight
-    ) {
-      vehicleImage.frontImage = `uploads/bike/${req.files.vehicleImgFront[0].filename}`;
-      vehicleImage.backImage = `uploads/bike/${req.files.vehicleImgBack[0].filename}`;
-      vehicleImage.leftImage = `uploads/bike/${req.files.vehicleImgLeft[0].filename}`;
-      vehicleImage.rightImage = `uploads/bike/${req.files.vehicleImgRight[0].filename}`;
-      req.body.vehicleImage = vehicleImage;
-      // return res.send(req.body);
-    }
-
+    console.log(req.files, "....files");
+    console.log(req.body, ".....body");
     var find_Driver = await BikeDriverModel.findOne({
       $or: [
         { mobile: req.body.mobile },
@@ -52,144 +32,397 @@ module.exports = {
       );
       return next(err);
     }
-    var create_vehicle = await BikeModel.create(req.body);
-    /**vaildation for image and password when  driver is created*/
-    var passportImg = {};
-    var emiratesIdImg = {};
-    var licenseImg = {};
-    if (req.files.passportImgFront && req.files.passportImgBack) {
-      passportImg.frontImg = `uploads/driver/${req.files.passportImgFront[0].filename}`;
-      passportImg.backImg = `uploads/driver/${req.files.passportImgBack[0].filename}`;
-      req.body.passportImg = passportImg;
-    }
-    if (req.files.emiratesIdImgFront && req.files.emiratesIdImgBack) {
-      emiratesIdImg.frontImg = `uploads/driver/${req.files.emiratesIdImgFront[0].filename}`;
-      emiratesIdImg.backImg = `uploads/driver/${req.files.emiratesIdImgBack[0].filename}`;
-      req.body.emiratesIdImg = emiratesIdImg;
-    }
-    if (req.files.licenseImgFront && req.files.licenseImgBack) {
-      licenseImg.frontImg = `uploads/driver/${req.files.licenseImgFront[0].filename}`;
-      licenseImg.backImg = `uploads/driver/${req.files.licenseImgBack[0].filename}`;
-      req.body.licenseImg = licenseImg;
-    }
-    if (req.files.visaImg) {
-      req.body.visaImg = `uploads/driver/${req.files.visaImg[0].filename}`;
-    }
-    if (req.files.driverImg) {
-      req.body.driverImg = `uploads/driver/${req.files.driverImg[0].filename}`;
-    }
 
-    const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
-    const hash = await bcrypt.hashSync(req.body.password, salt);
-    req.body.password = hash;
+    let mulkiyaDocImg = {};
+    let vehicleImage = {};
+    let passportImg = {};
+    let emiratesIdImg = {};
+    let licenseImg = {};
 
-    var create_driver = await BikeDriverModel.create(req.body);
-    if (create_driver) {
-      req.body.driverId = create_driver._id;
-      var create_doc = await DriverDocModel.create(req.body);
-      var create_bankDetails = await DriverBankDetailsModel.create(req.body);
-      var localAddress = {
-        houseNo: req.body.lHouseNo,
-        buildingName: req.body.lBuildingName,
-        street: req.body.lStreet,
-        landmark: req.body.lLandmark,
-      };
-      var homeCountryAddress = {
-        houseNo: req.body.hcHouseNo,
-        buildingName: req.body.hcBuildingName,
-        street: req.body.hcStreet,
-        landmark: req.body.hcLandmark,
-        city: req.body.hcCity,
-        state: req.body.hcState,
-        pinCode: req.body.hcPinCode,
-      };
-      var emergencyContact = {
-        namr: req.body.ecName,
-        relation: req.body.ecRelation,
-        mobile: req.body.ecMobile,
-      };
-      var create_address = await DriverAddressModel.create({
-        emergencyContact: emergencyContact,
-        homeCountryAddress: homeCountryAddress,
-        localAddress: localAddress,
-        driverId: create_driver._id,
-      });
-      if (create_address && create_bankDetails && create_doc) {
-        var update_driver = await BikeDriverModel.updateOne(
-          { _id: create_driver._id },
-          {
-            addressId: create_address._id,
-            bankDetailsId: create_bankDetails._id,
-            docId: create_doc._id,
-          }
-        );
-        return res.status(global.CONFIGS.responseCode.success).json({
-          success: true,
-          message: global.CONFIGS.api.Productadded,
-          // data: create_vehicle
-        });
-      }
-    }
-    return res.status(global.CONFIGS.responseCode.success).json({
-      success: true,
-      message: global.CONFIGS.api.Productadded,
-      data: create_vehicle,
-      create_driver,
-    });
-  },
-
-  updateVehicle: async (req, res, next) => {
-    var mulkiyaDocImg = {};
-    var vehicleImage = {};
-    if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
-      mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`;
-      mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`;
-      req.body.mulkiyaDocImg = mulkiyaDocImg;
-      return res.send(req.body);
-    }
+    // Check if all required files are present
     if (
+      req.files.mulkiyaImgFront &&
+      req.files.mulkiyaImgBack &&
       req.files.vehicleImgFront &&
       req.files.vehicleImgBack &&
       req.files.vehicleImgLeft &&
-      req.files.vehicleImgRight
+      req.files.vehicleImgRight &&
+      req.files.passportImgFront &&
+      req.files.passportImgBack &&
+      req.files.emiratesIdImgFront &&
+      req.files.emiratesIdImgBack &&
+      req.files.licenseImgFront &&
+      req.files.licenseImgBack &&
+      req.files.visaImg &&
+      req.files.driverImg &&
+      req.body.brandId &&
+      req.body.modelId &&
+      req.body.ownerName &&
+      req.body.vehicleNumber &&
+      req.body.registrationZone &&
+      req.body.vehicleColor &&
+      req.body.registrationDate &&
+      req.body.vehicleYear &&
+      req.body.chasisNumber &&
+      req.body.bikeInsuranceValidity &&
+      req.body.fitnessValidity &&
+      req.body.mulkiyaValidity &&
+      req.body.vehicleAge &&
+      req.body.name &&
+      req.body.email &&
+      req.body.mobile &&
+      req.body.nationality &&
+      req.body.altMobile &&
+      req.body.passportNumber &&
+      req.body.passwordassportValidity &&
+      req.body.visaNumber &&
+      req.body.visaValidity &&
+      req.body.emiratesId &&
+      req.body.emiratesIdValidity &&
+      req.body.InsuranceComp &&
+      req.body.insuranceValidity &&
+      req.body.password &&
+      req.body.licenseNumber &&
+      req.body.licenseCity &&
+      req.body.licenseType &&
+      req.body.licenseValidity &&
+      req.body.lHouseNo &&
+      req.body.lBuildingName &&
+      req.body.lStreet &&
+      req.body.lLandmark &&
+      req.body.hcHouseNo &&
+      req.body.hcBuildingName &&
+      req.body.hcStreet &&
+      req.body.hcLandmark &&
+      req.body.hcCity &&
+      req.body.hcState &&
+      req.body.hcPinCode &&
+      req.body.ecName &&
+      req.body.ecRelation &&
+      req.body.ecMobile &&
+      req.body.bankName &&
+      req.body.branchName &&
+      req.body.accountNumber &&
+      req.body.accountHolderName &&
+      req.body.IBAN
     ) {
+      mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`;
+      mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`;
+      req.body.mulkiyaDocImg = mulkiyaDocImg;
+
       vehicleImage.frontImage = `uploads/bike/${req.files.vehicleImgFront[0].filename}`;
       vehicleImage.backImage = `uploads/bike/${req.files.vehicleImgBack[0].filename}`;
       vehicleImage.leftImage = `uploads/bike/${req.files.vehicleImgLeft[0].filename}`;
       vehicleImage.rightImage = `uploads/bike/${req.files.vehicleImgRight[0].filename}`;
       req.body.vehicleImage = vehicleImage;
-      return res.send(req.body);
-    }
-    var find_vehicle = await BikeModel.findOne({
-      chasisNumber: req.body.chasisNumber,
-      _id: { $nin: [req.params.id] },
-    });
-    if (find_vehicle) {
+
+      passportImg.frontImg = `uploads/bike/${req.files.passportImgFront[0].filename}`;
+      passportImg.backImg = `uploads/bike/${req.files.passportImgBack[0].filename}`;
+      req.body.passportImg = passportImg;
+
+      emiratesIdImg.frontImg = `uploads/bike/${req.files.emiratesIdImgFront[0].filename}`;
+      emiratesIdImg.backImg = `uploads/bike/${req.files.emiratesIdImgBack[0].filename}`;
+      req.body.emiratesIdImg = emiratesIdImg;
+
+      licenseImg.frontImg = `uploads/bike/${req.files.licenseImgFront[0].filename}`;
+      licenseImg.backImg = `uploads/bike/${req.files.licenseImgBack[0].filename}`;
+      req.body.licenseImg = licenseImg;
+
+      req.body.visaImg = `uploads/bike/${req.files.visaImg[0].filename}`;
+
+      req.body.driverImg = `uploads/bike/${req.files.driverImg[0].filename}`;
+
+      // Hash password using bcrypt
+      const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
+      const hash = await bcrypt.hashSync(req.body.password, salt);
+      req.body.password = hash;
+
+      try {
+        const createDriver = await BikeDriverModel.create(req.body);
+        if (!createDriver) {
+          throw new Error("Failed to create driver");
+        }
+        const createVehicle = await BikeModel.create(req.body);
+        if (!createVehicle) {
+          throw new Error("Failed to create Vehicle");
+        }
+
+        // Create DriverAddressModel and DriverBankDetailsModel with driverId from createDriver
+        const createAddress = await DriverAddressModel.create({
+          emergencyContact: {
+            namr: req.body.ecName,
+            relation: req.body.ecRelation,
+            mobile: req.body.ecMobile,
+          },
+          homeCountryAddress: {
+            houseNo: req.body.hcHouseNo,
+            buildingName: req.body.hcBuildingName,
+            street: req.body.hcStreet,
+            landmark: req.body.hcLandmark,
+            city: req.body.hcCity,
+            state: req.body.hcState,
+            pinCode: req.body.hcPinCode,
+          },
+          localAddress: {
+            houseNo: req.body.lHouseNo,
+            buildingName: req.body.lBuildingName,
+            street: req.body.lStreet,
+            landmark: req.body.lLandmark,
+          },
+          driverId: createDriver._id, // Use _id from createDriver
+        });
+
+        if (!createAddress) {
+          throw new Error("Failed to create address");
+        }
+        const createDoc = await DriverDocModel.create({
+          passportImg: req.body.passportImg,
+          emiratesIdImg: req.body.emiratesIdImg,
+          licenseImg: req.body.licenseImg,
+          visaImg: req.body.visaImg,
+          driverImg: req.body.driverImg,
+          driverId: createDriver._id,
+        });
+        if (!createDoc) {
+          throw new Error("Failed to create driver document");
+        }
+
+        const createBankDetails = await DriverBankDetailsModel.create({
+          driverId: createDriver._id, // Use _id from createDriver
+          IBAN: req.body.IBAN,
+          accountHolderName: req.body.accountHolderName,
+          accountNumber: req.body.accountNumber,
+          branchName: req.body.branchName,
+          bankName: req.body.bankName,
+        });
+
+        if (!createBankDetails) {
+          throw new Error("Failed to create bank details");
+        }
+        if (createVehicle && createAddress && createBankDetails && createDoc) {
+          const updateDriver = await BikeDriverModel.updateOne(
+            { _id: createDriver._id },
+            {
+              addressId: createAddress._id,
+              bankDetailsId: createBankDetails._id,
+              bikeDetailsId: createVehicle._id,
+              docId: createDoc._id,
+            }
+          );
+          return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.Productadded,
+          });
+        }
+      } catch (error) {
+        // Handle errors
+        return next(error);
+      }
+    } else {
+      // If any of the required files are missing, return an error response
       const err = new customError(
-        global.CONFIGS.api.Productalreadyadded,
-        global.CONFIGS.responseCode.alreadyExist
+        global.CONFIGS.api.RequiredFilesMissing,
+        global.CONFIGS.responseCode.badRequest
       );
       return next(err);
     }
-    var update_vehicle = await BikeModel.updateOne(
-      { _id: req.params.id },
-      req.body
-    );
-    return res.status(global.CONFIGS.responseCode.success).json({
-      success: true,
-      message: global.CONFIGS.api.ProductUpdated,
-    });
   },
 
-  deletevehicle: async (req, res, next) => {
-    var delete_vehicle = await BikeModel.deleteOne({ _id: req.params.id });
-    if (delete_vehicle) {
-      return res.status(global.CONFIGS.responseCode.success).json({
-        success: true,
-        message: global.CONFIGS.api.ProductDelete,
-      });
+
+  /** */
+  updateVehicle: async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      console.log({ _id: id });
+
+      /**Update BikeDriver */
+      const updatedDriver = await BikeDriverModel.findByIdAndUpdate(
+        id,
+        req.body,
+        { new: true }
+      );
+      if (!updatedDriver) {
+        throw new Error("Driver not found");
+      }
+
+      /*  Update Bank Details*/
+      const updatedBankDetails = await DriverBankDetailsModel.findByIdAndUpdate(
+        updatedDriver.bankDetailsId,
+        req.body,
+        { new: true }
+      );
+      if (!updatedBankDetails) {
+        throw new Error("Bank details not found");
+      }
+
+      /* Update Driver Documents*/
+      const updatedDriverDoc = await DriverDocModel.findByIdAndUpdate(
+        updatedDriver.docId,
+        {
+          $set: {
+            passportImg: req.body.passportImg,
+            emiratesIdImg: req.body.emiratesIdImg,
+            licenseImg: req.body.licenseImg,
+            visaImg: req.body.visaImg,
+            driverImg: req.body.driverImg,
+          },
+        },
+        { new: true }
+      );
+      if (!updatedDriverDoc) {
+        throw new Error("Driver documents not found");
+      }
+      /* Update Driver Address*/
+      const updateDriverAddress = await DriverAddressModel.findByIdAndUpdate(
+        updatedDriver.addressId,
+        {
+          $set: {
+            emergencyContact: {
+              namr: req.body.ecName,
+              relation: req.body.ecRelation,
+              mobile: req.body.ecMobile,
+            },
+            homeCountryAddress: {
+              houseNo: req.body.hcHouseNo,
+              buildingName: req.body.hcBuildingName,
+              street: req.body.hcStreet,
+              landmark: req.body.hcLandmark,
+              city: req.body.hcCity,
+              state: req.body.hcState,
+              pinCode: req.body.hcPinCode,
+            },
+            localAddress: {
+              houseNo: req.body.lHouseNo,
+              buildingName: req.body.lBuildingName,
+              street: req.body.lStreet,
+              landmark: req.body.lLandmark,
+            },
+          },
+        },
+        { new: true }
+      );
+      if (!updateDriverAddress) {
+        throw new Error("Driver address not found");
+      }
+      /* Update Bike Details*/
+      const updateBikeDetails = await BikeModel.findByIdAndUpdate(
+        updatedDriver.bikeDetailsId,
+        {
+          $set: {
+            brandId: req.body.brandId,
+            modelId: req.body.modelId,
+            ownerName: req.body.ownerName,
+            vehicleNumber: req.body.vehicleNumber,
+            registrationZone: req.body.registrationZone,
+            vehicleColor: req.body.vehicleColor,
+            registrationDate: req.body.registrationDate,
+            vehicleYear: req.body.vehicleYear,
+            chasisNumber: req.body.chasisNumber,
+            bikeInsuranceValidity: req.body.bikeInsuranceValidity,
+            fitnessValidity: req.body.fitnessValidity,
+            mulkiyaValidity: req.body.mulkiyaValidity,
+            vehicleAge: req.body.vehicleAge,
+            name: req.body.name,
+            email: req.body.email,
+            mobile: req.body.mobile,
+            nationality: req.body.nationality,
+            altMobile: req.body.altMobile,
+            passportNumber: req.body.passportNumber,
+            passportValidity: req.body.passportValidity,
+            visaNumber: req.body.visaNumber,
+            visaValidity: req.body.visaValidity,
+            emiratesId: req.body.emiratesId,
+            emiratesIdValidity: req.body.emiratesIdValidity,
+            InsuranceComp: req.body.InsuranceComp,
+            insuranceValidity: req.body.insuranceValidity,
+            licenseNumber: req.body.licenseNumber,
+            licenseCity: req.body.licenseCity,
+            licenseType: req.body.licenseType,
+            licenseValidity: req.body.licenseValidity,
+          },
+        },
+        { new: true }
+      );
+      if (!updateBikeDetails) {
+        throw new Error("Bike Details  not found");
+      }
+      if (
+        updateDriverAddress &&
+        updatedBankDetails &&
+        updatedDriverDoc &&
+        updateBikeDetails
+      ) {
+        return res.status(global.CONFIGS.responseCode.success).json({
+          success: true,
+          message: global.CONFIGS.api.ProductUpdated,
+        });
+      } else {
+        throw new Error("Failed to update driver");
+      }
+    } catch (error) {
+      // Handle errors
+      return next(error);
     }
   },
+
+  /** */
+deletevehicle: async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    /* Delete BikeDriver*/
+    const deletedDriver = await BikeDriverModel.findOneAndDelete(id);
+    if (!deletedDriver) {
+      throw new Error("Driver not found");
+    }
+
+    /* Delete Bank Details*/
+    const deletedBankDetails = await DriverBankDetailsModel.findOneAndDelete(deletedDriver.bankDetailsId);
+    if (!deletedBankDetails) {
+      throw new Error("Bank details not found");
+    }
+
+    /* Delete Driver Documents*/
+    const deletedDriverDoc = await DriverDocModel.findOneAndDelete(deletedDriver.docId);
+    if (!deletedDriverDoc) {
+      throw new Error("Driver documents not found");
+    }
+
+    /* Delete Driver Address*/
+    const deletedDriverAddress = await DriverAddressModel.findOneAndDelete(deletedDriver.addressId);
+    if (!deletedDriverAddress) {
+      throw new Error("Driver address not found");
+    }
+
+    /* Delete Bike Details*/
+    const deletedBikeDetails = await BikeModel.findOneAndDelete(deletedDriver.bikeDetailsId);
+    if (!deletedBikeDetails) {
+      throw new Error("Bike Details not found");
+    }
+
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.ProductDelete,
+    });
+  } catch (error) {
+    // Handle errors
+    return next(error);
+  }
+},
+
+
+
+
+
+  /** */
+
+
+
+
+
+
+  /** */
+  
 
   vehicleListFront: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
@@ -264,52 +497,53 @@ module.exports = {
     });
   },
 
+/** */
   vehicleListAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
-    var bikeData = await BikeModel.aggregate([
+    var bikeDriverData = await BikeModel.aggregate([
       {
         $lookup: {
           from: "bikebrand",
           localField: "brandId",
           foreignField: "_id",
-          as: "bikebrand",
+          as: "bikebrandList",
         },
       },
-      { $unwind: "$bikebrand" },
+    //   { $unwind: "$bikebrandList" },
       { $unset: "brandId" },
       {
         $lookup: {
           from: "bikemodel",
           localField: "modelId",
           foreignField: "_id",
-          as: "bikemodel",
+          as: "bikemodelList",
         },
       },
-      { $unwind: "$bikemodel" },
-      { $unset: "modelId" },
-      {
-        $project: {
-          _id: "$_id",
-          ownerName: "$ownerName",
-          vehicleNumber: "$vehicleNumber",
-          registrationZone: "$registrationZone",
-          registrationDate: "$registrationDate",
-          vehicleColor: "$vehicleColor",
-          vehicleYear: "$vehicleYear",
-          vehicleAge: "$vehicleAge",
-          chasisNumber: "$chasisNumber",
-          insuranceValidity: "$insuranceValidity",
-          fitnessValidity: "$fitnessValidity",
-          mulkiyaValidity: "$mulkiyaValidity",
-          mulkiyaDocImg: "$mulkiyaDocImg",
-          vehicleImage: "$vehicleImage",
-          activeStatus: "$activeStatus",
-          bikeBrand: "$bikebrand.bikeBrand",
-          bikemodel: "$bikemodel.bikeModel",
-        },
-      },
+    //   { $unwind: "$bikemodelList" },
+    //   { $unset: "modelId" },
+    //   {
+    //     $project: {
+    //       _id: "$_id",
+    //       ownerName: "$ownerName",
+    //       vehicleNumber: "$vehicleNumber",
+    //       registrationZone: "$registrationZone",
+    //       registrationDate: "$registrationDate",
+    //       vehicleColor: "$vehicleColor",
+    //       vehicleYear: "$vehicleYear",
+    //       vehicleAge: "$vehicleAge",
+    //       chasisNumber: "$chasisNumber",
+    //       insuranceValidity: "$insuranceValidity",
+    //       fitnessValidity: "$fitnessValidity",
+    //       mulkiyaValidity: "$mulkiyaValidity",
+    //       mulkiyaDocImg: "$mulkiyaDocImg",
+    //       vehicleImage: "$vehicleImage",
+    //       activeStatus: "$activeStatus",
+    //       bikeBrand: "$bikebrandList",
+    //       bikemodel: "$bikemodelList",
+    //     },
+    //   },
       {
         $facet: {
           metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
@@ -317,19 +551,19 @@ module.exports = {
         },
       },
     ]);
-    if (bikeData[0].data.length == 0) {
+    if (bikeDriverData[0].data.length == 0) {
       const err = new customError(
         global.CONFIGS.api.ProductNotfound,
         global.CONFIGS.responseCode.notFoud
       );
       return next(err);
     }
-    var totalPage = Math.ceil(parseInt(bikeData[0].metadata[0].total) / limit);
+    var totalPage = Math.ceil(parseInt(bikeDriverData[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getProductSuccess,
       totalPage: totalPage,
-      allOrder: bikeData[0].data,
+      allOrder: bikeDriverData[0].data,
     });
   },
 };
