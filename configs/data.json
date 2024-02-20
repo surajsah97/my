@@ -1,0 +1,46 @@
+/*
+! in which commented 
+{ $unwind: "$bikebrandList" },
+       { $unset: "brandId" },and { $unwind: "$bikemodelList" },
+      { $unset: "modelId" }, commenetd*/
+
+
+{
+    "success": true,
+    "message": "Get product list Successfully.",
+    "totalPage": 1,
+    "allOrder": [
+        {
+            "_id": "65d499546b8d4ba73de31a59",
+            "ownerName": "prakash",
+            "vehicleNumber": "9999",
+            "registrationZone": 9,
+            "registrationDate": "2022-10-11T18:30:00.000Z",
+            "vehicleColor": "Black",
+            "vehicleYear": "2022-10-11T18:30:00.000Z",
+            "vehicleAge": 2,
+            "chasisNumber": "asdfghjklzxcvbnm",
+            "fitnessValidity": "2030-12-11T18:30:00.000Z",
+            "mulkiyaValidity": "2031-12-11T18:30:00.000Z",
+            "mulkiyaDocImg": {
+                "frontImg": "uploads/bike/1708431699229-mulkitalfront.jpeg",
+                "backImg": "uploads/bike/1708431699232-mulkiyatback.jpeg",
+                "_id": "65d499546b8d4ba73de31a5a"
+            },
+            "vehicleImage": {
+                "frontImage": "uploads/bike/1708431699237-heroFront.jpg",
+                "backImage": "uploads/bike/1708431699236-heroback.jpg",
+                "leftImage": "uploads/bike/1708431699237-heroleft.jpg",
+                "rightImage": "uploads/bike/1708431699237-heroRight'.jpg",
+                "_id": "65d499546b8d4ba73de31a5b"
+            },
+            "activeStatus": "1",
+            "bikeBrand": [
+                "hero"
+            ],
+            "bikemodel": [
+                "splendor black"
+            ]
+        }
+    ]
+}
