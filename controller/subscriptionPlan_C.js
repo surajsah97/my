@@ -35,7 +35,7 @@ module.exports = {
     subscriptionPlanList: async (req, res, next) => {
         var find_subplan = await subscriptionPlanModel.find({});
         if (find_subplan.length == 0) {
-            const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         return res.status(global.CONFIGS.responseCode.success).json({
@@ -48,7 +48,7 @@ module.exports = {
     subscriptionPlanListFront: async (req, res, next) => {
         var find_subplan = await subscriptionPlanModel.find({ activeStatus: "Active" });
         if (find_subplan.length == 0) {
-            const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         return res.status(global.CONFIGS.responseCode.success).json({
@@ -61,7 +61,7 @@ module.exports = {
     subscriptionPlanDelete: async (req, res, next) => {
         var find_subplan = await subscriptionPlanModel.deleteOne({ _id: req.params.id });
         if (find_subplan.length == 0) {
-            const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         return res.status(global.CONFIGS.responseCode.success).json({

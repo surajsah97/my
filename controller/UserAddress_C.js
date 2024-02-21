@@ -90,7 +90,7 @@ module.exports = {
         ]);
         // return res.send(find_user)
         if (find_user.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         // var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
