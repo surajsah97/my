@@ -46,7 +46,7 @@ module.exports = {
 
         // var find_user1 = await UserModel.findOne({ email: req.body.email, userType: "Admin" });
         // if (find_user1) {
-        //     return res.status(global.CONFIGS.responseCode.notFoud).json({
+        //     return res.status(global.CONFIGS.responseCode.notFound).json({
         //         success: false,
         //         message: global.CONFIGS.api.userNotFound,
         //     })
@@ -54,7 +54,7 @@ module.exports = {
         var find_user = await UserModel.findOne({ email: req.body.email });
         console.log(find_user)
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
 

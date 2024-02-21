@@ -42,7 +42,7 @@ module.exports = {
     VerifieUser: async (req, res, next) => {
         var find_user = await TempUserModel.findOne({ mobile: req.body.mobile }).sort({_id:-1});
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         if (req.body.verifyOtp === false || req.body.verifyOtp === undefined) {
@@ -83,7 +83,7 @@ module.exports = {
     reSendOtp: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
 
         }
@@ -105,7 +105,7 @@ module.exports = {
 
         var find_user = await UserModel.findOne({ mobile: req.body.mobile ,userType: req.body.userType });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
             
@@ -147,7 +147,7 @@ module.exports = {
     forgetPass: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var otp = common.randomNumber();
@@ -167,7 +167,7 @@ module.exports = {
     resetPass: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         
@@ -193,7 +193,7 @@ module.exports = {
     changePass: async (req, res, next) => {
         var find_user = await UserModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         const match = await bcrypt.compare(req.body.oldPassword, find_user.password);
@@ -218,7 +218,7 @@ module.exports = {
         }
         var find_user = await UserModel.findOne({ _id: req.body.UserId });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         if (req.body.password != undefined) {
@@ -227,7 +227,7 @@ module.exports = {
             req.body.password = hash;
         }
         // if (req.body.mobile != find_user.mobile) {
-        //     const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+        //     const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
         //     return next(err);
         // }
         
@@ -269,7 +269,7 @@ module.exports = {
 
         var find_user = await UserModel.findOne({ _id: req.params.id });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
 
@@ -286,7 +286,7 @@ module.exports = {
         
         var find_user = await UserModel.findOne({ _id: req.query.UserId });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         
@@ -340,7 +340,7 @@ module.exports = {
         ]);
         // return res.send(find_user)
         if (find_user[0].data.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);

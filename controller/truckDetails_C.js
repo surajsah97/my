@@ -116,7 +116,7 @@ module.exports = {
 
         ]);
         if (truckData[0].data.length == 0) {
-            const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFound);
             next(err);
         }
         var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);
@@ -166,7 +166,7 @@ module.exports = {
 
         ]);
         if (truckData[0].data.length == 0) {
-            const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFound);
             next(err);
         }
         var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);

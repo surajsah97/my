@@ -62,7 +62,7 @@
     "Productadded": "Product added Successfully.",
     "ProductUpdated": "Product updated Successfully.",
     "getProductSuccess": "Get product list Successfully.",
-    "ProductNotfound": "Product notFoud Successfully.",
+    "ProductNotfound": "Product notFound Successfully.",
     "ProductDelete": "Product deleted Successfully.",
     "subscriptionPlanalreadyadded": "Subscription plan already added. Please try another name.",
     "subscriptionPlanadded": "Subscription plan added Successfully.",
@@ -87,7 +87,7 @@
     "error": 0,
     "exception": 500,
     "Unauthorized": 401,
-    "notFoud": 404,
+    "notFound": 404,
     "alreadyExist": 409,
     "noContent": 204
   },

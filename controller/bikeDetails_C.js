@@ -105,6 +105,10 @@ module.exports = {
       req.body.accountNumber &&
       req.body.accountHolderName &&
       req.body.IBAN
+      /** */
+      //  && req.body.long &&
+      //    req.body.lat
+      /** */
     ) {
       mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`;
       mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`;
@@ -131,7 +135,12 @@ module.exports = {
       req.body.visaImg = `uploads/bike/${req.files.visaImg[0].filename}`;
 
       req.body.driverImg = `uploads/bike/${req.files.driverImg[0].filename}`;
-
+      /** */
+      //   req.body.location = {
+      //     type: "Point",
+      //     coordinates: [req.body.long, req.body.lat],
+      //   };
+      /** */
       // Hash password using bcrypt
       const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
       const hash = await bcrypt.hashSync(req.body.password, salt);
@@ -212,6 +221,7 @@ module.exports = {
           return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.Productadded,
+            updateDriver: updateDriver,
           });
         }
       } catch (error) {
@@ -227,7 +237,6 @@ module.exports = {
       return next(err);
     }
   },
-
 
   /** */
   updateVehicle: async (req, res, next) => {
@@ -366,63 +375,61 @@ module.exports = {
   },
 
   /** */
-deletevehicle: async (req, res, next) => {
-  try {
-    const { id } = req.params;
+  deletevehicle: async (req, res, next) => {
+    try {
+      const { id } = req.params;
 
-    /* Delete BikeDriver*/
-    const deletedDriver = await BikeDriverModel.findOneAndDelete(id);
-    if (!deletedDriver) {
-      throw new Error("Driver not found");
+      /* Delete BikeDriver*/
+      const deletedDriver = await BikeDriverModel.findByIdAndRemove(id);
+      if (!deletedDriver) {
+        throw new Error("Driver not found");
+      }
+
+      /* Delete Bank Details*/
+      const deletedBankDetails = await DriverBankDetailsModel.findByIdAndRemove(
+        deletedDriver.bankDetailsId
+      );
+      if (!deletedBankDetails) {
+        throw new Error("Bank details not found");
+      }
+
+      /* Delete Driver Documents*/
+      const deletedDriverDoc = await DriverDocModel.findByIdAndRemove(
+        deletedDriver.docId
+      );
+      if (!deletedDriverDoc) {
+        throw new Error("Driver documents not found");
+      }
+
+      /* Delete Driver Address*/
+      const deletedDriverAddress = await DriverAddressModel.findByIdAndRemove(
+        deletedDriver.addressId
+      );
+      if (!deletedDriverAddress) {
+        throw new Error("Driver address not found");
+      }
+
+      /* Delete Bike Details*/
+      const deletedBikeDetails = await BikeModel.findByIdAndRemove(
+        deletedDriver.bikeDetailsId
+      );
+      if (!deletedBikeDetails) {
+        throw new Error("Bike Details not found");
+      }
+
+      return res.status(global.CONFIGS.responseCode.success).json({
+        success: true,
+        message: global.CONFIGS.api.ProductDelete,
+        deleteBikeDetails: deletedBikeDetails,
+        deleteBikedriver: deletedDriver,
+      });
+    } catch (error) {
+      // Handle errors
+      return next(error);
     }
-
-    /* Delete Bank Details*/
-    const deletedBankDetails = await DriverBankDetailsModel.findOneAndDelete(deletedDriver.bankDetailsId);
-    if (!deletedBankDetails) {
-      throw new Error("Bank details not found");
-    }
-
-    /* Delete Driver Documents*/
-    const deletedDriverDoc = await DriverDocModel.findOneAndDelete(deletedDriver.docId);
-    if (!deletedDriverDoc) {
-      throw new Error("Driver documents not found");
-    }
-
-    /* Delete Driver Address*/
-    const deletedDriverAddress = await DriverAddressModel.findOneAndDelete(deletedDriver.addressId);
-    if (!deletedDriverAddress) {
-      throw new Error("Driver address not found");
-    }
-
-    /* Delete Bike Details*/
-    const deletedBikeDetails = await BikeModel.findOneAndDelete(deletedDriver.bikeDetailsId);
-    if (!deletedBikeDetails) {
-      throw new Error("Bike Details not found");
-    }
-
-    return res.status(global.CONFIGS.responseCode.success).json({
-      success: true,
-      message: global.CONFIGS.api.ProductDelete,
-    });
-  } catch (error) {
-    // Handle errors
-    return next(error);
-  }
-},
-
-
-
-
+  },
 
   /** */
-
-
-
-
-
-
-  /** */
-  
 
   vehicleListFront: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
@@ -484,7 +491,7 @@ deletevehicle: async (req, res, next) => {
     if (bikeData[0].data.length == 0) {
       const err = new customError(
         global.CONFIGS.api.ProductNotfound,
-        global.CONFIGS.responseCode.notFoud
+        global.CONFIGS.responseCode.notFound
       );
       return next(err);
     }
@@ -497,53 +504,150 @@ deletevehicle: async (req, res, next) => {
     });
   },
 
-/** */
+  /** */
+
   vehicleListAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
-    var bikeDriverData = await BikeModel.aggregate([
-      {
-        $lookup: {
-          from: "bikebrand",
-          localField: "brandId",
-          foreignField: "_id",
-          as: "bikebrandList",
-        },
-      },
-    //   { $unwind: "$bikebrandList" },
-      { $unset: "brandId" },
-      {
-        $lookup: {
-          from: "bikemodel",
-          localField: "modelId",
-          foreignField: "_id",
-          as: "bikemodelList",
-        },
-      },
-    //   { $unwind: "$bikemodelList" },
-    //   { $unset: "modelId" },
+    // console.log(skip, "...skip");
+    var bikeDriverList = await BikeDriverModel.aggregate([
+      /**bikebrand */
+// {
+//         $lookup: {
+//           from: "bikebrand",
+//           localField: "brandId",
+//           foreignField: "_id",
+//           as: "bikebrand",
+//         },
+//       },
+//       { $unwind: "$bikebrand" },
+//       { $unset: "brandId" },
+      /**bikemodel */
     //   {
-    //     $project: {
-    //       _id: "$_id",
-    //       ownerName: "$ownerName",
-    //       vehicleNumber: "$vehicleNumber",
-    //       registrationZone: "$registrationZone",
-    //       registrationDate: "$registrationDate",
-    //       vehicleColor: "$vehicleColor",
-    //       vehicleYear: "$vehicleYear",
-    //       vehicleAge: "$vehicleAge",
-    //       chasisNumber: "$chasisNumber",
-    //       insuranceValidity: "$insuranceValidity",
-    //       fitnessValidity: "$fitnessValidity",
-    //       mulkiyaValidity: "$mulkiyaValidity",
-    //       mulkiyaDocImg: "$mulkiyaDocImg",
-    //       vehicleImage: "$vehicleImage",
-    //       activeStatus: "$activeStatus",
-    //       bikeBrand: "$bikebrandList",
-    //       bikemodel: "$bikemodelList",
+    //     $lookup: {
+    //       from: "bikemodel",
+    //       localField: "modelId",
+    //       foreignField: "_id",
+    //       as: "bikemodel",
     //     },
     //   },
+    //   { $unwind: "$bikemodel" },
+    //   { $unset: "modelId" },
+
+
+      /**driverbankdetails */
+      {
+        $lookup: {
+          from: "driverbankdetails",
+          localField: "bankDetailsId",
+          foreignField: "_id",
+          as: "driverbankdetails",
+        },
+      },
+      { $unwind: "$driverbankdetails" },
+      { $unset: "bankDetailsId" },
+      /**bikedetails */
+      {
+        $lookup: {
+          from: "bikedetails",
+          localField: "bikeDetailsId",
+          foreignField: "_id",
+          as: "bikedetails",
+        },
+      },
+      { $unwind: "$bikedetails" },
+      { $unset: "bikeDetailsId" },
+      { $unset: "bikedetails.mulkiyaDocImg._id" },
+      { $unset: "bikedetails.vehicleImage._id" },
+      /**driveraddress */
+
+      {
+        $lookup: {
+          from: "driveraddress",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "driveraddress",
+        },
+      },
+      { $unwind: "$driveraddress" },
+      { $unset: "addressId" },
+      { $unset: "driveraddress.localAddress._id" },
+      { $unset: "driveraddress.homeCountryAddress._id" },
+      { $unset: "driveraddress.emergencyContact._id" },
+      /**driverdoc */
+      {
+        $lookup: {
+          from: "driverdoc",
+          localField: "docId",
+          foreignField: "_id",
+          as: "driverdoc",
+        },
+      },
+      { $unwind: "$driverdoc" },
+      { $unset: "docId" },
+      { $unset: "driverdoc.passportImg._id" },
+      { $unset: "driverdoc.emiratesIdImg._id" },
+      { $unset: "driverdoc.licenseImg._id" },
+      {
+        $project: {
+          _id: "$_id",
+          /**bikedriverdetails */
+          name: "$name",
+          email: "$email",
+          mobile: "$mobile",
+          nationality: "$nationality",
+          altMobile: "$altMobile",
+          passportNumber: "$passportNumber",
+          passwordassportValidity: "$passwordassportValidity",
+          visaNumber: "$visaNumber",
+          visaValidity: "$visaValidity",
+          emiratesId: "$emiratesId",
+          emiratesIdValidity: "$emiratesIdValidity",
+          InsuranceComp: "$InsuranceComp",
+          insuranceValidity: "$insuranceValidity",
+          password: "$password",
+          licenseNumber: "$licenseNumber",
+          licenseCity: "$licenseCity",
+          licenseType: "$licenseType",
+          licenseValidity: "$licenseValidity",
+          isVerified: "$isVerified",
+          driverType: "$driverType",
+          activeStatus: "$activeStatus",
+          /**driveraddress */
+          localAddress: "$driveraddress.localAddress",
+          homeCountryAddress: "$driveraddress.homeCountryAddress",
+          emergencyContact: "$driveraddress.emergencyContact",
+          /**driverbankdetails */
+          bankName: "$driverbankdetails.bankName",
+          branchName: "$driverbankdetails.branchName",
+          accountNumber: "$driverbankdetails.accountNumber",
+          accountHolderName: "$driverbankdetails.accountHolderName",
+          IBAN: "$driverbankdetails.IBAN",
+          /**driverdoc */
+          passportImg: "$driverdoc.passportImg",
+          emiratesIdImg: "$driverdoc.emiratesIdImg",
+          licenseImg: "$driverdoc.licenseImg",
+          visaImg: "$driverdoc.visaImg",
+          driverImg: "$driverdoc.driverImg",
+          /**bikedetails */
+          ownerName: "$bikedetails.ownerName",
+          vehicleNumber: "$bikedetails.vehicleNumber",
+          registrationZone: "$bikedetails.registrationZone",
+          registrationDate: "$bikedetails.registrationDate",
+          vehicleColor: "$bikedetails.vehicleColor",
+          vehicleYear: "$bikedetails.vehicleYear",
+          vehicleAge: "$bikedetails.vehicleAge",
+          chasisNumber: "$bikedetails.chasisNumber",
+          bikeInsuranceValidity: "$bikedetails.bikeInsuranceValidity",
+          fitnessValidity: "$bikedetails.fitnessValidity",
+          mulkiyaValidity: "$bikedetails.mulkiyaValidity",
+          mulkiyaDocImg: "$bikedetails.mulkiyaDocImg",
+          vehicleImage: "$bikedetails.vehicleImage",
+          bikeActiveStatus: "$bikedetails.activeStatus",
+            // bikeBrand:"$bikedetails.bikebrand.bikeBrand",
+        },
+      },
       {
         $facet: {
           metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
@@ -551,19 +655,30 @@ deletevehicle: async (req, res, next) => {
         },
       },
     ]);
-    if (bikeDriverData[0].data.length == 0) {
+    if (bikeDriverList[0].data.length == 0) {
       const err = new customError(
         global.CONFIGS.api.ProductNotfound,
-        global.CONFIGS.responseCode.notFoud
+        global.CONFIGS.responseCode.notFound
       );
       return next(err);
     }
-    var totalPage = Math.ceil(parseInt(bikeDriverData[0].metadata[0].total) / limit);
+    const totalPage = Math.ceil(
+      parseInt(bikeDriverList[0].metadata[0].total) / limit
+    );
+    const total = parseInt(bikeDriverList[0].metadata[0].total);
+    const dataPerPage = total - skip > limit ? limit : total - skip;
+    const totalLeftdata = total - skip - dataPerPage;
+    const rangeStart = skip === 0 ? 1 : skip + 1;
+    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getProductSuccess,
+      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+      totalData: total,
       totalPage: totalPage,
-      allOrder: bikeDriverData[0].data,
+      totalLeftdata: totalLeftdata,
+      dataPerPage,
+      allOrder: bikeDriverList[0].data,
     });
   },
 };

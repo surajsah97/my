@@ -94,7 +94,7 @@ module.exports = {
                 
             ]);
             if (productData[0].data.length == 0) {
-                const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
+                const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFound);
                 return next(err);
             }
             var totalPage = Math.ceil(parseInt(productData[0].metadata[0].total) / limit);
@@ -144,7 +144,7 @@ module.exports = {
 
             ]);
             if (productData[0].data.length == 0) {
-                const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFoud);
+                const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFound);
                 return next(err);
             }
             var totalPage = Math.ceil(parseInt(productData[0].metadata[0].total) / limit);

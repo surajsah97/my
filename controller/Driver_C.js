@@ -101,7 +101,7 @@ module.exports = {
  
         var find_user = await DriverModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
 
@@ -137,7 +137,7 @@ module.exports = {
     reSendOtp: async (req, res, next) => {
         var find_user = await DriverModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
 
         }
@@ -158,7 +158,7 @@ module.exports = {
     forgetPass: async (req, res, next) => {
         var find_user = await DriverModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var otp = common.randomNumber();
@@ -178,7 +178,7 @@ module.exports = {
     resetPass: async (req, res, next) => {
         var find_user = await DriverModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         if (find_user.Otp != req.body.Otp) {
@@ -205,7 +205,7 @@ module.exports = {
     changePass: async (req, res, next) => {
         var find_user = await DriverModel.findOne({ mobile: req.body.mobile });
         if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         const match = await bcrypt.compare(req.body.oldPassword, find_user.password);
@@ -279,7 +279,7 @@ module.exports = {
         ]);
         // return res.send(find_user)
         if (find_user.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         // var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
@@ -350,7 +350,7 @@ module.exports = {
         ]);
         // return res.send(find_user)
         if (find_user[0].data.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFoud);
+            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
