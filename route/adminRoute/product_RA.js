@@ -24,7 +24,7 @@ var cpUpload = upload1.fields([
 
 router.route('/')
     .get(Auth.adminValidateToken, errorfun(cat.productListAdmin))
-    .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addProduct))
+    .post(cpUpload,  errorfun(cat.addProduct))
 
 router.route('/:id')
     .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateProduct))
