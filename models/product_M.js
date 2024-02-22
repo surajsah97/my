@@ -3,16 +3,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var productSchema = new Schema(
     {
-        categoryId: {
-            type: Schema.Types.ObjectId,
-            ref: constants.CategoryModel,
-            required: [true, "Please enter categoryId."]
-        },
-        subCategoryId: {
-            type: Schema.Types.ObjectId,
-            ref: constants.SubCategoryModel,
-            required: [true, "Please enter subCategoryId."]
-        },
         productName: {
             type: String,
             required: [true, "Please enter product name."]
@@ -24,6 +14,16 @@ var productSchema = new Schema(
         productPrice: {
             type: Number,
             required: [true, "Please enter product product price."]
+        },
+        categoryId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.CategoryModel,
+            required: [true, "Please enter categoryId."]
+        },
+        subCategoryId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.SubCategoryModel,
+            required: [true, "Please enter subCategoryId."]
         },
         productUOM: {
             type: String,
