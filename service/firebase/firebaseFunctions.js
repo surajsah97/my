@@ -9,7 +9,6 @@ admin.initializeApp({
 module.exports = {
     firebasesms :async (req, res) => {
         const phoneNumber = '+916396553061'; 
-
         const identityToolkit = google.identitytoolkit({
             auth: 'AIzaSyAsIZSHIrt7DuiALc6FbfvzKypr-v4QqeA',
             version: 'v3',

@@ -17,4 +17,5 @@ require('./DriverAddress_M');
 require('./DriverBankDeatils_M');
 require('./DriverDoc_M');
 require('./UserAddress_M');
-require("./BikeDriver_M")
+require("./BikeDriver_M");
+require("./productCheckout_M");

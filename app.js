@@ -62,9 +62,10 @@ app.use('/v' + process.env.VERSION + '/front/subplan/', require('./route/frontRo
 app.use('/v' + process.env.VERSION + '/admin/subplan/', require('./route/adminRoute/subscriptionPlan_RA'));
 
 app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
-// app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
 
-// app.use('/v' + process.env.VERSION + '/front/checkout/', require('./route/frontRoute/checkOut_RF'));
+
+app.use('/v' + process.env.VERSION + '/front/productcheckout/', require('./route/frontRoute/productCheckout_RF'));
+
 app.use('/v' + process.env.VERSION + '/admin/adminauth/', require('./route/adminRoute/admin_RA'));
 
 app.use('/v' + process.env.VERSION + '/admin/truckbrand/', require('./route/adminRoute/TruckBrand_RA'));
