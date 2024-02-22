@@ -31,5 +31,4 @@ module.exports = {
             data: create_prod
         })
     },
-
 }

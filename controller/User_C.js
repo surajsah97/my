@@ -278,7 +278,6 @@ module.exports = {
             success: true,
             message: global.CONFIGS.api.userDelete,
         })
-
     },
 
     getUserProfile: async (req, res, next) => {
