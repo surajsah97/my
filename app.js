@@ -77,6 +77,10 @@ app.use('/v' + process.env.VERSION + '/admin/notification/', require('./route/ad
 
 app.use('/v' + process.env.VERSION + '/admin/bike/', require('./route/adminRoute/BikeDetails_RA'));
 
+app.use('/v' + process.env.VERSION + '/front/bike/',require('./route/frontRoute/BikeDetails_RF'))
+
+
+
 app.use('/v' + process.env.VERSION + '/admin/driver/', require('./route/adminRoute/Driver_RA'));
 app.use('/v' + process.env.VERSION + '/front/driver/', require('./route/frontRoute/Driver_RF'));
 

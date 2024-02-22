@@ -225,7 +225,7 @@ module.exports = {
 
     
 
-    getDriverProfile: async (req, res, next) => {
+    getDriverProfile: async (req, res, next) => { 
         // console.log(req.body);
         var find_user = await DriverModel.aggregate([
             {
