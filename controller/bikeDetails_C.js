@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const DriverDocModel = mongoose.model(constants.DriverDocModel);
 const DriverAddressModel = mongoose.model(constants.DriverAddressModel);
 const DriverBankDetailsModel = mongoose.model(constants.DriverBankDetailsModel);
+const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   /** */
@@ -431,111 +432,14 @@ module.exports = {
 
   /** */
 
-  vehicleListFront: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 20; // docs in single page
-    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
-    const skip = (pageNo - 1) * limit;
+  /**get single vehicleDetails */
 
-    var bikeData = await BikeModel.aggregate([
+  getVehicleSingleFront: async (req, res, next) => {
+    // console.log(req.body);
+    var find_user = await BikeDriverModel.aggregate([
       {
-        $match: { activeStatus: "1" },
+        $match: { activeStatus: "1", _id: new ObjectId(req.query.id) },
       },
-      {
-        $lookup: {
-          from: "bikebrand",
-          localField: "brandId",
-          foreignField: "_id",
-          as: "bikebrand",
-        },
-      },
-      { $unwind: "$bikebrand" },
-      { $unset: "brandId" },
-      {
-        $lookup: {
-          from: "bikemodel",
-          localField: "modelId",
-          foreignField: "_id",
-          as: "bikemodel",
-        },
-      },
-      { $unwind: "$bikemodel" },
-      { $unset: "modelId" },
-      {
-        $project: {
-          _id: "$_id",
-          ownerName: "$ownerName",
-          vehicleNumber: "$vehicleNumber",
-          registrationZone: "$registrationZone",
-          registrationDate: "$registrationDate",
-          vehicleColor: "$vehicleColor",
-          vehicleYear: "$vehicleYear",
-          vehicleAge: "$vehicleAge",
-          chasisNumber: "$chasisNumber",
-          insuranceValidity: "$insuranceValidity",
-          fitnessValidity: "$fitnessValidity",
-          mulkiyaValidity: "$mulkiyaValidity",
-          mulkiyaDocImg: "$mulkiyaDocImg",
-          vehicleImage: "$vehicleImage",
-          activeStatus: "$activeStatus",
-          bikeBrand: "$bikebrand.bikeBrand",
-          bikemodel: "$bikemodel.bikeModel",
-        },
-      },
-      {
-        $facet: {
-          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
-        },
-      },
-    ]);
-    if (bikeData[0].data.length == 0) {
-      const err = new customError(
-        global.CONFIGS.api.ProductNotfound,
-        global.CONFIGS.responseCode.notFound
-      );
-      return next(err);
-    }
-    var totalPage = Math.ceil(parseInt(bikeData[0].metadata[0].total) / limit);
-    return res.status(global.CONFIGS.responseCode.success).json({
-      success: true,
-      message: global.CONFIGS.api.getProductSuccess,
-      totalPage: totalPage,
-      allOrder: bikeData[0].data,
-    });
-  },
-
-  /** */
-
-  vehicleListAdmin: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 20; // docs in single page
-    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
-    const skip = (pageNo - 1) * limit;
-    // console.log(skip, "...skip");
-    var bikeDriverList = await BikeDriverModel.aggregate([
-      /**bikebrand */
-// {
-//         $lookup: {
-//           from: "bikebrand",
-//           localField: "brandId",
-//           foreignField: "_id",
-//           as: "bikebrand",
-//         },
-//       },
-//       { $unwind: "$bikebrand" },
-//       { $unset: "brandId" },
-      /**bikemodel */
-    //   {
-    //     $lookup: {
-    //       from: "bikemodel",
-    //       localField: "modelId",
-    //       foreignField: "_id",
-    //       as: "bikemodel",
-    //     },
-    //   },
-    //   { $unwind: "$bikemodel" },
-    //   { $unset: "modelId" },
-
-
       /**driverbankdetails */
       {
         $lookup: {
@@ -560,6 +464,32 @@ module.exports = {
       { $unset: "bikeDetailsId" },
       { $unset: "bikedetails.mulkiyaDocImg._id" },
       { $unset: "bikedetails.vehicleImage._id" },
+
+      /**fetch bikeMrand into bikedetails */
+
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "bikedetails.brandId",
+          foreignField: "_id",
+          as: "bikebrandName",
+        },
+      },
+      { $unwind: "$bikebrandName" },
+      { $unset: "bikedetails.brandId" },
+
+      /**fetch bikeModel into bikedetails */
+      /**bikemodel */
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "bikedetails.modelId",
+          foreignField: "_id",
+          as: "bikemodelName",
+        },
+      },
+      { $unwind: "$bikemodelName" },
+      { $unset: "bikedetails.modelId" },
       /**driveraddress */
 
       {
@@ -589,6 +519,11 @@ module.exports = {
       { $unset: "driverdoc.passportImg._id" },
       { $unset: "driverdoc.emiratesIdImg._id" },
       { $unset: "driverdoc.licenseImg._id" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
       {
         $project: {
           _id: "$_id",
@@ -645,7 +580,363 @@ module.exports = {
           mulkiyaDocImg: "$bikedetails.mulkiyaDocImg",
           vehicleImage: "$bikedetails.vehicleImage",
           bikeActiveStatus: "$bikedetails.activeStatus",
-            // bikeBrand:"$bikedetails.bikebrand.bikeBrand",
+          bikeBrand: "$bikebrandName.bikeBrand",
+          bikeModel: "$bikemodelName.bikeModel",
+        },
+      },
+    ]);
+    // return res.send(find_user)
+    if (find_user.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.getUserDetailsFail,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.getUserDetailsSuccess,
+      // totalPage: totalPage,
+      data: find_user,
+    });
+  },
+  /** */
+
+  VehicleListFront: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
+    // console.log(skip, "...skip");
+    var bikeDriverList = await BikeDriverModel.aggregate([
+      {
+        $match: { activeStatus: "1" },
+      },
+      /**driverbankdetails */
+      {
+        $lookup: {
+          from: "driverbankdetails",
+          localField: "bankDetailsId",
+          foreignField: "_id",
+          as: "driverbankdetails",
+        },
+      },
+      { $unwind: "$driverbankdetails" },
+      { $unset: "bankDetailsId" },
+      /**bikedetails */
+      {
+        $lookup: {
+          from: "bikedetails",
+          localField: "bikeDetailsId",
+          foreignField: "_id",
+          as: "bikedetails",
+        },
+      },
+      { $unwind: "$bikedetails" },
+      { $unset: "bikeDetailsId" },
+      { $unset: "bikedetails.mulkiyaDocImg._id" },
+      { $unset: "bikedetails.vehicleImage._id" },
+
+      /**fetch bikeMrand into bikedetails */
+
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "bikedetails.brandId",
+          foreignField: "_id",
+          as: "bikebrandName",
+        },
+      },
+      { $unwind: "$bikebrandName" },
+      { $unset: "bikedetails.brandId" },
+
+      /**fetch bikeModel into bikedetails */
+      /**bikemodel */
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "bikedetails.modelId",
+          foreignField: "_id",
+          as: "bikemodelName",
+        },
+      },
+      { $unwind: "$bikemodelName" },
+      { $unset: "bikedetails.modelId" },
+      /**driveraddress */
+
+      {
+        $lookup: {
+          from: "driveraddress",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "driveraddress",
+        },
+      },
+      { $unwind: "$driveraddress" },
+      { $unset: "addressId" },
+      { $unset: "driveraddress.localAddress._id" },
+      { $unset: "driveraddress.homeCountryAddress._id" },
+      { $unset: "driveraddress.emergencyContact._id" },
+      /**driverdoc */
+      {
+        $lookup: {
+          from: "driverdoc",
+          localField: "docId",
+          foreignField: "_id",
+          as: "driverdoc",
+        },
+      },
+      { $unwind: "$driverdoc" },
+      { $unset: "docId" },
+      { $unset: "driverdoc.passportImg._id" },
+      { $unset: "driverdoc.emiratesIdImg._id" },
+      { $unset: "driverdoc.licenseImg._id" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+      {
+        $project: {
+          _id: "$_id",
+          /**bikedriverdetails */
+          name: "$name",
+          email: "$email",
+          mobile: "$mobile",
+          nationality: "$nationality",
+          altMobile: "$altMobile",
+          passportNumber: "$passportNumber",
+          passwordassportValidity: "$passwordassportValidity",
+          visaNumber: "$visaNumber",
+          visaValidity: "$visaValidity",
+          emiratesId: "$emiratesId",
+          emiratesIdValidity: "$emiratesIdValidity",
+          InsuranceComp: "$InsuranceComp",
+          insuranceValidity: "$insuranceValidity",
+          password: "$password",
+          licenseNumber: "$licenseNumber",
+          licenseCity: "$licenseCity",
+          licenseType: "$licenseType",
+          licenseValidity: "$licenseValidity",
+          isVerified: "$isVerified",
+          driverType: "$driverType",
+          activeStatus: "$activeStatus",
+          /**driveraddress */
+          localAddress: "$driveraddress.localAddress",
+          homeCountryAddress: "$driveraddress.homeCountryAddress",
+          emergencyContact: "$driveraddress.emergencyContact",
+          /**driverbankdetails */
+          bankName: "$driverbankdetails.bankName",
+          branchName: "$driverbankdetails.branchName",
+          accountNumber: "$driverbankdetails.accountNumber",
+          accountHolderName: "$driverbankdetails.accountHolderName",
+          IBAN: "$driverbankdetails.IBAN",
+          /**driverdoc */
+          passportImg: "$driverdoc.passportImg",
+          emiratesIdImg: "$driverdoc.emiratesIdImg",
+          licenseImg: "$driverdoc.licenseImg",
+          visaImg: "$driverdoc.visaImg",
+          driverImg: "$driverdoc.driverImg",
+          /**bikedetails */
+          ownerName: "$bikedetails.ownerName",
+          vehicleNumber: "$bikedetails.vehicleNumber",
+          registrationZone: "$bikedetails.registrationZone",
+          registrationDate: "$bikedetails.registrationDate",
+          vehicleColor: "$bikedetails.vehicleColor",
+          vehicleYear: "$bikedetails.vehicleYear",
+          vehicleAge: "$bikedetails.vehicleAge",
+          chasisNumber: "$bikedetails.chasisNumber",
+          bikeInsuranceValidity: "$bikedetails.bikeInsuranceValidity",
+          fitnessValidity: "$bikedetails.fitnessValidity",
+          mulkiyaValidity: "$bikedetails.mulkiyaValidity",
+          mulkiyaDocImg: "$bikedetails.mulkiyaDocImg",
+          vehicleImage: "$bikedetails.vehicleImage",
+          bikeActiveStatus: "$bikedetails.activeStatus",
+          bikeBrand: "$bikebrandName.bikeBrand",
+          bikeModel: "$bikemodelName.bikeModel",
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
+    if (bikeDriverList[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const totalPage = Math.ceil(
+      parseInt(bikeDriverList[0].metadata[0].total) / limit
+    );
+    const total = parseInt(bikeDriverList[0].metadata[0].total);
+    const dataPerPage = total - skip > limit ? limit : total - skip;
+    const totalLeftdata = total - skip - dataPerPage;
+    const rangeStart = skip === 0 ? 1 : skip + 1;
+    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.getProductSuccess,
+      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+      totalData: total,
+      totalPage: totalPage,
+      totalLeftdata: totalLeftdata,
+      dataPerPage,
+      allOrder: bikeDriverList[0].data,
+    });
+  },
+  vehicleListAdmin: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
+    // console.log(skip, "...skip");
+    var bikeDriverList = await BikeDriverModel.aggregate([
+      /**driverbankdetails */
+      {
+        $lookup: {
+          from: "driverbankdetails",
+          localField: "bankDetailsId",
+          foreignField: "_id",
+          as: "driverbankdetails",
+        },
+      },
+      { $unwind: "$driverbankdetails" },
+      { $unset: "bankDetailsId" },
+      /**bikedetails */
+      {
+        $lookup: {
+          from: "bikedetails",
+          localField: "bikeDetailsId",
+          foreignField: "_id",
+          as: "bikedetails",
+        },
+      },
+      { $unwind: "$bikedetails" },
+      { $unset: "bikeDetailsId" },
+      { $unset: "bikedetails.mulkiyaDocImg._id" },
+      { $unset: "bikedetails.vehicleImage._id" },
+
+      /**fetch bikeMrand into bikedetails */
+
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "bikedetails.brandId",
+          foreignField: "_id",
+          as: "bikebrandName",
+        },
+      },
+      { $unwind: "$bikebrandName" },
+      { $unset: "bikedetails.brandId" },
+
+      /**fetch bikeModel into bikedetails */
+      /**bikemodel */
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "bikedetails.modelId",
+          foreignField: "_id",
+          as: "bikemodelName",
+        },
+      },
+      { $unwind: "$bikemodelName" },
+      { $unset: "bikedetails.modelId" },
+      /**driveraddress */
+
+      {
+        $lookup: {
+          from: "driveraddress",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "driveraddress",
+        },
+      },
+      { $unwind: "$driveraddress" },
+      { $unset: "addressId" },
+      { $unset: "driveraddress.localAddress._id" },
+      { $unset: "driveraddress.homeCountryAddress._id" },
+      { $unset: "driveraddress.emergencyContact._id" },
+      /**driverdoc */
+      {
+        $lookup: {
+          from: "driverdoc",
+          localField: "docId",
+          foreignField: "_id",
+          as: "driverdoc",
+        },
+      },
+      { $unwind: "$driverdoc" },
+      { $unset: "docId" },
+      { $unset: "driverdoc.passportImg._id" },
+      { $unset: "driverdoc.emiratesIdImg._id" },
+      { $unset: "driverdoc.licenseImg._id" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+      {
+        $project: {
+          _id: "$_id",
+          /**bikedriverdetails */
+          name: "$name",
+          email: "$email",
+          mobile: "$mobile",
+          nationality: "$nationality",
+          altMobile: "$altMobile",
+          passportNumber: "$passportNumber",
+          passwordassportValidity: "$passwordassportValidity",
+          visaNumber: "$visaNumber",
+          visaValidity: "$visaValidity",
+          emiratesId: "$emiratesId",
+          emiratesIdValidity: "$emiratesIdValidity",
+          InsuranceComp: "$InsuranceComp",
+          insuranceValidity: "$insuranceValidity",
+          password: "$password",
+          licenseNumber: "$licenseNumber",
+          licenseCity: "$licenseCity",
+          licenseType: "$licenseType",
+          licenseValidity: "$licenseValidity",
+          isVerified: "$isVerified",
+          driverType: "$driverType",
+          activeStatus: "$activeStatus",
+          /**driveraddress */
+          localAddress: "$driveraddress.localAddress",
+          homeCountryAddress: "$driveraddress.homeCountryAddress",
+          emergencyContact: "$driveraddress.emergencyContact",
+          /**driverbankdetails */
+          bankName: "$driverbankdetails.bankName",
+          branchName: "$driverbankdetails.branchName",
+          accountNumber: "$driverbankdetails.accountNumber",
+          accountHolderName: "$driverbankdetails.accountHolderName",
+          IBAN: "$driverbankdetails.IBAN",
+          /**driverdoc */
+          passportImg: "$driverdoc.passportImg",
+          emiratesIdImg: "$driverdoc.emiratesIdImg",
+          licenseImg: "$driverdoc.licenseImg",
+          visaImg: "$driverdoc.visaImg",
+          driverImg: "$driverdoc.driverImg",
+          /**bikedetails */
+          ownerName: "$bikedetails.ownerName",
+          vehicleNumber: "$bikedetails.vehicleNumber",
+          registrationZone: "$bikedetails.registrationZone",
+          registrationDate: "$bikedetails.registrationDate",
+          vehicleColor: "$bikedetails.vehicleColor",
+          vehicleYear: "$bikedetails.vehicleYear",
+          vehicleAge: "$bikedetails.vehicleAge",
+          chasisNumber: "$bikedetails.chasisNumber",
+          bikeInsuranceValidity: "$bikedetails.bikeInsuranceValidity",
+          fitnessValidity: "$bikedetails.fitnessValidity",
+          mulkiyaValidity: "$bikedetails.mulkiyaValidity",
+          mulkiyaDocImg: "$bikedetails.mulkiyaDocImg",
+          vehicleImage: "$bikedetails.vehicleImage",
+          bikeActiveStatus: "$bikedetails.activeStatus",
+          bikeBrand: "$bikebrandName.bikeBrand",
+          bikeModel: "$bikemodelName.bikeModel",
         },
       },
       {
