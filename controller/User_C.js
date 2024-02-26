@@ -283,11 +283,6 @@ module.exports = {
       const hash = await bcrypt.hashSync(req.body.password, salt);
       req.body.password = hash;
     }
-    // if (req.body.mobile != find_user.mobile) {
-    //     const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
-    //     return next(err);
-    // }
-
     var createuser = await UserModel.updateOne(
       { _id: find_user._id },
       req.body
@@ -305,7 +300,7 @@ module.exports = {
       console.log(token);
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
-        message: global.CONFIGS.api.registerSuccess,
+        message: global.CONFIGS.api.userUpdateSuccess,
         data: {
           UserId: find_user2._id,
           Otp: find_user2.Otp,
@@ -364,7 +359,7 @@ module.exports = {
     console.log(token);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.registerSuccess,
+      message: global.CONFIGS.api.getUserProfileSuccess,
       data: {
         UserId: find_user2._id,
         name: find_user2.name,
