@@ -32,7 +32,7 @@ module.exports = {
     addAddress: async (req, res, next) => {
         var find_address = await UserAddressModel.findOne({ userId: req.body.userId });
         if (find_address) {
-            const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
+            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         req.body.location = {
@@ -42,7 +42,7 @@ module.exports = {
         var createAddress = await UserAddressModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.registerSuccess,
+            message: global.CONFIGS.api.addAddressSucess,
             data: createAddress,
         })
     },
@@ -50,7 +50,7 @@ module.exports = {
     updateAddress: async (req, res, next) => {
         var find_address = await UserAddressModel.findOne({ _id: req.params.id });
         if (!find_address) {
-            const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
+            const err = new customError(global.CONFIGS.api.addressNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         req.body.location = {
@@ -60,7 +60,7 @@ module.exports = {
         var createAddress = await UserAddressModel.updateOne({_id:req.params.id},req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.registerSuccess,
+            message: global.CONFIGS.api.updateAddressSucess,
             // data: createAddress,
         })
     },
@@ -90,13 +90,13 @@ module.exports = {
         ]);
         // return res.send(find_user)
         if (find_user.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.getAddressDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         // var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.getUserDetailsSuccess,
+            message: global.CONFIGS.api.getAddressDetailsSuccess,
             // totalPage: totalPage,
             data: find_user
         })
@@ -106,13 +106,13 @@ module.exports = {
     deleteaddress: async (req, res, next) => {
         var find_address = await UserAddressModel.findOne({ _id: req.params.id });
         if (!find_address) {
-            const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
+            const err = new customError(global.CONFIGS.api.addressNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var createAddress = await UserAddressModel.deleteOne({ _id: req.params.id });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.registerSuccess,
+            message: global.CONFIGS.api.deleteAddressSucess,
             // data: createAddress,
         })
     }

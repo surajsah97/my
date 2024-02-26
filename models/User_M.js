@@ -36,10 +36,11 @@ var usersSchema = new Schema(
             enum: ['Admin', 'User', 'Guest'],
             required:true
             // default: '1'
-        }, location: {
-            type: { type: String },
-            coordinates: [],
-        },
+        }, 
+        // location: {
+        //     type: { type: String },
+        //     coordinates: [],
+        // },
         userImage: {
             type: String,
             // required: [true, "Please enter product image."]
@@ -63,8 +64,7 @@ var usersSchema = new Schema(
     }
 );
 
-usersSchema.index({ location: "2dsphere" });
+// usersSchema.index({ location: "2dsphere" });
 usersSchema.index({ 'createdAt': -1 });
-
 
 mongoose.model(constants.UserModel, usersSchema);

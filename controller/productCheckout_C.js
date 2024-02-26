@@ -20,7 +20,6 @@ module.exports = {
   //         }
 
   //         const product = await ProductModel.findById(productId);
-
   //         if (!product) {
   //           return res
   //             .status(404)
@@ -45,7 +44,8 @@ module.exports = {
   //       return res.status(500).json({ success: false, message: error.message });
   //     }
   //   },
-
+  
+  
   /** */
   productCheckout: async (req, res) => {
     try {
