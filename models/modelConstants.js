@@ -26,6 +26,7 @@
 !new way */
 module.exports = {
   UserModel: "users",
+  TrialUserModel: "trialusers",
   TempUserModel: "tempuser",
   CategoryModel: "category",
   SubCategoryModel: "subcategory",
