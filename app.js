@@ -39,7 +39,7 @@ console.log("here");
 // });
 
 const corsOptions = {
-  origin: ["*"],
+  origin: ["*","http://localhost:3000"],
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
@@ -52,6 +52,14 @@ console.log("version", process.env.VERSION);
 app.use(
   "/v" + process.env.VERSION + "/front/user/",
   require("./route/frontRoute/User_RF")
+);
+app.use(
+  "/v" + process.env.VERSION + "/front/trialusers/",
+  require("./route/frontRoute/TrialUsers_RF")
+);
+app.use(
+  "/v" + process.env.VERSION + "/admin/trialuserslist/",
+  require("./route/adminRoute/TrialUsers_RA")
 );
 app.use(
   "/v" + process.env.VERSION + "/admin/user/",
