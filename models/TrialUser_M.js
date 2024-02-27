@@ -12,11 +12,11 @@ var trialUsersSchema = new Schema(
       required: [true, "Please enter email."],
     },
     mobileNumber: {
-      type: Number,
+      type: String,
       required: [true, "Please enter mobile."],
     },
     flatNumber: {
-      type: Number,
+      type: String,
       required: [true, "Please enter flatNo."],
     },
     buildingName: {
