@@ -53,17 +53,17 @@ var trialUsersSchema = new Schema(
       type: String,
       default: "TrialUser",
     },
-    // location: {
-    //   type: {
-    //     type: String, // Don't do `{ location: { type: String } }`
-    //     enum: ["Point"], // 'location.type' must be 'Point'
-    //     required: true,
-    //   },
-    //   coordinates: {
-    //     type: [Number],
-    //     required: true,
-    //   },
-    // },
+    location: {
+      type: {
+        type: String, // Don't do `{ location: { type: String } }`
+        enum: ["Point"], // 'location.type' must be 'Point'
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
+    },
     lat: {
       type: Number,
       required: true,
@@ -82,7 +82,7 @@ var trialUsersSchema = new Schema(
   }
 );
 
-// trialUsersSchema.index({ location: "2dsphere" });
+trialUsersSchema.index({ location: "2dsphere" });
 trialUsersSchema.index({ createdAt: -1 });
 
 mongoose.model(constants.TrialUserModel, trialUsersSchema);

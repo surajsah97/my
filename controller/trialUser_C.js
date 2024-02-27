@@ -10,6 +10,10 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.trialusersalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             return next(err);
         }
+        req.body.location = {
+            "type": "Point",
+            "coordinates": [req.body.lng, req.body.lat]
+        };
         var create_trialusers = await TrialUserModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
