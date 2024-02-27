@@ -20,3 +20,4 @@ require('./UserAddress_M');
 require("./BikeDriver_M");
 require("./productCheckout_M");
 require("./TrialUser_M");
+require("./deliveryLocation_M");

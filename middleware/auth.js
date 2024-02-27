@@ -40,7 +40,37 @@ const adminValidateToken = errorfun(async function (req, res, next) {
     }
 });
 
+const reCAPTCHA = async (req, res, next) => {
+    // console.log(req)
+    const token = req.body.g_recaptcha_response || req.headers.g_recaptcha_response;
+    const secret_key = process.env.SECRATKEY
+    if (!token) {
+        return res.status(401).json({ status: 401, message: 'Authentication failed: no recaptcha response provided.' });
+    }
+    try {
+        axios.post(`https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${token}`)
+            .then(function (response) {
+
+                if (response.data.success == true) {
+                    next();
+                } else {
+                    return res.status(401).json({ status: 401, message: 'Authentication failed: timeout-or-duplicate.' });
+                }
+            })
+            .catch(function (error) {
+                console.log(error)
+                return res.status(401).json({ status: 401, message: error });
+            });
+
+
+    } catch (error) {
+        console.log(error)
+        res.send("catch error");
+    }
+}
+
 module.exports = {
     apiValidateToken,
-    adminValidateToken,errorfun
+    adminValidateToken, errorfun,
+    reCAPTCHA
 }

@@ -20,9 +20,10 @@ const geocoder = NodeGeocoder(options);
 module.exports = {
 
     googlemap: async (req, res, next) => {
-        const data = await geocoder.reverse({ lat: 24.4539, lon: 54.3773 });
+        // 25.122962889246118, 55.420197803529156
+        const data = await geocoder.reverse({ lat: req.query.lat, lon: req.query.lon });
         if (data) {
-            const data1 = await geocoder.geocode("F93G+HW4 - Al Manhal - Abu Dhabi - United Arab Emirates");
+            const data1 = await geocoder.geocode("Academic City");
             return res.status(200).json({ data, data1 });
         }
         
