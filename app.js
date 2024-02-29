@@ -168,6 +168,11 @@ app.use(
   require("./route/adminRoute/deliveryLocation_RA")
 );
 
+app.use(
+  "/v" + process.env.VERSION + "/front/cart/",
+  require("./route/frontRoute/cart_RF")
+);
+
 app.all("*", (req, res, next) => {
   const err = new customError(
     `can't find this(${req.originalUrl}) URL on server`,

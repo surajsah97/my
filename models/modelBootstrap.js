@@ -22,3 +22,4 @@ require("./productCheckout_M");
 require("./TrialUser_M");
 require("./deliveryLocation_M");
 require("./productOrder_M");
+require("./cart_M");
