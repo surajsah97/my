@@ -48,5 +48,6 @@ module.exports = {
   UserAddressModel: "useraddress",
   ProductCheckOutModel: "productcheckout",
   DeliveryLocationModel: "deliverylocation",
-  ProductOrderModel: "productorder"
+  ProductOrderModel: "productorder",
+  CartModel : "cart"
 };
