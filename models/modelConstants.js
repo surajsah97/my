@@ -47,5 +47,6 @@ module.exports = {
   DriverDocModel: "driverdoc",
   UserAddressModel: "useraddress",
   ProductCheckOutModel: "productcheckout",
-  DeliveryLocationModel: "deliverylocation"
+  DeliveryLocationModel: "deliverylocation",
+  ProductOrderModel: "productorder"
 };

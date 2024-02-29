@@ -8,7 +8,8 @@ const errorfun = require("../../middleware/catchAsyncErrors");
 router
     .route("/")
     .get(Auth.adminValidateToken, errorfun(location.locationList))
-    .post(Auth.adminValidateToken, errorfun(location.addlocation));
+    .post( errorfun(location.addlocation))
+    // .post(Auth.adminValidateToken, errorfun(location.addlocation));
 
 router
     .route("/:id")
