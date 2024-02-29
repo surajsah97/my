@@ -1,7 +1,7 @@
+var constants = require("./modelConstants");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var constants = require("./modelConstants");
-var productCheckoutSchema = new Schema(
+var tempProductCheckoutSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -26,9 +26,19 @@ var productCheckoutSchema = new Schema(
             type: String,
           },
           quantity: {
-            type: Number,
-            min: [1, "Quantity cannot be less than 1"],
-            default: 1,
+        type: Number,
+        min: [1, "Quantity cannot be less than 1"],
+        default: 1,
+      },
+         
+          productUOM: {
+            type: String,
+            
+          },
+        
+          productInventory: {
+            type: String,
+            
           },
         },
       ],
@@ -37,7 +47,6 @@ var productCheckoutSchema = new Schema(
       type: Number,
       // required: [true, "Please enter price."],
     },
-  
     activeStatus: {
       type: String,
       enum: ["Active", "Inactive", "Expired"],
@@ -45,12 +54,12 @@ var productCheckoutSchema = new Schema(
     },
   },
   {
-    collection: constants.ProductCheckOutModel,
+    collection: constants.TempProductCheckOutModel,
     versionKey: false,
     timestamps: true,
   }
 );
 
-productCheckoutSchema.index({ createdAt: -1 });
+tempProductCheckoutSchema.index({ createdAt: -1 });
 
-mongoose.model(constants.ProductCheckOutModel, productCheckoutSchema);
+mongoose.model(constants.TempProductCheckOutModel, tempProductCheckoutSchema);

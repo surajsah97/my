@@ -104,6 +104,11 @@ app.use(
 );
 
 app.use(
+  "/v" + process.env.VERSION + "/front/productorder/",
+  require("./route/frontRoute/ProductOrder_RF")
+);
+
+app.use(
   "/v" + process.env.VERSION + "/admin/adminauth/",
   require("./route/adminRoute/admin_RA")
 );
@@ -153,6 +158,10 @@ app.use(
 app.use(
   "/v" + process.env.VERSION + "/front/useraddress/",
   require("./route/frontRoute/UserAddress_RF")
+);
+app.use(
+  "/v" + process.env.VERSION + "/admin/deliveryaddress/",
+  require("./route/adminRoute/deliveryLocation_RA")
 );
 
 app.all("*", (req, res, next) => {

@@ -30,7 +30,7 @@ var UserAddressSchema = new Schema(
         },
         userId: {
             type: Schema.Types.ObjectId,
-            ref: constants.DriverModel,
+            ref: constants.UserModel,
             required: true
         },
         activeStatus: {

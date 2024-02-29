@@ -53,6 +53,14 @@ var usersSchema = new Schema(
             type: String,
             enum: ['0', '1', '2'],
             default: '1'
+        },
+        trialActive:{
+            type:Boolean,
+            default:true
+        },
+        trialQuantity:{
+            type:Number,
+            default:0
         }
     },
     {
