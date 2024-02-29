@@ -1,15 +1,30 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var constants = require("./modelConstants");
-
+const { randomUUID } = require('crypto'); 
+// const { v4: uuidv4 } = require("uuid");
 var productOrderSchema = new Schema(
   {
+    orderId: {
+      type: String,
+      default: randomUUID(),
+    },
+    // orderId: {
+    //   type: String,
+    //   default: uuidv4(),
+    // },
+    transactionId: {
+      type: String,
+      // ref: "Payment",
+      // required: true,
+      default:0
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: constants.UserModel,
       required: [true, "Please enter userId."],
     },
-    products: [
+    product: [
       {
         productId: {
           type: Schema.Types.ObjectId,
@@ -26,10 +41,21 @@ var productOrderSchema = new Schema(
         },
       },
     ],
+    addressId: {
+      type: Schema.Types.ObjectId,
+      ref: constants.UserAddressModel,
+      required: [true, "Please enter productId."],
+    },
     totalPrice: {
       type: Number,
       //   required: [true, "Please enter totalPrice."],
     },
+
+    paymentstatus: {
+      type: Boolean,
+      default: false,
+    },
+
     status: {
       type: String,
       enum: ["Pending", "Completed", "Cancelled"],

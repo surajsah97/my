@@ -107,6 +107,10 @@ app.use(
   "/v" + process.env.VERSION + "/front/productorder/",
   require("./route/frontRoute/ProductOrder_RF")
 );
+app.use(
+  "/v" + process.env.VERSION + "/admin/productorder/",
+  require("./route/adminRoute/ProductOrder_RA")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/admin/adminauth/",
