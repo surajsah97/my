@@ -6,7 +6,7 @@ const errorfun=require("../../middleware/catchAsyncErrors")
 
 
 router.route('/login')
-    .post(errorfun(Admin.login));
+    .post(Auth.reCAPTCHA, errorfun(Admin.login));
     
 router.route('/singup')
     .post(errorfun(Admin.adminSingup));
