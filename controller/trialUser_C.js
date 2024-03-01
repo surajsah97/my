@@ -40,7 +40,7 @@ module.exports = {
   //     })
   // },
 
-  trialusersListAdmin: async (req, res, next) => {
+  trialuserListall: async (req, res, next) => {
     var find_trialusers = await TrialUserModel.find().sort({ _id: -1 });
     var totaltrialusers = find_trialusers.length;
     return res.status(global.CONFIGS.responseCode.success).json({
@@ -51,17 +51,69 @@ module.exports = {
     });
   },
 
-  trialusersListAdminBYdate: async (req, res, next) => {
-    const date = new Date(req.params.date);
-    /**this gives greater and equal to given date */
-    var find_trialusersByDate = await TrialUserModel.find({
-      createdAt: { $gte: date },
-    });
+  trialusersListAdmin: async (req, res, next) => {
 
-    //     /**this gives date only givendate */
-    // var find_trialusersByDate = await TrialUserModel.find({ createdAt: { $gte: date, $lt: new Date(date.getTime() + 86400000) } });
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
+   
+      var query = {}
 
-    var totaltrialusersbyDate = find_trialusersByDate.length;
+      if (req.query.searchText != undefined) {
+        query = {
+          $or: [
+            { "name": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "email": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "mobileNumber": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "flatNumber": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "buildingName": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "address": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "landmark": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "emiratesName": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "productType": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "deliveryTime": { $regex: new RegExp(req.query.searchText), $options: 'i' } },
+            { "userType": { $regex: new RegExp(req.query.searchText), $options: 'i' } }
+
+          ],
+
+        };
+
+      }
+      if (req.query.gtDate != undefined && req.query.ltDate != undefined) {
+        query.createdAt = { $gt: new Date(req.query.gtDate), $lt: new Date(req.query.ltDate) };
+      }
+      // console.log(query)
+      var allUser = await TrialUserModel.aggregate([
+        {
+          $match: query
+        },
+        {
+          $sort: {
+            _id: -1
+          }
+        },
+        {
+          $facet: {
+            metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+            data: [{ $skip: skip }, { $limit: limit }]
+          }
+        }
+      ]);
+
+      if (allUser[0].data.length > 0) {
+        var totalPage = Math.ceil(parseInt(allUser[0].metadata[0].total) / limit);
+        return res.status(global.CONFIGS.responseCode.success).json({
+          success: true,
+          message: global.CONFIGS.api.alltrialuserslistAdmin,
+          totalPage: totalPage,
+          allUser: allUser[0].data
+        })
+      } else {
+        const err = new customError(
+          global.CONFIGS.api.userNotFound,
+          global.CONFIGS.responseCode.notFound
+        );
+      }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.alltrialuserslistAdmin,
