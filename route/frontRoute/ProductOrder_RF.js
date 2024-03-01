@@ -7,7 +7,11 @@ const errorfun = require("../../middleware/catchAsyncErrors");
 
 router
   .route("/")
-  .post( errorfun(productOrder.createOrder));
+  .post( errorfun(productOrder.createOrder))
 //   .post(Auth.apiValidateToken, errorfun(productOrder.createOrder.productCheckout));
+
+router
+  .route("/test")
+  .post( errorfun(productOrder.createTest));
 
 module.exports = router;

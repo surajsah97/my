@@ -101,10 +101,30 @@ module.exports = {
             as: "categoryName",
           },
         },
-        // {
-        //   $unwind: "$categoryName",
-        // },
-        // { $unset: "productDetails.categoryId" },
+        { $unset: "productDetails.categoryId" },
+         {
+          $lookup: {
+            from: "subcategory",
+            localField: "productDetails.subCategoryId",
+            foreignField: "_id",
+            as: "subcategoryName",
+          },
+        },
+        { $unset: "productDetails.subCategoryId" },
+        {
+            $project:{
+                productDetails: {
+    //   $map: {
+        input: "$productDetails",
+        as: "product",
+        in: {
+          productName: "$product.productName",
+          productPrice: "$product.productPrice",
+          categoryName: "$categoryName.category"
+        }
+      }
+            }
+        },
       {
         $sort: {
           _id: -1,
@@ -179,6 +199,7 @@ module.exports = {
     });
   },
 
+/** */
 //     orderListByAdmin: async (req, res, next) => {
 //     const limit = parseInt(req.query.limit) || 20; // docs in single page
 //     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
@@ -282,7 +303,24 @@ module.exports = {
 //     });
 //   },
 
-
+ 
+ /** */
+ createTest: async (req, res) => {
+    try {
+     
+      const { heading , description } = req.body;
+      const testData=req.body;
+           
+      return res.status(global.CONFIGS.responseCode.success).json({
+        success: true,
+        message: global.CONFIGS.api.Productadded,
+        data: testData,
+      });
+      
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  },
 
 
 };
