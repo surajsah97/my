@@ -79,9 +79,19 @@ module.exports = {
         };
 
       }
-      if (req.query.gtDate != undefined && req.query.ltDate != undefined) {
-        query.createdAt = { $gt: new Date(req.query.gtDate), $lt: new Date(req.query.ltDate) };
-      }
+    if (req.query.sDate != undefined && req.query.eDate != undefined) {
+      // console.log({ $gt: new Date(req.query.sDate), $lt: new Date(req.query.eDate) })
+        query.createdAt = { $gt: new Date(req.query.sDate), $lt: new Date(req.query.eDate) };
+    }
+    if (req.query.sDate != undefined && req.query.eDate == undefined) {
+      // console.log({ $gt: new Date(req.query.sDate) })
+      query.createdAt = { $gte: new Date(req.query.sDate) };
+    }
+    if (req.query.sDate == undefined && req.query.eDate != undefined) {
+      // console.log({  $lt: new Date(req.query.eDate) })
+      query.createdAt = {$lte: new Date(req.query.eDate),  };
+    }
+    // if()
       // console.log(query)
       var allUser = await TrialUserModel.aggregate([
         {
@@ -113,13 +123,14 @@ module.exports = {
           global.CONFIGS.api.userNotFound,
           global.CONFIGS.responseCode.notFound
         );
+        return next(err);
       }
-    return res.status(global.CONFIGS.responseCode.success).json({
-      success: true,
-      message: global.CONFIGS.api.alltrialuserslistAdmin,
-      totaltrialusersbyDate,
-      find_trialusersByDate,
-    });
+    // return res.status(global.CONFIGS.responseCode.success).json({
+    //   success: true,
+    //   message: global.CONFIGS.api.alltrialuserslistAdmin,
+    //   totaltrialusersbyDate,
+    //   find_trialusersByDate,
+    // });
   },
 
 };
