@@ -48,7 +48,7 @@ var productOrderSchema = new Schema(
     },
     totalPrice: {
       type: Number,
-      //   required: [true, "Please enter totalPrice."],
+        required: [true, "Please enter totalPrice."],
     },
 
     paymentstatus: {

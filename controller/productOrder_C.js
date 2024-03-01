@@ -6,40 +6,6 @@ const UserAddressModel = mongoose.model(constants.UserAddressModel);
 const common = require("../service/commonFunction");
 
 module.exports = {
-  /** */
-
-  //   productCheckout: async (req, res) => {
-  //     try {
-  //       let price = 0;
-  //       let productsWithDetails = [];
-  //       const { productId, quantity } = req.body;
-  //       const product = await ProductModel.findById(productId);
-  //       if (!product) {
-  //         return res.status(404).json({ message: "Product not found" });
-  //       }
-  //       const productPrice = product.productPrice * quantity;
-  //       price += productPrice;
-  //        productsWithDetails.push({
-  //       productName: product.productName,
-  //       productId: product._id,
-  //       productPrice: product.productPrice,
-  //       productImage: product.productImage,
-  //       quantity: quantity
-  //     });
-  //       req.body.totalPrice = price;
-  //       req.body.product = productsWithDetails;
-  //       const createProductCheckout = await ProductCheckOutModel.create(req.body);
-  //       return res.status(global.CONFIGS.responseCode.success).json({
-  //         success: true,
-  //         message: global.CONFIGS.api.Productadded,
-  //         data: createProductCheckout,
-  //       });
-  //     } catch (error) {
-  //       return res.status(500).json({ success: false, message: error.message });
-  //     }
-  //   },
-
-  /** */
   createOrder: async (req, res) => {
     try {
       //   let productsWithDetails = [];
@@ -49,19 +15,20 @@ module.exports = {
       const checkOutdata = await ProductCheckOutModel.findOne({ userId }).sort({
         _id: -1,
       });
-      console.log(checkOutdata, ".......checkOutData");
+      //   console.log(checkOutdata, ".......checkOutData");
       const product = checkOutdata.product;
-      console.log(product, "........product");
+      //   console.log(product, "........product");
       const totalPrice = checkOutdata.totalPrice;
-      console.log(totalPrice, "...........totalPrice");
+      //   console.log(totalPrice, "...........totalPrice");
 
       const userAddress = await UserAddressModel.findOne(
         { userId },
         { _id: -1 }
       ).sort({ _id: -1 });
-      console.log(userAddress, "........userAddress");
+      //   console.log(userAddress, "........userAddress");
       req.body.product = product;
       req.body.addressId = userAddress._id;
+      req.body.totalPrice = totalPrice;
       console.log(req.body, "......body");
       const createProductOrder = await ProductOrderModel.create(req.body);
       return res.status(global.CONFIGS.responseCode.success).json({
@@ -69,21 +36,258 @@ module.exports = {
         message: global.CONFIGS.api.Productadded,
         data: createProductOrder,
       });
+      p;
     } catch (error) {
       return res.status(500).json({ success: false, message: error.message });
     }
   },
 
+  /** */
+  //    orderListByAdmin: async (req, res, next) => {
+  //     var findAllOrder = await ProductOrderModel.find().sort({ _id: -1 });
+  //     var totalOrder = findAllOrder.length;
+  //     return res.status(global.CONFIGS.responseCode.success).json({
+  //       success: true,
+  //       message: global.CONFIGS.api.alltrialuserslistAdmin,
+  //       totalOrder,
+  //       data: findAllOrder,
+  //     });
+  //   },
+  /** */
+  orderListByAdmin: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
 
+    var findAllOrderList = await ProductOrderModel.aggregate([
+      {
+        $lookup: {
+          from: "useraddress",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "useraddress",
+        },
+      },
+      {
+        $unwind: "$useraddress",
+      },
+      { $unset: "addressId" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "usersDetails",
+        },
+      },
+      {
+        $unwind: "$usersDetails",
+      },
+      { $unset: "userId" },
+     
+      {
+        $lookup: {
+          from: "product",
+          localField: "product.productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+         {
+          $lookup: {
+            from: "category",
+            localField: "productDetails.categoryId",
+            foreignField: "_id",
+            as: "categoryName",
+          },
+        },
+        // {
+        //   $unwind: "$categoryName",
+        // },
+        // { $unset: "productDetails.categoryId" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+    //   {
+    //     $project: {
+    //       _id: "$_id",
+    //       orderId: "$orderId",
+    //       transactionId: "$transactionId",
+    //       paymentstatus: "$paymentstatus",
+    //       totalPrice: "$totalPrice",
+    //       createdAt: "$createdAt",
+    //       updatedAt: "$updatedAt",
+    //     //   categoryName:"$categoryName",
+    //       /**product Array */
+    //       product: "$product",
+    //       /**productDetails */
+    //       productDetails: "$productDetails",
+          
+     
+    //       /**Addtess Deatils  */
+    //       useraddressDetails: {
+    //         houseNo: "$useraddress.houseNo",
+    //         buildingName: "$useraddress.buildingName",
+    //         city: "$useraddress.city",
+    //         landmark: "$useraddress.landmark",
+    //         country: "$useraddress.country",
+    //       },
+    //       /**Users Deatils  */
+    //       // userDetails:"$usersDetails"
+    //       userDetails: {
+    //         mobileNumber: "$usersDetails.mobile",
+    //         name: "$usersDetails.name",
+    //         email: "$usersDetails.email",
+    //       },
+    //     },
+    //   },
 
-   orderListByAdmin: async (req, res, next) => {
-    var findAllUser = await ProductOrderModel.find().sort({ _id: -1 });
-    var totalOrder = findAllUser.length;
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }],
+        },
+      },
+    ]);
+    if (findAllOrderList[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const totalPage = Math.ceil(
+      parseInt(findAllOrderList[0].metadata[0].total) / limit
+    );
+    const total = parseInt(findAllOrderList[0].metadata[0].total);
+    const dataPerPage = total - skip > limit ? limit : total - skip;
+    const totalLeftdata = total - skip - dataPerPage;
+    const rangeStart = skip === 0 ? 1 : skip + 1;
+    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.alltrialuserslistAdmin,
-      totalOrder,
-      data: findAllUser,
+      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+      totalData: total,
+      totalPage: totalPage,
+      totalLeftdata: totalLeftdata,
+      dataPerPage,
+      data: findAllOrderList[0].data,
     });
   },
+
+//     orderListByAdmin: async (req, res, next) => {
+//     const limit = parseInt(req.query.limit) || 20; // docs in single page
+//     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+//     const skip = (pageNo - 1) * limit;
+
+//     var findAllOrderList = await ProductOrderModel.aggregate([
+//       {
+//         $lookup: {
+//           from: "useraddress",
+//           localField: "addressId",
+//           foreignField: "_id",
+//           as: "useraddress",
+//         },
+//       },
+//       {
+//         $unwind: "$useraddress",
+//       },
+//       { $unset: "addressId" },
+//       {
+//         $lookup: {
+//           from: "users",
+//           localField: "userId",
+//           foreignField: "_id",
+//           as: "usersDetails",
+//         },
+//       },
+//       {
+//         $unwind: "$usersDetails",
+//       },
+//       { $unset: "userId" },
+//      {
+//         $sort: {
+//           _id: -1,
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: "$_id",
+//           orderId: "$orderId",
+//           transactionId: "$transactionId",
+//           paymentstatus: "$paymentstatus",
+//           totalPrice: "$totalPrice",
+//           createdAt: "$createdAt",
+//           updatedAt: "$updatedAt",
+//         //   categoryName:"$categoryName",
+//           /**product Array */
+//           product: "$product",
+          
+          
+     
+//           /**Addtess Deatils  */
+//           useraddressDetails: {
+//             houseNo: "$useraddress.houseNo",
+//             buildingName: "$useraddress.buildingName",
+//             city: "$useraddress.city",
+//             landmark: "$useraddress.landmark",
+//             country: "$useraddress.country",
+//           },
+//           /**Users Deatils  */
+//           // userDetails:"$usersDetails"
+//           userDetails: {
+//             mobileNumber: "$usersDetails.mobile",
+//             name: "$usersDetails.name",
+//             email: "$usersDetails.email",
+//           },
+//         },
+//       },
+
+//       {
+//         $facet: {
+//           metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+//           data: [{ $skip: skip }, { $limit: limit }],
+//         },
+//       },
+//     ]);
+//     if (findAllOrderList[0].data.length == 0) {
+//       const err = new customError(
+//         global.CONFIGS.api.ProductNotfound,
+//         global.CONFIGS.responseCode.notFound
+//       );
+//       return next(err);
+//     }
+//     const totalPage = Math.ceil(
+//       parseInt(findAllOrderList[0].metadata[0].total) / limit
+//     );
+//     const total = parseInt(findAllOrderList[0].metadata[0].total);
+//     const dataPerPage = total - skip > limit ? limit : total - skip;
+//     const totalLeftdata = total - skip - dataPerPage;
+//     const rangeStart = skip === 0 ? 1 : skip + 1;
+//     const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+
+//     return res.status(global.CONFIGS.responseCode.success).json({
+//       success: true,
+//       message: global.CONFIGS.api.alltrialuserslistAdmin,
+//       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+//       totalData: total,
+//       totalPage: totalPage,
+//       totalLeftdata: totalLeftdata,
+//       dataPerPage,
+//       data: findAllOrderList[0].data,
+//     });
+//   },
+
+
+
+
 };
+
+
+
+
+
