@@ -172,6 +172,10 @@ app.use(
   "/v" + process.env.VERSION + "/front/cart/",
   require("./route/frontRoute/cart_RF")
 );
+app.use(
+  "/v" + process.env.VERSION + "/admin/cart/",
+  require("./route/adminRoute/cart_RA")
+);
 
 app.all("*", (req, res, next) => {
   const err = new customError(
