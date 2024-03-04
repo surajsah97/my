@@ -2,6 +2,8 @@ var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
 const TrialUserModel = mongoose.model(constants.TrialUserModel);
 var customError = require("../middleware/customerror");
+const sendEmail=require("../utills/sendEmail");
+
 
 module.exports = {
   addTrailUsers: async (req, res, next) => {
@@ -19,11 +21,28 @@ module.exports = {
       type: "Point",
       coordinates: [req.body.lng, req.body.lat],
     };
+
+
     var create_trialusers = await TrialUserModel.create(req.body);
+
+// if(create_trialusers){
+// const user = await TrialUserModel.findOne({ email: req.body.email });
+
+//    const message = `text`;
+//     await sendEmail({
+//         email: user.email,
+//         subject: `Thank you for registering for our complimentary milk sample. Password Recovery`,
+//         message,
+//       });
+// }
+
+
+
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.trialusersadded,
       data: create_trialusers,
+
     });
   },
 

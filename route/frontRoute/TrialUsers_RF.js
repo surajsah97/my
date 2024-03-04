@@ -7,5 +7,6 @@ const auth = require("../../middleware/auth")
 router
   .route("/")
   .post(auth.reCAPTCHA, errorfun(TrialUsers.addTrailUsers));
+  // .post( errorfun(TrialUsers.addTrailUsers));
 
 module.exports = router;

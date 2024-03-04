@@ -362,11 +362,13 @@ module.exports = {
       message: global.CONFIGS.api.getUserProfileSuccess,
       data: {
         UserId: find_user2._id,
+        userImage: find_user2.userImage || "",
         name: find_user2.name,
         email: find_user2.email || "",
         mobile: find_user2.mobile,
         userType: find_user2.userType,
         activeStatus: find_user2.activeStatus,
+        DOB: find_user2.DOB,
         token: token,
       },
     });

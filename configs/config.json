@@ -98,7 +98,22 @@
     "getModelSuccess": "Get model list Successfully.",
     "modelUpdated": "Model updated Successfully.",
     "modelDelete": "Model deleted Successfully.",
-    "deliveryRangeNotFound":"We are not provide these location,please contact other delivery partners"
+    "deliveryRangeNotFound":"We are not provide these location,please contact other delivery partners",
+    "CheckOutadded": "CheckOut added Successfully.",
+    "Cartalreadyadded": "Cart already added. Please try another name.",
+    "Cartadded": "Cart added Successfully.",
+    "CartUpdated": "Cart updated Successfully.",
+    "getCartByUser": "Get Cart list Successfully.",
+    "CartNotfound": "Cart notFound Successfully.",
+    "CartDelete": "Cart deleted Successfully.",
+    "allCartlistAdmin": "Get CartList by_Admin Successfully.",
+    "Orderalreadyadded": "Order already added. Please try another name.",
+    "Orderadded": "Order added Successfully.",
+    "OrderUpdated": "Order updated Successfully.",
+    "getOrderByUser": "Get Order list Successfully.",
+    "OrderNotfound": "Order notFound Successfully.",
+    "OrderDelete": "Order deleted Successfully.",
+    "allOrderlistAdmin": "Get OrderList by_Admin Successfully."
   },
   "responseCode": {
     "success": 200,

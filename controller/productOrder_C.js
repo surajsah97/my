@@ -37,7 +37,7 @@ module.exports = {
       const createProductOrder = await ProductOrderModel.create(req.body);
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
-        message: global.CONFIGS.api.Productadded,
+        message: global.CONFIGS.api.Orderadded,
         data: createProductOrder,
       });
       p;
@@ -171,7 +171,7 @@ module.exports = {
     ]);
     if (findAllOrderList[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.userNotFound,
+        global.CONFIGS.api.OrderNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -187,7 +187,7 @@ module.exports = {
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.alltrialuserslistAdmin,
+      message: global.CONFIGS.api.getOrderByUser,
       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
       totalData: total,
       totalPage: totalPage,
@@ -320,7 +320,7 @@ module.exports = {
     ]);
     if (findAllOrderList[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.api.OrderNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -336,7 +336,7 @@ module.exports = {
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.alltrialuserslistAdmin,
+      message: global.CONFIGS.api.allOrderlistAdmin,
       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
       totalData: total,
       totalPage: totalPage,
