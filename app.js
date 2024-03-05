@@ -20,6 +20,7 @@ global.CONFIGS = require("./configs/config.json");
 require("./models/dbConnections");
 
 var app = express();
+app.set('view engine', 'ejs');
 var morgan = require("morgan");
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -177,7 +178,17 @@ app.use(
   require("./route/adminRoute/cart_RA")
 );
 
-app.all("*", (req, res, next) => {
+
+
+// app.get('/home', (req, res) => { 
+//     let data = { 
+//         name: 'Akashdeep', 
+//         hobbies: ['playing football', 'playing chess', 'cycling'] 
+//     } 
+//     res.render('home', { data: data }); 
+// }); 
+
+app.all("*", (req, res, next) => {  
   const err = new customError(
     `can't find this(${req.originalUrl}) URL on server`,
     404

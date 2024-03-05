@@ -2,13 +2,14 @@ var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
 const TrialUserModel = mongoose.model(constants.TrialUserModel);
 var customError = require("../middleware/customerror");
-const sendEmail=require("../utills/sendEmail");
-
+const sendEmail = require("../utills/sendEmail");
+const ejs = require('ejs');
+const fs = require('fs');
 
 module.exports = {
   addTrailUsers: async (req, res, next) => {
     var find_trialusers = await TrialUserModel.findOne({
-      mobileNumber: req.body.mobileNumber,
+     $or: [{ email: req.body.email }, { mobileNumber: req.body.mobileNumber }]
     });
     if (find_trialusers) {
       const err = new customError(
@@ -22,27 +23,29 @@ module.exports = {
       coordinates: [req.body.lng, req.body.lat],
     };
 
-
     var create_trialusers = await TrialUserModel.create(req.body);
 
-// if(create_trialusers){
-// const user = await TrialUserModel.findOne({ email: req.body.email });
+    // if (create_trialusers) {
+    //   const user = await TrialUserModel.findOne({ email: req.body.email });
+    //   // console.log(user,"......userDetails");
+    //   // console.log(user.name,"......username");
 
-//    const message = `text`;
-//     await sendEmail({
-//         email: user.email,
-//         subject: `Thank you for registering for our complimentary milk sample. Password Recovery`,
-//         message,
-//       });
-// }
+    //    const templatePath = '../views/emailTemplate.ejs';
+    //     const emailTemplate = fs.readFileSync(templatePath, 'utf-8');
+    //     const renderedHtml = ejs.render(emailTemplate, { userName:user.name });
 
-
+    //   await sendEmail({
+    //     email: user.email,
+    //     subject: `Thank you for registering for our complimentary milk sample.`,
+    //     message: renderedHtml,
+    //     isHtml: true,
+    //   });
+    // }
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.trialusersadded,
       data: create_trialusers,
-
     });
   },
 

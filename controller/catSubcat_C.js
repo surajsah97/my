@@ -11,7 +11,7 @@ module.exports = {
       var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`;
       req.body.categoryImg = categoryImage;
     }
-    var find_cat = await CategoryModel.findOne({ category: req.body.category });
+    var find_cat = await CategoryModel.findOne({ category: req.body.category.toLowerCase() });
     if (find_cat) {
       const err = new customError(
         global.CONFIGS.api.categoryalreadyadded,
