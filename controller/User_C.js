@@ -264,7 +264,8 @@ module.exports = {
   },
 
   updateUserProfile: async (req, res, next) => {
-    console.log(req.body, req.files);
+    // console.log(req.body,"....body");
+    // console.log( req.files,"....file");
       if (req.files != undefined) {
           if (req.files.userImage != undefined) {
               req.body.userImage = `uploads/user/${req.files.userImage[0].filename}`;
@@ -297,19 +298,24 @@ module.exports = {
       const secret = process.env.SECRETKEY;
       const token = await jwt.sign(payload, secret, options);
 
-      console.log(token);
+      // console.log(token);
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.userUpdateSuccess,
         data: {
           UserId: find_user2._id,
-          Otp: find_user2.Otp,
-          name: find_user2.name,
-          email: find_user2.email,
           mobile: find_user2.mobile,
-          password: find_user2.password,
+          Otp: find_user2.Otp,
+          isVerified: find_user2.isVerified,
           userType: find_user2.userType,
           activeStatus: find_user2.activeStatus,
+          trialActive: find_user2.trialActive,
+          trialQuantity: find_user2.trialQuantity,
+          name: find_user2.name,
+          email: find_user2.email,
+          password: find_user2.password,
+          DOB: find_user2.DOB,
+          userImage: find_user2.userImage,
           token: token,
         },
       });
@@ -336,7 +342,7 @@ module.exports = {
   },
 
   getUserProfile: async (req, res, next) => {
-    console.log(req.body);
+    // console.log(req.body);
 
     var find_user = await UserModel.findOne({ _id: req.query.UserId });
     if (!find_user) {
@@ -356,18 +362,25 @@ module.exports = {
     const secret = process.env.SECRETKEY;
     const token = await jwt.sign(payload, secret, options);
 
-    console.log(token);
+    // console.log(token);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getUserProfileSuccess,
       data: {
         UserId: find_user2._id,
-        name: find_user2.name,
-        email: find_user2.email || "",
-        mobile: find_user2.mobile,
-        userType: find_user2.userType,
-        activeStatus: find_user2.activeStatus,
-        token: token,
+          mobile: find_user2.mobile,
+          Otp: find_user2.Otp,
+          isVerified: find_user2.isVerified,
+          userType: find_user2.userType,
+          activeStatus: find_user2.activeStatus,
+          trialActive: find_user2.trialActive,
+          trialQuantity: find_user2.trialQuantity,
+          name: find_user2.name,
+          email: find_user2.email,
+          password: find_user2.password,
+          DOB: find_user2.DOB,
+          userImage: find_user2.userImage,
+          token: token,
       },
     });
   },

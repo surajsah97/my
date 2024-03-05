@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const path = require("path")
-const cat = require("../../controller/product_C")
+const product = require("../../controller/product_C")
 const Auth = require("../../middleware/auth");
 const multer = require("multer");
 
@@ -10,6 +10,7 @@ const errorfun=require("../../middleware/catchAsyncErrors")
 
 
 router.route('/')
-    .get(Auth.apiValidateToken, errorfun(cat.productListFront))
+    // .get(errorfun(product.productListFront))
+    .get(Auth.apiValidateToken, errorfun(product.productListFront))
 
 module.exports = router;

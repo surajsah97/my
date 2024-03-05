@@ -12,7 +12,7 @@ module.exports = {
     var find_user = await UserModel.findOne({ _id: req.body.userId });
     if (!find_user) {
       const err = new customError(
-        global.CONFIGS.api.categoryalreadyadded,
+        global.CONFIGS.api.userNotFound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -29,7 +29,7 @@ module.exports = {
         });
         if (!find_prod) {
           const err = new customError(
-            global.CONFIGS.api.categoryalreadyadded,
+            global.CONFIGS.api.ProductNotfound,
             global.CONFIGS.responseCode.notFound
           );
           return next(err);
@@ -56,7 +56,7 @@ module.exports = {
         });
         if (!find_prod) {
           const err = new customError(
-            global.CONFIGS.api.categoryalreadyadded,
+            global.CONFIGS.api.ProductNotfound,
             global.CONFIGS.responseCode.notFound
           );
           return next(err);
@@ -75,7 +75,7 @@ module.exports = {
       var get_cart = await CartModel.findOne({ _id: find_cart._id });
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
-        message: global.CONFIGS.api.categoryadded,
+        message: global.CONFIGS.api.Cartadded,
         data: get_cart,
       });
     } else if (!find_cart) {
@@ -84,7 +84,7 @@ module.exports = {
       });
       if (!find_prod) {
         const err = new customError(
-          global.CONFIGS.api.categoryalreadyadded,
+          global.CONFIGS.api.ProductNotfound,
           global.CONFIGS.responseCode.notFound
         );
         return next(err);
@@ -97,7 +97,7 @@ module.exports = {
       });
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
-        message: global.CONFIGS.api.categoryadded,
+        message: global.CONFIGS.api.Cartadded,
         data: create_cart,
       });
 
@@ -207,7 +207,7 @@ module.exports = {
     ]);
     if (findAllCartList[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.api.CartNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -223,8 +223,7 @@ module.exports = {
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: "get AllCartList by Admin Succesfully",
-    //   message: global.CONFIGS.api.alltrialuserslistAdmin,
+      message: global.CONFIGS.api.getCartByUser,
       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
       totalData: total,
       totalPage: totalPage,
@@ -335,7 +334,7 @@ module.exports = {
     ]);
     if (findAllCartList[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.api.CartNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -351,8 +350,7 @@ module.exports = {
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: "get AllCartList by Admin Succesfully",
-    //   message: global.CONFIGS.api.alltrialuserslistAdmin,
+      message: global.CONFIGS.api.allCartlistAdmin,
       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
       totalData: total,
       totalPage: totalPage,

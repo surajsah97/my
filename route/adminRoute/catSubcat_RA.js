@@ -26,18 +26,22 @@ var cpUpload = upload1.fields([
 // category router //
 router.route('/category/')
     .get(Auth.adminValidateToken, errorfun(cat.categoryList))
+    // .post(cpUpload, errorfun(cat.addCategory))
     .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addCategory))
 
 router.route('/category/:id')
+    // .put(cpUpload,  errorfun(cat.updateCategory))
     .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateCategory))
     .delete(Auth.adminValidateToken, errorfun(cat.categoryDelete))
 
 // subCategory router //
 router.route('/subcategory/')
     .get(Auth.adminValidateToken, cat.SubcategoryList)
+    // .post(cpUpload,  errorfun(cat.addSubCategory))
     .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addSubCategory))
 
 router.route('/subcategory/:id')
+    // .put(cpUpload,  errorfun(cat.updateSubCategory))
     .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateSubCategory))
     .delete(Auth.adminValidateToken, errorfun(cat.SubcategoryDelete))
 
