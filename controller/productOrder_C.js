@@ -6,27 +6,32 @@ const ProductCheckOutModel = mongoose.model(constants.ProductCheckOutModel);
 const UserAddressModel = mongoose.model(constants.UserAddressModel);
 const common = require("../service/commonFunction");
 const ObjectId = mongoose.Types.ObjectId;
-var customError = require('../middleware/customerror');
+var customError = require("../middleware/customerror");
 module.exports = {
-  createOrder: async (req, res,next) => {
+  createOrder: async (req, res, next) => {
     try {
       // const { userId } = req.body;
-       var find_user = await UserModel.findOne({ _id: req.body.userId } );
-        if (!find_user) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
-            return next(err);
-        }
-      const checkOutdata = await ProductCheckOutModel.findOne( { userId: req.body.userId } ).sort({
+      var find_user = await UserModel.findOne({ _id: req.body.userId });
+      if (!find_user) {
+        const err = new customError(
+          global.CONFIGS.api.userNotFound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      const checkOutdata = await ProductCheckOutModel.findOne({
+        userId: req.body.userId,
+      }).sort({
         _id: -1,
       });
-        console.log(checkOutdata, ".......checkOutData");
+      console.log(checkOutdata, ".......checkOutData");
       const product = checkOutdata.product;
       //   console.log(product, "........product");
       const totalPrice = checkOutdata.totalPrice;
       //   console.log(totalPrice, "...........totalPrice");
 
       const userAddress = await UserAddressModel.findOne(
-       { userId: req.body.userId },
+        { userId: req.body.userId },
         { _id: -1 }
       ).sort({ _id: -1 });
       //   console.log(userAddress, "........userAddress");
@@ -46,9 +51,6 @@ module.exports = {
     }
   },
 
-  
-
-  
   getOrderByUser: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
@@ -56,7 +58,7 @@ module.exports = {
 
     var findAllOrderList = await ProductOrderModel.aggregate([
       {
-        $match: {userId: new ObjectId(req.query.userId) },
+        $match: { userId: new ObjectId(req.query.userId) },
       },
       {
         $lookup: {
@@ -114,38 +116,42 @@ module.exports = {
       },
       { $unwind: "$product.productDetails.subcategory" },
 
-     {
-       "$project": {
-    "_id": 1,
-    "orderId": 1,
-    "totalPrice":1,
-    "usersDetails": {
-    "userId": "$usersDetails._id",
-        "name":"$usersDetails.name",
-        "email":"$usersDetails.email",
-        "mobile":"$usersDetails.mobile",
-    },
-    "useraddress": {
-        "houseNo":"$useraddress.houseNo",
-        "buildingName":"$useraddress.buildingName",
-        "city":"$useraddress.city",
-        "landmark":"$useraddress.landmark",
-        "country":"$useraddress.country",
-    },
-    "product": {
-      "_id":"$product.productDetails._id",
-      "quantity":"$product.quantity",
-      "productName":"$product.productDetails.productName",
-      "productImage":"$product.productDetails.productImage",
-      "productPrice":"$product.productDetails.productPrice",
-      "Price":`${$product.productDetails.productPrice}*${$product.quantity}`,
-      "productUOM":"$product.productDetails.productUOM",
-      "productDes":"$product.productDetails.productDes",
-        "categoryName": "$product.productDetails.category.category",
-      "subategoryName": "$product.productDetails.subcategory.subCategory",
-    }
-  },
-  
+      {
+        $project: {
+          _id: 1,
+          orderId: 1,
+          totalPrice: 1,
+          usersDetails: {
+            userId: "$usersDetails._id",
+            name: "$usersDetails.name",
+            email: "$usersDetails.email",
+            mobile: "$usersDetails.mobile",
+          },
+          useraddress: {
+            houseNo: "$useraddress.houseNo",
+            buildingName: "$useraddress.buildingName",
+            city: "$useraddress.city",
+            landmark: "$useraddress.landmark",
+            country: "$useraddress.country",
+          },
+          product: {
+            _id: "$product.productDetails._id",
+            quantity: "$product.quantity",
+            productPrice: "$product.productDetails.productPrice",
+            individualTotalPrice: {
+              $multiply: [
+                "$product.productDetails.productPrice",
+                "$product.quantity",
+              ],
+            },
+            productName: "$product.productDetails.productName",
+            productImage: "$product.productDetails.productImage",
+            productUOM: "$product.productDetails.productUOM",
+            productDes: "$product.productDetails.productDes",
+            categoryName: "$product.productDetails.category.category",
+            subategoryName: "$product.productDetails.subcategory.subCategory",
+          },
+        },
       },
       {
         $group: {
@@ -206,7 +212,6 @@ module.exports = {
     const skip = (pageNo - 1) * limit;
 
     var findAllOrderList = await ProductOrderModel.aggregate([
-      
       //   {
       //   $match: { activeStatus: "1",  },
       // },
@@ -265,40 +270,47 @@ module.exports = {
       },
       { $unwind: "$product.productDetails.subcategory" },
 
-     {
-       "$project": {
-    "_id": 1,
-    "orderId": 1,
-    // "usersDetails": 1,
-    "usersDetails": {
-        "name":"$usersDetails.name",
-        "email":"$usersDetails.email",
-        "mobile":"$usersDetails.mobile",
-    },
-    "useraddress": {
-        "houseNo":"$useraddress.houseNo",
-        "buildingName":"$useraddress.buildingName",
-        "city":"$useraddress.city",
-        "landmark":"$useraddress.landmark",
-        "country":"$useraddress.country",
-    },
-    "product": {
-      "_id":"$product.productDetails._id",
-      "quantity":"$product.quantity",
-      "productName":"$product.productDetails.productName",
-      "productImage":"$product.productDetails.productImage",
-      "productPrice":"$product.productDetails.productPrice",
-      "productUOM":"$product.productDetails.productUOM",
-      "productDes":"$product.productDetails.productDes",
-        "categoryName": "$product.productDetails.category.category",
-      "subategoryName": "$product.productDetails.subcategory.subCategory",
-    }
-  },
-  
+      {
+        $project: {
+          _id: 1,
+          totalPrice: 1,
+          orderId: 1,
+          // "usersDetails": 1,
+          usersDetails: {
+            name: "$usersDetails.name",
+            email: "$usersDetails.email",
+            mobile: "$usersDetails.mobile",
+          },
+          useraddress: {
+            houseNo: "$useraddress.houseNo",
+            buildingName: "$useraddress.buildingName",
+            city: "$useraddress.city",
+            landmark: "$useraddress.landmark",
+            country: "$useraddress.country",
+          },
+          product: {
+            _id: "$product.productDetails._id",
+            quantity: "$product.quantity",
+            productPrice: "$product.productDetails.productPrice",
+            individualTotalPrice: {
+              $multiply: [
+                "$product.productDetails.productPrice",
+                "$product.quantity",
+              ],
+            },
+            productName: "$product.productDetails.productName",
+            productImage: "$product.productDetails.productImage",
+            productUOM: "$product.productDetails.productUOM",
+            productDes: "$product.productDetails.productDes",
+            categoryName: "$product.productDetails.category.category",
+            subategoryName: "$product.productDetails.subcategory.subCategory",
+          },
+        },
       },
       {
         $group: {
           _id: "$_id",
+          totalPrice: { $first: "$totalPrice" },
           orderId: { $first: "$orderId" },
           userDetails: { $first: "$usersDetails" },
           useraddressDetails: { $first: "$useraddress" },
@@ -349,8 +361,6 @@ module.exports = {
     });
   },
 
-
-
   /** test api*/
   createTest: async (req, res) => {
     try {
@@ -367,4 +377,3 @@ module.exports = {
     }
   },
 };
-

@@ -8,7 +8,7 @@ var customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
-  addTpCart: async (req, res,next) => {
+  addTpCart: async (req, res, next) => {
     var find_user = await UserModel.findOne({ _id: req.body.userId });
     if (!find_user) {
       const err = new customError(
@@ -111,8 +111,11 @@ module.exports = {
     const skip = (pageNo - 1) * limit;
 
     var findAllCartList = await CartModel.aggregate([
-        {
-        $match: { activeStatus: "Active", userId: new ObjectId(req.query.userId)},
+      {
+        $match: {
+          activeStatus: "Active",
+          userId: new ObjectId(req.query.userId),
+        },
       },
       {
         $lookup: {
@@ -160,8 +163,9 @@ module.exports = {
       {
         $project: {
           _id: 1,
-        //   _id: "$_id",
-          // "usersDetails": 1,
+          //   _id: "$_id",
+          price: 1,
+          // "price": "$price",
           usersDetails: {
             name: "$usersDetails.name",
             email: "$usersDetails.email",
@@ -171,9 +175,15 @@ module.exports = {
           product: {
             _id: "$product.productDetails._id",
             qty: "$product.qty",
+            productPrice: "$product.productDetails.productPrice",
+            individualTotalPrice: {
+              $multiply: [
+                "$product.productDetails.productPrice",
+                "$product.qty",
+              ],
+            },
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
-            productPrice: "$product.productDetails.productPrice",
             productUOM: "$product.productDetails.productUOM",
             productDes: "$product.productDetails.productDes",
             categoryName: "$product.productDetails.category.category",
@@ -184,7 +194,7 @@ module.exports = {
       {
         $group: {
           _id: "$_id",
-        //   userDetails:  "$usersDetails" },
+          totalPrice: { $first: "$price" },
           userDetails: { $first: "$usersDetails" },
           product: {
             $push: "$product",
@@ -238,8 +248,8 @@ module.exports = {
     const skip = (pageNo - 1) * limit;
 
     var findAllCartList = await CartModel.aggregate([
-        {
-        $match: { activeStatus: "Active", },
+      {
+        $match: { activeStatus: "Active" },
       },
       {
         $lookup: {
@@ -287,20 +297,24 @@ module.exports = {
       {
         $project: {
           _id: 1,
-        //   _id: "$_id",
-          // "usersDetails": 1,
+          price: 1,
           usersDetails: {
             name: "$usersDetails.name",
             email: "$usersDetails.email",
             mobile: "$usersDetails.mobile",
           },
-
           product: {
             _id: "$product.productDetails._id",
             qty: "$product.qty",
+            productPrice: "$product.productDetails.productPrice",
+            individualTotalPrice: {
+              $multiply: [
+                "$product.productDetails.productPrice",
+                "$product.qty",
+              ],
+            },
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
-            productPrice: "$product.productDetails.productPrice",
             productUOM: "$product.productDetails.productUOM",
             productDes: "$product.productDetails.productDes",
             categoryName: "$product.productDetails.category.category",
@@ -311,7 +325,7 @@ module.exports = {
       {
         $group: {
           _id: "$_id",
-        //   userDetails:  "$usersDetails" },
+          totalPrice: { $first: "$price" },
           userDetails: { $first: "$usersDetails" },
           product: {
             $push: "$product",

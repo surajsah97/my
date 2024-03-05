@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
+var moment = require('moment');
 
 module.exports = {
   UserSingup: async (req, res, next) => {
@@ -342,7 +343,7 @@ module.exports = {
   },
 
   getUserProfile: async (req, res, next) => {
-    // console.log(req.body);
+    console.log(req.query);
 
     var find_user = await UserModel.findOne({ _id: req.query.UserId });
     if (!find_user) {
@@ -361,7 +362,10 @@ module.exports = {
     };
     const secret = process.env.SECRETKEY;
     const token = await jwt.sign(payload, secret, options);
-
+    var dob = "";
+  if(find_user2.DOB!=undefined ||find_user2.DOB!=null ){
+     dob = moment(find_user2.DOB).format("DD-MM-YYYY");
+  }
     // console.log(token);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
@@ -378,7 +382,7 @@ module.exports = {
           name: find_user2.name,
           email: find_user2.email,
           password: find_user2.password,
-          DOB: find_user2.DOB,
+          DOB: dob,
           userImage: find_user2.userImage,
           token: token,
       },

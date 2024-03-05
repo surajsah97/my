@@ -55,7 +55,7 @@ module.exports = {
   },
 
   trialuserListall: async (req, res, next) => {
-    var find_trialusers = await TrialUserModel.find().sort({ _id: -1 });
+    var find_trialusers = await TrialUserModel.find();
     var totaltrialusers = find_trialusers.length;
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,

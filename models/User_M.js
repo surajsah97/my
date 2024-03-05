@@ -1,6 +1,7 @@
 var constants = require('./modelConstants');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+
 var usersSchema = new Schema(
     {
         name: {
@@ -73,6 +74,15 @@ var usersSchema = new Schema(
 );
 
 // usersSchema.index({ location: "2dsphere" });
+
+// usersSchema.virtual('formattedDOB').get(function() {
+//     if (this.DOB) {
+//         return moment(this.DOB).format('DD-MM-YYYY');
+//     }
+//     return '';
+// });
+
+
 usersSchema.index({ 'createdAt': -1 });
 
 mongoose.model(constants.UserModel, usersSchema);
