@@ -81,6 +81,7 @@ module.exports = {
       {
         $unwind: "$usersDetails",
       },
+      { $unset: "userId" },
       {
         $unwind: "$product",
       },
@@ -117,8 +118,8 @@ module.exports = {
        "$project": {
     "_id": 1,
     "orderId": 1,
-    // "usersDetails": 1,
     "usersDetails": {
+    "userId": "$usersDetails._id",
         "name":"$usersDetails.name",
         "email":"$usersDetails.email",
         "mobile":"$usersDetails.mobile",
@@ -155,7 +156,6 @@ module.exports = {
           },
         },
       },
-      { $unset: "userId" },
       {
         $sort: {
           _id: 1,

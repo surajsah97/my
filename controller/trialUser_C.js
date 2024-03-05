@@ -18,6 +18,11 @@ module.exports = {
       );
       return next(err);
     }
+    if(req.body.source!=undefined && (req.body.source== "instagram" || req.body.source== "tiktok") ){
+      req.body.source = req.body.source
+    }else{
+      delete req.body.source;
+    }
     req.body.location = {
       type: "Point",
       coordinates: [req.body.lng, req.body.lat],

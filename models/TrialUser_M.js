@@ -48,7 +48,10 @@ var trialUsersSchema = new Schema(
       required: true,
       // default:"6 pm to 7 pm"
     },
-
+    source: {
+      type: String,
+      enum: ["instagram", "tiktok"],
+    },
     userType: {
       type: String,
       default: "TrialUser",
