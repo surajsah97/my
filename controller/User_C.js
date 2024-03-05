@@ -285,6 +285,9 @@ module.exports = {
       const hash = await bcrypt.hashSync(req.body.password, salt);
       req.body.password = hash;
     }
+     if (req.body.DOB != undefined) {
+      req.body.DOB = new Date(req.body.DOB);
+     }
     var createuser = await UserModel.updateOne(
       { _id: find_user._id },
       req.body
