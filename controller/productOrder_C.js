@@ -118,6 +118,7 @@ module.exports = {
        "$project": {
     "_id": 1,
     "orderId": 1,
+    "totalPrice":1,
     "usersDetails": {
     "userId": "$usersDetails._id",
         "name":"$usersDetails.name",
@@ -137,6 +138,7 @@ module.exports = {
       "productName":"$product.productDetails.productName",
       "productImage":"$product.productDetails.productImage",
       "productPrice":"$product.productDetails.productPrice",
+      "Price":`${$product.productDetails.productPrice}*${$product.quantity}`,
       "productUOM":"$product.productDetails.productUOM",
       "productDes":"$product.productDetails.productDes",
         "categoryName": "$product.productDetails.category.category",
@@ -149,6 +151,7 @@ module.exports = {
         $group: {
           _id: "$_id",
           orderId: { $first: "$orderId" },
+          totalPrice: { $first: "$totalPrice" },
           userDetails: { $first: "$usersDetails" },
           useraddressDetails: { $first: "$useraddress" },
           product: {
