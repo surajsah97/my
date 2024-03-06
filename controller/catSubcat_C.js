@@ -61,11 +61,11 @@ module.exports = {
     });
   },
 
-  categoryList: async (req, res, next) => {
+  categoryListAdmin: async (req, res, next) => {
     var find_cat = await CategoryModel.find({});
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.categoryUpdated,
+      message: global.CONFIGS.api.allcategorylistAdmin,
       data: find_cat,
     });
   },
@@ -74,7 +74,7 @@ module.exports = {
     var find_cat = await CategoryModel.find({ activeStatus: "1" });
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.categoryUpdated,
+      message: global.CONFIGS.api.allcategorylistUser,
       data: find_cat,
     });
   },
@@ -149,11 +149,11 @@ module.exports = {
     });
   },
 
-  SubcategoryList: async (req, res, next) => {
+  SubcategoryListAdmin: async (req, res, next) => {
     var find_cat = await SubCategoryModel.find({});
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.SubcategoryUpdated,
+      message: global.CONFIGS.api.allSubcategorylistAdmin,
       data: find_cat,
     });
   },
@@ -163,12 +163,21 @@ module.exports = {
     if (req.query.categoryId != undefined) {
       query.categoryId = req.query.categoryId;
     }
-    var find_cat = await SubCategoryModel.find();
-    return res.status(global.CONFIGS.responseCode.success).json({
-      success: true,
-      message: global.CONFIGS.api.SubcategoryUpdated,
-      data: find_cat,
-    });
+    var find_cat = await SubCategoryModel.find(query);
+    if(find_cat.length>0){
+      return res.status(global.CONFIGS.responseCode.success).json({
+        success: true,
+        message: global.CONFIGS.api.allSubcategorylistUser,
+        data: find_cat,
+      });
+    }else{
+      const err = new customError(
+        global.CONFIGS.api.SubcategoryInactive,
+        global.CONFIGS.responseCode.alreadyExist
+      );
+      return next(err);
+    }
+    
   },
 
   SubcategoryDelete: async (req, res, next) => {
