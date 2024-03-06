@@ -5,11 +5,12 @@ var customError = require("../middleware/customerror");
 const sendEmail = require("../utills/sendEmail");
 const ejs = require('ejs');
 const fs = require('fs');
+const path = require('path');
 
 module.exports = {
   addTrailUsers: async (req, res, next) => {
     var find_trialusers = await TrialUserModel.findOne({
-     $or: [{ email: req.body.email }, { mobileNumber: req.body.mobileNumber }]
+      $or: [{ email: req.body.email }, { mobileNumber: req.body.mobileNumber }]
     });
     if (find_trialusers) {
       const err = new customError(
@@ -18,9 +19,9 @@ module.exports = {
       );
       return next(err);
     }
-    if(req.body.source!=undefined && (req.body.source== "instagram" || req.body.source== "tiktok") ){
+    if (req.body.source != undefined && (req.body.source == "instagram" || req.body.source == "tiktok")) {
       req.body.source = req.body.source
-    }else{
+    } else {
       delete req.body.source;
     }
     req.body.location = {
@@ -32,18 +33,14 @@ module.exports = {
 
     // if (create_trialusers) {
     //   const user = await TrialUserModel.findOne({ email: req.body.email });
-    //   // console.log(user,"......userDetails");
-    //   // console.log(user.name,"......username");
-
-    //    const templatePath = '../views/emailTemplate.ejs';
-    //     const emailTemplate = fs.readFileSync(templatePath, 'utf-8');
-    //     const renderedHtml = ejs.render(emailTemplate, { userName:user.name });
+    //   const templatePath = path.join(__dirname, "../views/emailTemplate.ejs");
+    //   const emailTemplate = fs.readFileSync(templatePath, 'utf-8');
+    //   const renderedHtml = ejs.render(emailTemplate, { userName: user.name });
 
     //   await sendEmail({
     //     email: user.email,
-    //     subject: `Thank you for registering for our complimentary milk sample.`,
+    //     subject: `Confirmation of Registration for Dhudu Complimentary Milk Sample: Limited Time Only.`,
     //     message: renderedHtml,
-    //     isHtml: true,
     //   });
     // }
 
@@ -79,11 +76,13 @@ module.exports = {
           {
             email: { $regex: new RegExp(req.query.searchText), $options: "i" },
           },
+          // { mobileNumber: { $eq: parseInt(req.query.searchText) } },
           {
             mobileNumber: {
               $regex: new RegExp(req.query.searchText),
               $options: "i",
             },
+            // $where:"/^123.*/.test(this.mobileNumber)"
           },
           {
             flatNumber: {
@@ -171,10 +170,19 @@ module.exports = {
 
     if (allUser[0].data.length > 0) {
       var totalPage = Math.ceil(parseInt(allUser[0].metadata[0].total) / limit);
+      var totalTrialUsers=parseInt(allUser[0].metadata[0].total);
+      const dataOnThatPage = totalTrialUsers - skip > limit ? limit : totalTrialUsers - skip;
+      const totalLeftdata = totalTrialUsers - skip - dataOnThatPage;
+      const rangeStart = totalTrialUsers === 0 ? 1 : skip + 1;
+      const rangeEnd = pageNo === totalPage ? totalTrialUsers : skip + dataOnThatPage;
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.alltrialuserslistAdmin,
+        rangers: `Showing ${rangeStart} – ${rangeEnd} of ${totalTrialUsers} totalData`,
+        totalTrialUsers,
         totalPage: totalPage,
+        totalLeftdata: totalLeftdata,
+        dataOnThatPage,
         allUser: allUser[0].data,
       });
     } else {

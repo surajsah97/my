@@ -13,11 +13,12 @@ const sendEmail = async (optionsed) => {
     },
   });
   
+  
   const mailOptions = {
     from: process.env.SMTP_MAIL,
     to: optionsed.email,
     subject: optionsed.subject,
-    text: optionsed.message,
+    html: optionsed.message,
   };
   await transporter.sendMail(mailOptions);
 };

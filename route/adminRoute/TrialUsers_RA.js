@@ -6,6 +6,7 @@ const Auth = require("../../middleware/auth")
 
 router
   .route("/")
+  // .get( errorfun(TrialUsers.trialusersListAdmin));
   .get(Auth.adminValidateToken, errorfun(TrialUsers.trialusersListAdmin));
  
 router
