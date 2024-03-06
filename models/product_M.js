@@ -37,6 +37,10 @@ var productSchema = new Schema(
             type: String,
             required: [true, "Please enter product product Inventory."]
         },
+        tagLine:{
+            type:String,
+            required: [true, "Please enter product tagLine."]
+        },
         activeStatus: {
             type: String,
             enum: ['0', '1', '2'],
