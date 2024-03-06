@@ -5,6 +5,7 @@ const SubCategoryModel = mongoose.model(constants.SubCategoryModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 
+
 module.exports = {
   addCategory: async (req, res, next) => {
     if (req.files.categoryImg) {
