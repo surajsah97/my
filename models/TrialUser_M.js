@@ -85,7 +85,7 @@ var trialUsersSchema = new Schema(
   }
 );
 
-trialUsersSchema.index({ location: "2dsphere" });
+// trialUsersSchema.index({ location: "2dsphere" });
 trialUsersSchema.index({ createdAt: -1 });
 
 mongoose.model(constants.TrialUserModel, trialUsersSchema);
