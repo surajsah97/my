@@ -31,14 +31,14 @@ module.exports = {
   },
 
   addAddress: async (req, res, next) => {
-    // var matchedLocation = await common.deliveryRange(req.body.location);
-    // if (matchedLocation === false) {
-    //   const err = new customError(
-    //     global.CONFIGS.api.deliveryRangeNotFound,
-    //     global.CONFIGS.responseCode.notFound
-    //   );
-    //   return next(err);
-    // }
+    var matchedLocation = await common.deliveryRange(req.body.location);
+    if (matchedLocation === false) {
+      const err = new customError(
+        global.CONFIGS.api.deliveryRangeNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
 
     var find_address = await UserAddressModel.findOne({
       userId: req.body.userId,
@@ -67,6 +67,14 @@ module.exports = {
     if (!find_address) {
       const err = new customError(
         global.CONFIGS.api.addressNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+     var matchedLocation = await common.deliveryRange(req.body.location);
+    if (matchedLocation === false) {
+      const err = new customError(
+        global.CONFIGS.api.deliveryRangeNotFound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
