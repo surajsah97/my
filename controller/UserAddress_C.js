@@ -11,7 +11,7 @@ const options = {
 
   // Optional depending on the providers
   // fetch: customFetchImplementation,
-  apiKey: process.env.GOOGLEMAPAPIKEY, // for Mapquest, OpenCage, Google Premier
+  apiKey: process.env.GOOGLEAPIKEY, // for Mapquest, OpenCage, Google Premier
   formatter: null, // 'gpx', 'string', ...
 };
 
@@ -24,10 +24,16 @@ module.exports = {
       lat: req.query.lat,
       lon: req.query.lon,
     });
-    if (data) {
-      const data1 = await geocoder.geocode("Academic City");
-      return res.status(200).json({ data, data1 });
-    }
+    // return res.status(200).json( data );
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.addAddressSucess,
+      data: data,
+    });
+    // if (data) {
+    //   const data1 = await geocoder.geocode("Academic City");
+    //   return res.status(200).json({ data, data1 });
+    // }
   },
 
   addAddress: async (req, res, next) => {
