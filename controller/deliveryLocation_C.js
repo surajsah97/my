@@ -32,7 +32,7 @@ module.exports = {
     },
 
     locationList: async (req, res, next) => {
-        var find_location = await DeliveryLocationModel.find({}).sort({ location: 1 });
+        var find_location = await DeliveryLocationModel.find({},{location:1,_id:0}).sort({ location: 1 });
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getLocationSuccess,

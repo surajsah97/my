@@ -168,6 +168,10 @@ app.use(
   "/v" + process.env.VERSION + "/admin/deliveryaddress/",
   require("./route/adminRoute/deliveryLocation_RA")
 );
+app.use(
+  "/v" + process.env.VERSION + "/front/deliveryaddress/",
+  require("./route/frontRoute/deliveryLocation_RF")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/front/cart/",
