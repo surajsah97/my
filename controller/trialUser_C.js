@@ -24,7 +24,7 @@ module.exports = {
     } else {
       delete req.body.source;
     }
-    if (req.body.lng != undefined && req.body.lat != undefined) {
+    if ((req.body.lng != undefined || req.body.lng != "") && (req.body.lat != undefined || req.body.lat != "")) {
       req.body.location = {
         type: "Point",
         coordinates: [req.body.lng, req.body.lat],
