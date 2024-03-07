@@ -3,14 +3,14 @@ const constants = require("../models/modelConstants");
 const TrialUserModel = mongoose.model(constants.TrialUserModel);
 var customError = require("../middleware/customerror");
 const sendEmail = require("../utills/sendEmail");
-const ejs = require('ejs');
-const fs = require('fs');
-const path = require('path');
+const ejs = require("ejs");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   addTrailUsers: async (req, res, next) => {
     var find_trialusers = await TrialUserModel.findOne({
-      $or: [{ email: req.body.email }, { mobileNumber: req.body.mobileNumber }]
+      $or: [{ email: req.body.email }, { mobileNumber: req.body.mobileNumber }],
     });
     if (find_trialusers) {
       const err = new customError(
@@ -19,18 +19,21 @@ module.exports = {
       );
       return next(err);
     }
-    if (req.body.source != undefined && (req.body.source == "instagram" || req.body.source == "tiktok")) {
-      req.body.source = req.body.source
+    if (
+      req.body.source != undefined &&
+      (req.body.source == "instagram" || req.body.source == "tiktok")
+    ) {
+      req.body.source = req.body.source;
     } else {
       delete req.body.source;
     }
-    if ((req.body.lng != undefined && req.body.lat != undefined) || (req.body.lng != "" && req.body.lat != "")) {
+    if (req.body.lng != undefined && req.body.lat != undefined) {
       req.body.location = {
         type: "Point",
         coordinates: [req.body.lng, req.body.lat],
       };
     }
-    
+
     var create_trialusers = await TrialUserModel.create(req.body);
 
     // if (create_trialusers) {
@@ -172,11 +175,13 @@ module.exports = {
 
     if (allUser[0].data.length > 0) {
       var totalPage = Math.ceil(parseInt(allUser[0].metadata[0].total) / limit);
-      var totalTrialUsers=parseInt(allUser[0].metadata[0].total);
-      const dataOnThatPage = totalTrialUsers - skip > limit ? limit : totalTrialUsers - skip;
+      var totalTrialUsers = parseInt(allUser[0].metadata[0].total);
+      const dataOnThatPage =
+        totalTrialUsers - skip > limit ? limit : totalTrialUsers - skip;
       const totalLeftdata = totalTrialUsers - skip - dataOnThatPage;
       const rangeStart = totalTrialUsers === 0 ? 1 : skip + 1;
-      const rangeEnd = pageNo === totalPage ? totalTrialUsers : skip + dataOnThatPage;
+      const rangeEnd =
+        pageNo === totalPage ? totalTrialUsers : skip + dataOnThatPage;
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.alltrialuserslistAdmin,
