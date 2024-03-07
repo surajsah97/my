@@ -104,11 +104,59 @@ module.exports = {
       // }
     }
   },
+  updateCart: async (req, res, next) => {
+    var find_user = await UserModel.findOne({ _id: req.body.userId });
+    if (!find_user) {
+      const err = new customError(
+        global.CONFIGS.api.userNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    var find_cart = await CartModel.findOne({ userId: req.body.userId });
+    if (find_cart) {
+      var prodincart = find_cart.product.some(
+        (item) => item.productId == req.body.productId
+      );
+
+      if (prodincart === true) {
+        var find_prod = await ProductModel.findOne({
+          _id: req.body.productId,
+        });
+        if (!find_prod) {
+          const err = new customError(
+            global.CONFIGS.api.ProductNotfound,
+            global.CONFIGS.responseCode.notFound
+          );
+          return next(err);
+        }
+        var price = find_prod.productPrice * req.body.qty;
+        var finalPrice = price + find_cart.price;
+        var myArray = find_cart.product;
+        var objIndex = myArray.findIndex(
+          (obj) => obj.productId == req.body.productId
+        );
+        myArray[objIndex].qty = myArray[objIndex].qty + req.body.qty;
+        var totalProduct = myArray;
+        // return res.send(totalProduct)
+        var update_cart = await CartModel.updateOne(
+          { _id: find_cart._id },
+          {
+            product: totalProduct,
+            price: finalPrice,
+          }
+        );
+      } 
+      var get_cart = await CartModel.findOne({ _id: find_cart._id });
+      return res.status(global.CONFIGS.responseCode.success).json({
+        success: true,
+        message: global.CONFIGS.api.CartUpdated,
+        data: get_cart,
+      });
+    } 
+  },
 
   getCartByuser: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 20; // docs in single page
-    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
-    const skip = (pageNo - 1) * limit;
 
     var findAllCartList = await CartModel.aggregate([
       {
@@ -207,39 +255,19 @@ module.exports = {
           _id: 1,
         },
       },
-
-      {
-        $facet: {
-          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-          data: [{ $skip: skip }, { $limit: limit }],
-        },
-      },
     ]);
-    if (findAllCartList[0].data.length == 0) {
+    if (findAllCartList.length == 0) {
       const err = new customError(
         global.CONFIGS.api.CartNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
     }
-    const totalPage = Math.ceil(
-      parseInt(findAllCartList[0].metadata[0].total) / limit
-    );
-    const total = parseInt(findAllCartList[0].metadata[0].total);
-    const dataPerPage = total - skip > limit ? limit : total - skip;
-    const totalLeftdata = total - skip - dataPerPage;
-    const rangeStart = skip === 0 ? 1 : skip + 1;
-    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getCartByUser,
-      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
-      totalData: total,
-      totalPage: totalPage,
-      totalLeftdata: totalLeftdata,
-      dataPerPage,
-      data: findAllCartList[0].data,
+      data: findAllCartList,
     });
   },
   cartListByAdmin: async (req, res, next) => {
