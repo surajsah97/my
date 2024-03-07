@@ -9,6 +9,7 @@ router.route('/')
     .post( errorfun(cart.addTpCart))
     //   .post(Auth.apiValidateToken, errorfun(cart.addTpCart));
     .get( errorfun(cart.getCartByuser))
-    //   .post(Auth.apiValidateToken, errorfun(cart.getCartByuser));
+//   .post(Auth.apiValidateToken, errorfun(cart.getCartByuser));
+    .put(errorfun(cart.updateCart))
 
 module.exports = router;
