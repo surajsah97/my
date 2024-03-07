@@ -25,7 +25,7 @@ var productCheckoutSchema = new Schema(
           productImage: {
             type: String,
           },
-          quantity: {
+          qty: {
             type: Number,
             min: [1, "Quantity cannot be less than 1"],
             default: 1,

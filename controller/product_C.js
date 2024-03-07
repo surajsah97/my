@@ -101,10 +101,11 @@ module.exports = {
           _id: "$_id",
           productName: "$productName",
           productImage: "$productImage",
+          productDes: "$productDes",
           productPrice: "$productPrice",
           productUOM: "$productUOM",
-          productDes: "$productDes",
           productInventory: "$productInventory",
+          tagLine: "$tagLine",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
@@ -169,10 +170,11 @@ module.exports = {
           _id: "$_id",
           productName: "$productName",
           productImage: "$productImage",
+          productDes: "$productDes",
           productPrice: "$productPrice",
           productUOM: "$productUOM",
-          productDes: "$productDes",
           productInventory: "$productInventory",
+          tagLine: "$tagLine",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
@@ -198,7 +200,7 @@ module.exports = {
       parseInt(productData[0].metadata[0].total) / limit
     );
     const total = parseInt(productData[0].metadata[0].total);
-console.log(total,"..........");
+    console.log(total,"..........");
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getProductSuccess,
