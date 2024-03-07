@@ -24,11 +24,13 @@ module.exports = {
     } else {
       delete req.body.source;
     }
-    req.body.location = {
-      type: "Point",
-      coordinates: [req.body.lng, req.body.lat],
-    };
-
+    if (req.body.lng != undefined && req.body.lat != undefined) {
+      req.body.location = {
+        type: "Point",
+        coordinates: [req.body.lng, req.body.lat],
+      };
+    }
+    
     var create_trialusers = await TrialUserModel.create(req.body);
 
     // if (create_trialusers) {
