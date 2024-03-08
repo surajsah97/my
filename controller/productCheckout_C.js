@@ -160,9 +160,9 @@ module.exports = {
               const taxAmount = bodyTotalPrice * (vat/100);
               const totalTaxablePrice = bodyTotalPrice + taxAmount;
               req.body.product = product;
-              req.body.totalPrice =bodyTotalPrice ;
-              req.body.vat =vat ;
-              req.body.totalTaxablePrice =totalTaxablePrice ;
+              req.body.totalPrice =Math.round(bodyTotalPrice) ;
+              req.body.vatAmount =Math.round(taxAmount) ;
+              req.body.totalTaxablePrice =Math.round(totalTaxablePrice) ;
               req.body.userId = userId;
               console.log(req.body, "...req.body......end");
               const create_Checkout = await ProductCheckOutModel.create(req.body);
@@ -210,9 +210,9 @@ module.exports = {
               });
             }
             req.body.product = product;
-            req.body.vat = vat;
-            req.body.totalPrice = totalPrice;
-            req.body.totalTaxablePrice = totalTaxablePrice;
+            req.body.vatAmount = Math.round(taxAmount);
+            req.body.totalPrice = Math.round(totalPrice);
+            req.body.totalTaxablePrice = Math.round(totalTaxablePrice);
             req.body.userId = userId;
             console.log(req.body, "...req.body......end");
             const create_Checkout = await ProductCheckOutModel.create(req.body);
