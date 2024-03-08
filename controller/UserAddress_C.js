@@ -120,6 +120,7 @@ module.exports = {
           _id: "$_id",
           houseNo: "$houseNo",
           buildingName: "$buildingName",
+          address: "$address",
           city: "$city",
           landmark: "$landmark",
           country: "$country",
