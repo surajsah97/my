@@ -109,6 +109,7 @@ module.exports = {
                 });
               }
               req.body.product = product;
+              req.body.vat = 0;
               req.body.totalPrice = 0;
               req.body.totalTaxablePrice = 0;
               // req.body.totalPrice = totalPrice;
@@ -151,8 +152,8 @@ module.exports = {
               const totalPrice = find_cart.price;
               const remainQuantity = qtyInCart - remainingTrialQuantity;
               const bodyTotalPrice=remainQuantity * qtyInCartPrice;
-              const taxRate = 0.05;
-              const taxAmount = bodyTotalPrice * taxRate;
+              const vat = 5;
+              const taxAmount = bodyTotalPrice * (vat/100);
               const totalTaxablePrice = bodyTotalPrice + taxAmount;
               console.log(remainQuantity, "......remainQuantity");
               const qtyInCartPrice = totalPrice / qtyInCart;
@@ -160,6 +161,7 @@ module.exports = {
               console.log(totalPrice, "...........totalPrice......7");
               req.body.product = product;
               req.body.totalPrice =bodyTotalPrice ;
+              req.body.vat =vat ;
               req.body.totalTaxablePrice =totalTaxablePrice ;
               req.body.userId = userId;
               console.log(req.body, "...req.body......end");
@@ -196,8 +198,8 @@ module.exports = {
             // const product = find_cart.product;
             // console.log(product, "........product....6");
             const totalPrice = find_cart.price;
-            const taxRate = 0.05;
-            const taxAmount = totalPrice * taxRate;
+            const vat = 5;
+            const taxAmount = totalPrice * (vat/100);
             const totalTaxablePrice = totalPrice + taxAmount;
             // console.log(totalPrice, "...........totalPrice......7");
             console.log(product, "......product.....xxxxx")
@@ -208,6 +210,7 @@ module.exports = {
               });
             }
             req.body.product = product;
+            req.body.vat = vat;
             req.body.totalPrice = totalPrice;
             req.body.totalTaxablePrice = totalTaxablePrice;
             req.body.userId = userId;
