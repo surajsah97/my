@@ -3,17 +3,14 @@ var customError = require("../middleware/customerror");
 
 module.exports={
 processPayment:async(req,res,next)=>{
-
-const { amount, paymentId } = req.body;
-
-
-
-
+    var data = {
+      authKey: process.env.PAYMENTAUTHKEY,
+      storeId: process.env.PAYMENTSTOREID
+ }
  return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: "Payment processed successfullY",
-      //message: global.CONFIGS.api.getProductSuccess,
-      data    
+      message: "Paymentgateway auth successfullY",
+      data:data    
     });
 },
 

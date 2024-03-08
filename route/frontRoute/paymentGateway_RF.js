@@ -5,7 +5,7 @@ const Auth = require("../../middleware/auth");
 const errorfun=require("../../middleware/catchAsyncErrors")
 
 router.route('/processPayment')
-    .post(Auth.apiValidateToken, errorfun(paymentGateway.processPayment));
+    .get(Auth.apiValidateToken, errorfun(paymentGateway.processPayment));
 router.route('/refundPayment')
     .post(Auth.apiValidateToken, errorfun(paymentGateway.refundPayment));
 
