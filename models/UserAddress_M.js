@@ -18,6 +18,11 @@ var UserAddressSchema = new Schema(
             required: true,
             trim: true
         },
+        address: {
+            type: String,
+            required: true,
+            trim: true
+        },
         landmark: {
             type: String,
             required: true,
