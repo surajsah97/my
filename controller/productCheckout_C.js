@@ -151,14 +151,14 @@ module.exports = {
               }
               const totalPrice = find_cart.price;
               const remainQuantity = qtyInCart - remainingTrialQuantity;
-              const bodyTotalPrice=remainQuantity * qtyInCartPrice;
               const vat = 5;
-              const taxAmount = bodyTotalPrice * (vat/100);
-              const totalTaxablePrice = bodyTotalPrice + taxAmount;
               console.log(remainQuantity, "......remainQuantity");
               const qtyInCartPrice = totalPrice / qtyInCart;
               console.log(qtyInCartPrice, "......qtyInCartPrice");
+              const bodyTotalPrice=remainQuantity * qtyInCartPrice;
               console.log(totalPrice, "...........totalPrice......7");
+              const taxAmount = bodyTotalPrice * (vat/100);
+              const totalTaxablePrice = bodyTotalPrice + taxAmount;
               req.body.product = product;
               req.body.totalPrice =bodyTotalPrice ;
               req.body.vat =vat ;
