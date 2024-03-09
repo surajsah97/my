@@ -6,7 +6,7 @@ const errorfun=require("../../middleware/catchAsyncErrors")
 
 
 router.route('/')
-    .post(Auth.apiValidateToken, errorfun(cart.addTpCart))
+    .post( errorfun(cart.addTpCart))
     //   .post(Auth.apiValidateToken, errorfun(cart.addTpCart));
     .get(Auth.apiValidateToken, errorfun(cart.getCartByuser))
 //   .post(Auth.apiValidateToken, errorfun(cart.getCartByuser));
