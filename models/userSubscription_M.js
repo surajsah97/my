@@ -40,8 +40,7 @@ var productSchema = new Schema(
         collection: constants.SubModel,
         versionKey: false,
         timestamps: true,
-        toObject: { virtuals: true, getters: true },
-        toJSON: { virtuals: true, getters: true }
+        // toJSON: { virtuals: true, getters: true }
     }
 );
 

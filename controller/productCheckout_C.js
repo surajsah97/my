@@ -49,14 +49,16 @@ module.exports = {
               } else if (quant > 0 && cart.qty > quant) {
                 freeItem.push({ ...cart, qty: quant });
                 payableItem.push({ ...cart, qty: cart.qty - quant });
-                totalAmount+=productPrice[cart.productId] * (cart.qty - quant);
+                totalAmount +=
+                  productPrice[cart.productId] * (cart.qty - quant);
                 quant = 0;
               } else {
                 payableItem.push({ ...cart });
                 totalAmount += productPrice[cart.productId] * cart.qty;
               }
             });
-            let totaltrialQuantity =userDetail.trialQuantity + remainingTrialQuantity - quant;
+            let totaltrialQuantity =
+              userDetail.trialQuantity + remainingTrialQuantity - quant;
             let checkoutCart = {};
             const vat = 5;
             const taxAmount = totalAmount * (vat / 100);
@@ -79,7 +81,7 @@ module.exports = {
                   trialActive: 3 - totaltrialQuantity > 0 ? true : false,
                 },
                 {
-                  new: true, 
+                  new: true,
                   runValidators: true,
                   useFindAndModify: false,
                 }
@@ -95,7 +97,7 @@ module.exports = {
             /*
           !THIRD CONDITION */
             console.log("ttyuiopoiu");
-          let checkoutCart = {};
+            let checkoutCart = {};
             let totalPrice = 0;
             find_cart.product.map((cart) => {
               totalPrice += productPrice[cart.productId] * cart.qty;
@@ -108,12 +110,16 @@ module.exports = {
             checkoutCart.product = product;
             checkoutCart.totalTaxablePrice = Math.round(totalTaxablePrice);
             checkoutCart.userId = userId;
-            const create_Checkout = await ProductCheckOutModel.create(checkoutCart);
+            const create_Checkout = await ProductCheckOutModel.create(
+              checkoutCart
+            );
             if (create_Checkout) {
+              let userdata = await UserModel.find({ _id: userId });
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.Productadded,
                 data: create_Checkout,
+                userdata: userdata,
               });
             }
           }
