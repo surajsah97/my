@@ -20,15 +20,29 @@ module.exports = {
     },
 
     updatesubscriptionPlan: async (req, res, next) => {
+        const validDurations = [1, 3, 6, 9, 12];
+        if (!validDurations.includes(req.body.planDuration)) {
+            const err = new customError("Invalid plan duration. Allowed values are: 1, 3, 6, 9, 12", global.CONFIGS.responseCode.invalidInput);
+            return next(err);
+        }
         var find_subplan = await subscriptionPlanModel.findOne({ planDuration: req.body.planDuration, _id: { $nin: [req.params.id] } });
         if (find_subplan) {
             const err = new customError(global.CONFIGS.api.subscriptionPlanalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             return next(err);
         }
-        var create_subplan = await subscriptionPlanModel.updateOne({ _id: req.params.id }, req.body);
+        
+         const existingPlan = await subscriptionPlanModel.findById(req.params.id);
+        if (!existingPlan) {
+            const err = new customError(global.CONFIGS.api.subscriptionPlanNotfound, global.CONFIGS.responseCode.notFound);
+            return next(err);
+        }
+        let updatePlan={}
+        updatePlan.planDuration=req.body.planDuration
+        var create_subplan = await subscriptionPlanModel.findByIdAndUpdate({ _id: req.params.id }, updatePlan,{new:true});
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.subscriptionPlanUpdated,
+            create_subplan
         })
     },
 
@@ -38,9 +52,12 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
+        const totalLengthOfSubPlan = find_subplan.length;
+
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.subscriptionPlanList,
+            totalLengthOfSubPlan,
             data: find_subplan
         })
     },
@@ -51,19 +68,27 @@ module.exports = {
             const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
+        const totalLengthOfSubPlan = find_subplan.length;
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.subscriptionPlanList,
+            totalLengthOfSubPlan,
             data: find_subplan
         })
     },
 
     subscriptionPlanDelete: async (req, res, next) => {
+        const existingPlan = await subscriptionPlanModel.findById(req.params.id);
+        if (!existingPlan) {
+            const err = new customError(global.CONFIGS.api.subscriptionPlanNotfound, global.CONFIGS.responseCode.notFound);
+            return next(err);
+        }
         var find_subplan = await subscriptionPlanModel.deleteOne({ _id: req.params.id });
         if (find_subplan.length == 0) {
             const err = new customError(global.CONFIGS.api.subscriptionPlanInactive, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
+
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.subscriptionPlanDelete,

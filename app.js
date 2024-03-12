@@ -93,6 +93,14 @@ app.use(
   "/v" + process.env.VERSION + "/admin/subplan/",
   require("./route/adminRoute/subscriptionPlan_RA")
 );
+app.use(
+  "/v" + process.env.VERSION + "/front/subscription/",
+  require("./route/frontRoute/subscription_RF")
+);
+app.use(
+  "/v" + process.env.VERSION + "/admin/subscription/",
+  require("./route/adminRoute/subscription_RA")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/front/checkout/",
