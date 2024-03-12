@@ -9,244 +9,106 @@ const CartModel = mongoose.model(constants.CartModel);
 
 module.exports = {
   /** */
-  // productCheckout : async (req, res) => {
-  //     try {
-  //         let { products } = req.body;
-  //         let totalPrice = 0;
-  //         let productsWithDetails = [];
-
-  //         if (!products || !Array.isArray(products) || products.length === 0) {
-  //             return res.status(400).json({
-  //                 success: false,
-  //                 message: "Products array is required with each product containing productId and quantity.",
-  //             });
-  //         }
-
-  //         for (let i = 0; i < products.length; i++) {
-  //             const { productId, quantity } = products[i];
-
-  //             if (!productId) {
-  //                 return res.status(400).json({
-  //                     success: false,
-  //                     message: "productId is required for each product.",
-  //                 });
-  //             }
-
-  //             const product = await ProductModel.findById(productId);
-
-  //             if (!product) {
-  //                 return res.status(404).json({
-  //                     success: false,
-  //                     message: `Product with ID ${productId} not found.`,
-  //                 });
-  //             }
-
-  //             const productPrice = product.productPrice * quantity;
-  //             totalPrice += productPrice;
-
-  //             productsWithDetails.push({
-  //                 productId: product._id,
-  //                 productName: product.productName,
-  //                 productPrice: product.productPrice,
-  //                 productImage: product.productImage,
-  //                 quantity: quantity,
-  //             });
-  //         }
-
-  //         req.body.totalPrice = totalPrice;
-  //         req.body.product = productsWithDetails;
-
-  //         const create_prod = await ProductCheckOutModel.create(req.body);
-
-  //         return res.status(global.CONFIGS.responseCode.success).json({
-  //             success: true,
-  //             message: global.CONFIGS.api.Productadded,
-  //             data: create_prod,
-  //         });
-  //     } catch (error) {
-  //         return res.status(500).json({ success: false, message: error.message });
-  //     }
-  // }
-
-  /** */
-
   productCheckout: async (req, res, next) => {
     try {
       let { userId } = req.body;
-      // console.log(req.body);
       if (!userId) {
-        res.send({ status: "400", message: "userId require" });
+        return res
+          .status(400)
+          .json({ status: "400", message: "userId required" });
       }
-      // console.log("....1");
       let userDetail = await UserModel.findOne({ _id: userId });
-      // console.log(userDetail, "....userDetail...2");
       if (userDetail) {
-        // console.log(userDetail.trialActive, "...trialActive..3");
         let find_cart = await CartModel.findOne({ userId: req.body.userId });
-        // console.log(find_cart, "......find_cart...4")
-
         if (find_cart) {
           const product = find_cart.product;
-          // console.log(product, "........product....5");
+          if (!product) {
+            return res.status(400).json({
+              success: false,
+              message: "productId is required for each product.",
+            });
+          }
           const productIds = product.map((item) => item.productId.toString());
-          console.log(productIds, "....productIds...6");
-          // const productDetails = await ProductModel.find({ _id: { $in: productIds } });
-          // console.log(productDetails,"....productDetails.....7");
-          const eachProductPrice = (
-            await ProductModel.find({ _id: { $in: productIds } })
-          ).map((item) => item.productPrice);
-          console.log(eachProductPrice, "...eachProductPrice...8");
-          const eachQtyInCart = find_cart.product.map((item) => item.qty);
-          console.log(eachQtyInCart, "..eachQtyInCart...9");
-          const totalPriceForEachProduct = eachProductPrice.map(
-            (price, index) => price * eachQtyInCart[index]
-          );
-          console.log(totalPriceForEachProduct,".....totalPriceForEachProduct...9"); // Output: [135, 100]
-          const totalPrice = find_cart.price;
-          console.log(totalPrice, "...........totalPrice......10");
-          // return;
-          const qtyInCart = find_cart.product
-            .map((item) => item.qty)
-            .reduce((accumulator, currentValue) => {
-              return accumulator + currentValue;
-            }, 0);
-          console.log(qtyInCart, "..qtyInCart...11");
-          // const totalPrice = find_cart.price;
-          // console.log(totalPrice, "...........totalPrice......7");
-
-          /*
-          !FIRST_CASE */
+          const productDetails = await ProductModel.find({
+            _id: { $in: productIds },
+          });
+          let productPrice = {};
+          productDetails.map((el) => {
+            productPrice[el._id] = el.productPrice;
+          });
+          let totalAmount = 0;
           if (userDetail.trialActive == true) {
             let remainingTrialQuantity = 3 - userDetail.trialQuantity;
-            if (userDetail.trialActive && remainingTrialQuantity >= qtyInCart) {
-              let totaltrialQuantity = userDetail.trialQuantity + qtyInCart;
-              // console.log(totaltrialQuantity, "....totaltrialQuantity...8");
-              // console.log(product, "....product...9")
-              if (!product) {
-                return res.status(400).json({
-                  success: false,
-                  message: "productId is required for each product.",
-                });
+            let freeItem = [];
+            let payableItem = [];
+            let quant = remainingTrialQuantity;
+            find_cart.product.map((cart) => {
+              if (cart.qty <= quant) {
+                freeItem.push({ ...cart });
+                quant -= cart.qty;
+              } else if (quant > 0 && cart.qty > quant) {
+                freeItem.push({ ...cart, qty: quant });
+                payableItem.push({ ...cart, qty: cart.qty - quant });
+                totalAmount+=productPrice[cart.productId] * (cart.qty - quant);
+                quant = 0;
+              } else {
+                payableItem.push({ ...cart });
+                totalAmount += productPrice[cart.productId] * cart.qty;
               }
-              req.body.product = product;
-              req.body.vat = 0;
-              req.body.totalPrice = 0;
-              req.body.totalTaxablePrice = 0;
-              req.body.userId = userId;
-              console.log("...req.body..firstCONDITION...");
-              // console.log(req.body, "...req.body......end");
-              const create_Checkout = await ProductCheckOutModel.create(
-                req.body
-              );
-              if (create_Checkout) {
-                let userUpdate = await UserModel.findByIdAndUpdate(
-                  { _id: userId },
-                  {
-                    trialQuantity: totaltrialQuantity,
-                    trialActive: 3 - totaltrialQuantity > 0 ? true : false,
-                  },
-                  {
-                    new: true,
-                    runValidators: true,
-                    useFindAndModify: false,
-                  }
-                );
-                // console.log(userUpdate, "uuuuuuu");
-                return res.status(global.CONFIGS.responseCode.success).json({
-                  success: true,
-                  message: global.CONFIGS.api.Productadded,
-                  data: create_Checkout,
-                  userdata: userUpdate,
-                });
-              }
-            } else {
-            /*
-          !SECOND_CASE */
-              for (let index = 0; index < eachQtyInCart.length; index++) {
-                if (
-                  userDetail.trialActive &&
-                  remainingTrialQuantity <= eachQtyInCart[index]
-                ) {
-                 
+            });
+            let totaltrialQuantity =userDetail.trialQuantity + remainingTrialQuantity - quant;
+            let checkoutCart = {};
+            const vat = 5;
+            const taxAmount = totalAmount * (vat / 100);
+            const totalTaxablePrice = totalAmount + taxAmount;
+            checkoutCart.vatAmount = Math.round(taxAmount);
+            checkoutCart.totalPrice = Math.round(totalAmount);
+            checkoutCart.product = payableItem;
+            checkoutCart.totalTaxablePrice = Math.round(totalTaxablePrice);
+            checkoutCart.userId = userId;
+            checkoutCart.freeProduct = freeItem;
 
-                  let totaltrialQuantity =
-                    userDetail.trialQuantity + remainingTrialQuantity;
-                  console.log(totaltrialQuantity, "....totaltrialQuantity...1");
-                  // console.log(product, "....product...2");
-                  if (!product) {
-                    return res.status(400).json({
-                      success: false,
-                      message: "productId is required for each product.",
-                    });
-                  }
-                  const remainQuantity =
-                    qtyInCart - remainingTrialQuantity;
-                  const vat = 5;
-                  console.log(remainQuantity, "......remainQuantity");
-                  console.log(eachQtyInCart[index],"...eachQtyInCart...");
-                  const qtyInCartPrice = totalPriceForEachProduct[index] / eachQtyInCart[index];
-                  console.log(qtyInCartPrice, "......qtyInCartPrice");
-                  const bodyTotalPrice = remainQuantity * qtyInCartPrice;
-                  console.log(totalPrice, "...........totalPrice......");
-                  const taxAmount = bodyTotalPrice * (vat / 100);
-                  const totalTaxablePrice = bodyTotalPrice + taxAmount;
-                  req.body.product = product;
-                  req.body.totalPrice = Math.round(bodyTotalPrice);
-                  req.body.vatAmount = Math.round(taxAmount);
-                  req.body.totalTaxablePrice = Math.round(totalTaxablePrice);
-                  req.body.userId = userId;
-                  console.log("...second....Condition")
-                  // console.log(req.body, "...req.body.....second");
-                  const create_Checkout = await ProductCheckOutModel.create(
-                    req.body
-                  );
-                  if (create_Checkout) {
-                    let userUpdate = await UserModel.findByIdAndUpdate(
-                      { _id: userId },
-                      {
-                        trialQuantity: totaltrialQuantity,
-                        trialActive: 3 - totaltrialQuantity > 0 ? true : false,
-                      },
-                      {
-                        new: true,
-                        runValidators: true,
-                        useFindAndModify: false,
-                      }
-                    );
-                    return res
-                      .status(global.CONFIGS.responseCode.success)
-                      .json({
-                        success: true,
-                        message: global.CONFIGS.api.Productadded,
-                        data: create_Checkout,
-                        userdata: userUpdate,
-                      });
-                  }
+            const create_Checkout = await ProductCheckOutModel.create(
+              checkoutCart
+            );
+            if (create_Checkout) {
+              let userUpdate = await UserModel.findByIdAndUpdate(
+                { _id: userId },
+                {
+                  trialQuantity: totaltrialQuantity,
+                  trialActive: 3 - totaltrialQuantity > 0 ? true : false,
+                },
+                {
+                  new: true, 
+                  runValidators: true,
+                  useFindAndModify: false,
                 }
-              }
+              );
+              return res.status(global.CONFIGS.responseCode.success).json({
+                success: true,
+                message: global.CONFIGS.api.Productadded,
+                data: create_Checkout,
+                userdata: userUpdate,
+              });
             }
           } else {
             /*
-          !THIRD_CASE */
-            if (!product) {
-              return res.status(400).json({
-                success: false,
-                message: "productId is required for each product.",
-              });
-            }
-            // console.log(product, "......product.....1");
-            // console.log(totalPrice, "...........totalPrice......2");
+          !THIRD CONDITION */
+            console.log("ttyuiopoiu");
+          let checkoutCart = {};
+            let totalPrice = 0;
+            find_cart.product.map((cart) => {
+              totalPrice += productPrice[cart.productId] * cart.qty;
+            });
             const vat = 5;
             const taxAmount = totalPrice * (vat / 100);
             const totalTaxablePrice = totalPrice + taxAmount;
-            req.body.product = product;
-            req.body.vatAmount = Math.round(taxAmount);
-            req.body.totalPrice = Math.round(totalPrice);
-            req.body.totalTaxablePrice = Math.round(totalTaxablePrice);
-            req.body.userId = userId;
-            console.log( "...third condition ..end...");
-            // console.log(req.body, "...req.body......end");
-            const create_Checkout = await ProductCheckOutModel.create(req.body);
+            checkoutCart.vatAmount = Math.round(taxAmount);
+            checkoutCart.totalPrice = Math.round(totalPrice);
+            checkoutCart.product = product;
+            checkoutCart.totalTaxablePrice = Math.round(totalTaxablePrice);
+            checkoutCart.userId = userId;
+            const create_Checkout = await ProductCheckOutModel.create(checkoutCart);
             if (create_Checkout) {
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
@@ -255,14 +117,9 @@ module.exports = {
               });
             }
           }
-          // }
         }
       }
-      //  catch (err) {
-      //   console.log({ err });
-      // }
     } catch (error) {
-      // console.log({ error });
       return res.status(500).json({ success: false, message: error.message });
     }
   },

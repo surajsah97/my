@@ -33,6 +33,25 @@ var productCheckoutSchema = new Schema(
         },
       ],
     },
+    freeProduct: {
+      type: [
+        {
+          productId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.ProductModel,
+            required: [true, "Please enter productId."],
+          },
+          productPrice: {
+            type: Number,
+          },
+          qty: {
+            type: Number,
+            min: [1, "Quantity cannot be less than 1"],
+            default: 1,
+          },
+        },
+      ],
+    },
     totalPrice: {
       type: Number,
       // required: [true, "Please enter price."],
