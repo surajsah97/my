@@ -20,9 +20,9 @@ module.exports = {
     },
 
     updatesubscriptionPlan: async (req, res, next) => {
-        const validDurations = [1, 3, 6, 9, 12];
+        const validDurations = [15,30,60,90];
         if (!validDurations.includes(req.body.planDuration)) {
-            const err = new customError("Invalid plan duration. Allowed values are: 1, 3, 6, 9, 12", global.CONFIGS.responseCode.invalidInput);
+            const err = new customError("Invalid plan duration. Allowed values are: 15,30,60,90", global.CONFIGS.responseCode.invalidInput);
             return next(err);
         }
         var find_subplan = await subscriptionPlanModel.findOne({ planDuration: req.body.planDuration, _id: { $nin: [req.params.id] } });

@@ -54,7 +54,7 @@ var productCheckoutSchema = new Schema(
     },
     totalPrice: {
       type: Number,
-      // required: [true, "Please enter price."],
+      required: [true, "Please enter price."],
     },
     vatAmount: {
       type: Number,
