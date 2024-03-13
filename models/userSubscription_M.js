@@ -63,6 +63,30 @@ var productSchema = new Schema(
       type: Date,
       required: [true, "Please enter startDate."],
     },
+    leftDuration:{
+      type:Number,
+      required: [true, "Please enter leftDuration."],
+    },
+    calendar:{
+      type: [
+        {
+          productId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.ProductModel,
+            required: [true, "Please enter productId."],
+          },
+          day: {
+            type: Number,
+            required: [true, "Please enter Day."],
+          },
+          deliveryStatus:{
+            type:Boolean,
+            default:false
+          }
+        },
+      ],
+
+    }
   },
   {
     collection: constants.SubModel,

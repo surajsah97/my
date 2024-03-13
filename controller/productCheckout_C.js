@@ -45,10 +45,11 @@ module.exports = {
             find_cart.product.map((cart) => {
               if (cart.qty <= quant) {
                 freeItem.push({ ...cart });
+                payableItem.push({ ...cart });
                 quant -= cart.qty;
               } else if (quant > 0 && cart.qty > quant) {
                 freeItem.push({ ...cart, qty: quant });
-                payableItem.push({ ...cart, qty: cart.qty - quant });
+                payableItem.push({ ...cart });
                 totalAmount +=
                   productPrice[cart.productId] * (cart.qty - quant);
                 quant = 0;
