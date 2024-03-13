@@ -34,7 +34,7 @@ var productOrderSchema = new Schema(
         productPrice: {
           type: Number,
         },
-        quantity: {
+        qty: {
           type: Number,
           min: [1, "Quantity cannot be less than 1"],
           default: 1,
@@ -46,20 +46,49 @@ var productOrderSchema = new Schema(
       ref: constants.UserAddressModel,
       required: [true, "Please enter productId."],
     },
-    totalPrice: {
-      type: Number,
-        required: [true, "Please enter totalPrice."],
+    // totalPrice: {
+    //   type: Number,
+    //     required: [true, "Please enter totalPrice."],
+    // },
+    freeProduct: {
+      type: [
+        {
+          productId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.ProductModel,
+            required: [true, "Please enter productId."],
+          },
+          productPrice: {
+            type: Number,
+          },
+          qty: {
+            type: Number,
+            min: [1, "Quantity cannot be less than 1"],
+            default: 1,
+          },
+        },
+      ],
     },
-
     paymentstatus: {
       type: Boolean,
       default: false,
     },
-
+    totalPrice: {
+      type: Number,
+      required: [true, "Please enter price."],
+    },
+    vatAmount: {
+      type: Number,
+      // required: [true, "Please enter price."],
+    },
     status: {
       type: String,
       enum: ["Pending", "Completed", "Cancelled"],
       default: "Pending",
+    },
+    totalTaxablePrice: {
+      type: Number,
+      // required: [true, "Please enter price."],
     },
   },
   {
