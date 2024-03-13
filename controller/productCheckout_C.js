@@ -86,7 +86,7 @@ module.exports = {
                   runValidators: true,
                   useFindAndModify: false,
                 }
-              );
+              ).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.Productadded,
@@ -115,7 +115,7 @@ module.exports = {
               checkoutCart
             );
             if (create_Checkout) {
-              let userdata = await UserModel.find({ _id: userId });
+              let userdata = await UserModel.find({ _id: userId }).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.Productadded,
