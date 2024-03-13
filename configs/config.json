@@ -85,7 +85,7 @@
     "subscriptionPlanList": "Subscription plan list Successfully.",
     "subscriptionPlanInactive": "Subscription plan inactive or not found.",
     "subscriptionPlanDelete": "Subscription plan deleted Successfully.",
-    "subscriptionNotfound": "subscriptionPlan notFound Successfully.",
+    "subscriptionNotfound": "subscription notFound Successfully.",
     "subscriptionalreadyadded": "Subscription already added. Please try another name.",
     "subscriptionadded": "Subscription added Successfully.",
     "subscriptionUpdated": "Subscription updated Successfully.",

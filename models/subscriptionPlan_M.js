@@ -6,7 +6,7 @@ var subscriptionPlanSchema = new Schema(
     {
         planDuration: {
             type: Number,
-            enum: [1, 3, 6, 9, 12],
+            enum: [15,30,60,90],
             required: [true, "Please enter plan duration."],
             trim: true
         },
