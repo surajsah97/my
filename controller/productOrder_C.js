@@ -9,46 +9,58 @@ const ObjectId = mongoose.Types.ObjectId;
 var customError = require("../middleware/customerror");
 module.exports = {
   createOrder: async (req, res, next) => {
-    try {
+    
       // const { userId } = req.body;
-      var find_user = await UserModel.findOne({ _id: req.body.userId });
-      if (!find_user) {
+      const checkOutdata = await ProductCheckOutModel.findOne({
+        _id: req.body.checkoutId, activeStatus:"Active"
+      }).sort({
+        _id: -1,
+      });
+      console.log(checkOutdata, ".......checkOutData");
+      if (!checkOutdata) {
         const err = new customError(
           global.CONFIGS.api.userNotFound,
           global.CONFIGS.responseCode.notFound
         );
         return next(err);
       }
-      const checkOutdata = await ProductCheckOutModel.findOne({
-        userId: req.body.userId,
-      }).sort({
-        _id: -1,
-      });
-      console.log(checkOutdata, ".......checkOutData");
-      const product = checkOutdata.product;
-      //   console.log(product, "........product");
-      const totalPrice = checkOutdata.totalPrice;
-      //   console.log(totalPrice, "...........totalPrice");
-
+      
       const userAddress = await UserAddressModel.findOne(
-        { userId: req.body.userId },
+        { userId: checkOutdata.userId },
         { _id: -1 }
       ).sort({ _id: -1 });
-      //   console.log(userAddress, "........userAddress");
-      req.body.product = product;
+
+      req.body.product = checkOutdata.product;
       req.body.addressId = userAddress._id;
-      req.body.totalPrice = totalPrice;
-      console.log(req.body, "......body");
+      req.body.freeProduct = checkOutdata.freeProduct;
+      req.body.totalPrice = checkOutdata.totalPrice;
+      req.body.vatAmount = checkOutdata.vatAmount;
+      req.body.totalTaxablePrice = checkOutdata.totalTaxablePrice;
+      req.body.userId = checkOutdata.userId;
+      // console.log(req.body, "......body");
+
       const createProductOrder = await ProductOrderModel.create(req.body);
+      if (createProductOrder) {
+        var update_checkout = await ProductCheckOutModel.updateOne({ _id: req.body.checkoutId }, { activeStatus: "Expired" })
+        if (createProductOrder.freeProduct.length > 0) {
+          var finduser = await UserModel.findOne({ _id: createProductOrder.userId })
+          if (finduser && finduser.trialActive === true) {
+            var trailprod = parseInt(createProductOrder.freeProduct.length + finduser.trialQuantity);
+            if (trailprod >= 3) {
+              var update_user = await UserModel.updateOne({ _id: createProductOrder.userId }, { trialQuantity: trailprod, trialActive :false})
+            } else if (trailprod < 3) {
+              var update_user = await UserModel.updateOne({ _id: createProductOrder.userId }, { trialQuantity: trailprod})
+            }
+          }
+        }
+      }
+
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.Orderadded,
         data: createProductOrder,
       });
-      p;
-    } catch (error) {
-      return res.status(500).json({ success: false, message: error.message });
-    }
+
   },
 
   getOrderByUser: async (req, res, next) => {
