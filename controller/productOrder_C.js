@@ -3,6 +3,7 @@ const constants = require("../models/modelConstants");
 const UserModel = mongoose.model(constants.UserModel);
 const ProductOrderModel = mongoose.model(constants.ProductOrderModel);
 const ProductCheckOutModel = mongoose.model(constants.ProductCheckOutModel);
+const CartModel = mongoose.model(constants.CartModel);
 const UserAddressModel = mongoose.model(constants.UserAddressModel);
 const common = require("../service/commonFunction");
 const ObjectId = mongoose.Types.ObjectId;
@@ -41,7 +42,9 @@ module.exports = {
 
       const createProductOrder = await ProductOrderModel.create(req.body);
       if (createProductOrder) {
-        var update_checkout = await ProductCheckOutModel.updateOne({ _id: req.body.checkoutId }, { activeStatus: "Expired" })
+        var update_checkout = await ProductCheckOutModel.updateOne({ _id: req.body.checkoutId }, { activeStatus: "Expired" });
+        var delete_cart = await CartModel.deleteOne({ userId:createProductOrder.userId });
+        console.log(delete_cart,".....deleted");
         if (createProductOrder.freeProduct.length > 0) {
           var finduser = await UserModel.findOne({ _id: createProductOrder.userId })
           if (finduser && finduser.trialActive === true) {
@@ -99,6 +102,11 @@ module.exports = {
       {
         $unwind: "$product",
       },
+      // {
+      //   $unwind: "$freeProduct",
+      // },
+      
+     
       {
         $lookup: {
           from: "product",
@@ -108,6 +116,16 @@ module.exports = {
         },
       },
       { $unwind: "$product.productDetails" },
+      {
+        $lookup: {
+          from: "product",
+          localField: "freeProduct.productId",
+          foreignField: "_id",
+          as: "freeProduct.freeProductDetails",
+        },
+      },
+      { $unwind: "$freeProduct.freeProductDetails" },
+      
 
       {
         $lookup: {
@@ -133,6 +151,11 @@ module.exports = {
           _id: 1,
           orderId: 1,
           totalPrice: 1,
+          transactionId: 1,
+          paymentstatus: 1,
+          vatAmount: 1,
+          totalTaxablePrice: 1,
+          status: 1,
           usersDetails: {
             userId: "$usersDetails._id",
             name: "$usersDetails.name",
@@ -146,14 +169,15 @@ module.exports = {
             landmark: "$useraddress.landmark",
             country: "$useraddress.country",
           },
+          // freeProduct:1,
           product: {
             _id: "$product.productDetails._id",
-            quantity: "$product.quantity",
+            qty: "$product.qty",
             productPrice: "$product.productDetails.productPrice",
             individualTotalPrice: {
               $multiply: [
                 "$product.productDetails.productPrice",
-                "$product.quantity",
+                "$product.qty",
               ],
             },
             productName: "$product.productDetails.productName",
@@ -163,18 +187,49 @@ module.exports = {
             categoryName: "$product.productDetails.category.category",
             subategoryName: "$product.productDetails.subcategory.subCategory",
           },
+          freeProduct: {
+            _id: "$freeProduct.freeProductDetails._id",
+            qty: "$freeProduct.qty",
+            productPrice: "$freeProduct.freeProductDetails.productPrice",
+            individualTotalPrice: {
+              $multiply: [
+                "$freeProduct.freeProductDetails.productPrice",
+                "$freeProduct.qty",
+              ],
+            },
+            productName: "$freeProduct.freeProductDetails.productName",
+            productImage: "$freeProduct.freeProductDetails.productImage",
+            productUOM: "$freeProduct.freeProductDetails.productUOM",
+            productDes: "$freeProduct.freeProductDetails.productDes",
+            categoryName: "$freeProduct.freeProductDetails.category.category",
+            subategoryName: "$freeProduct.freeProductDetails.subcategory.subCategory",
+          },
+         
         },
       },
       {
         $group: {
           _id: "$_id",
           orderId: { $first: "$orderId" },
-          totalPrice: { $first: "$totalPrice" },
+          transactionId: { $first: "$transactionId" },
+          paymentstatus: { $first: "$paymentstatus" },
+          status: { $first: "$status" },
           userDetails: { $first: "$usersDetails" },
           useraddressDetails: { $first: "$useraddress" },
           product: {
             $push: "$product",
           },
+          freeProduct: {
+            $push: "$freeProduct",
+          },
+         
+          // freeproduct: {
+          //   $first: "$freeProduct",
+          // },
+         
+          totalPrice: { $first: "$totalPrice" },
+          vatAmount: { $first: "$vatAmount" },
+          totalTaxablePrice: { $first: "$totalTaxablePrice" },
         },
       },
       {
