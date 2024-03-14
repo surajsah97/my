@@ -75,23 +75,27 @@ module.exports = {
               checkoutCart
             );
             if (create_Checkout) {
-              let userUpdate = await UserModel.findByIdAndUpdate(
-                { _id: userId },
-                {
-                  trialQuantity: totaltrialQuantity,
-                  trialActive: 3 - totaltrialQuantity > 0 ? true : false,
-                },
-                {
-                  new: true,
-                  runValidators: true,
-                  useFindAndModify: false,
-                }
-              ).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
+              // let userUpdate = await UserModel.findByIdAndUpdate(
+              //   { _id: userId },
+              //   {
+              //     trialQuantity: totaltrialQuantity,
+              //     trialActive: 3 - totaltrialQuantity > 0 ? true : false,
+              //   },
+              //   {
+              //     new: true,
+              //     runValidators: true,
+              //     useFindAndModify: false,
+              //   }
+              // ).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
+
+              let userdata = await UserModel.find({ _id: userId }).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
+
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.Productadded,
                 data: create_Checkout,
-                userdata: userUpdate,
+                // userdata: userUpdate,
+                userdata: userdata,
               });
             }
           } else {
