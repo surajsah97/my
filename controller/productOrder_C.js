@@ -10,60 +10,74 @@ const ObjectId = mongoose.Types.ObjectId;
 var customError = require("../middleware/customerror");
 module.exports = {
   createOrder: async (req, res, next) => {
-    
-      // const { userId } = req.body;
-      const checkOutdata = await ProductCheckOutModel.findOne({
-        _id: req.body.checkoutId, activeStatus:"Active"
-      }).sort({
-        _id: -1,
+    // const { userId } = req.body;
+    const checkOutdata = await ProductCheckOutModel.findOne({
+      _id: req.body.checkoutId,
+      activeStatus: "Active",
+    }).sort({
+      _id: -1,
+    });
+    console.log(checkOutdata, ".......checkOutData");
+    if (!checkOutdata) {
+      const err = new customError(
+        global.CONFIGS.api.userNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+    const userAddress = await UserAddressModel.findOne(
+      { userId: checkOutdata.userId },
+      { _id: -1 }
+    ).sort({ _id: -1 });
+
+    req.body.product = checkOutdata.product;
+    req.body.addressId = userAddress._id;
+    req.body.freeProduct = checkOutdata.freeProduct;
+    req.body.totalPrice = checkOutdata.totalPrice;
+    req.body.vatAmount = checkOutdata.vatAmount;
+    req.body.totalTaxablePrice = checkOutdata.totalTaxablePrice;
+    req.body.userId = checkOutdata.userId;
+    // console.log(req.body, "......body");
+
+    const createProductOrder = await ProductOrderModel.create(req.body);
+    if (createProductOrder) {
+      var update_checkout = await ProductCheckOutModel.updateOne(
+        { _id: req.body.checkoutId },
+        { activeStatus: "Expired" }
+      );
+      var delete_cart = await CartModel.deleteOne({
+        userId: createProductOrder.userId,
       });
-      console.log(checkOutdata, ".......checkOutData");
-      if (!checkOutdata) {
-        const err = new customError(
-          global.CONFIGS.api.userNotFound,
-          global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-      }
-      
-      const userAddress = await UserAddressModel.findOne(
-        { userId: checkOutdata.userId },
-        { _id: -1 }
-      ).sort({ _id: -1 });
-
-      req.body.product = checkOutdata.product;
-      req.body.addressId = userAddress._id;
-      req.body.freeProduct = checkOutdata.freeProduct;
-      req.body.totalPrice = checkOutdata.totalPrice;
-      req.body.vatAmount = checkOutdata.vatAmount;
-      req.body.totalTaxablePrice = checkOutdata.totalTaxablePrice;
-      req.body.userId = checkOutdata.userId;
-      // console.log(req.body, "......body");
-
-      const createProductOrder = await ProductOrderModel.create(req.body);
-      if (createProductOrder) {
-        var update_checkout = await ProductCheckOutModel.updateOne({ _id: req.body.checkoutId }, { activeStatus: "Expired" });
-        var delete_cart = await CartModel.deleteOne({ userId:createProductOrder.userId });
-        console.log(delete_cart,".....deleted");
-        if (createProductOrder.freeProduct.length > 0) {
-          var finduser = await UserModel.findOne({ _id: createProductOrder.userId })
-          if (finduser && finduser.trialActive === true) {
-            var trailprod = parseInt(createProductOrder.freeProduct.length + finduser.trialQuantity);
-            if (trailprod >= 3) {
-              var update_user = await UserModel.updateOne({ _id: createProductOrder.userId }, { trialQuantity: trailprod, trialActive :false})
-            } else if (trailprod < 3) {
-              var update_user = await UserModel.updateOne({ _id: createProductOrder.userId }, { trialQuantity: trailprod})
-            }
+      console.log(delete_cart, ".....deleted");
+      if (createProductOrder.freeProduct.length > 0) {
+        var finduser = await UserModel.findOne({
+          _id: createProductOrder.userId,
+        });
+        if (finduser && finduser.trialActive === true) {
+          var trailprod = parseInt(
+            createProductOrder.freeProduct.length + finduser.trialQuantity
+          );
+          if (trailprod >= 3) {
+            var update_user = await UserModel.updateOne(
+              { _id: createProductOrder.userId },
+              { trialQuantity: trailprod, trialActive: false }
+            );
+          } else if (trailprod < 3) {
+            var update_user = await UserModel.updateOne(
+              { _id: createProductOrder.userId },
+              { trialQuantity: trailprod }
+            );
           }
         }
       }
+    }
 
-      return res.status(global.CONFIGS.responseCode.success).json({
-        success: true,
-        message: global.CONFIGS.api.Orderadded,
-        data: createProductOrder,
-      });
-
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.Orderadded,
+      data: createProductOrder,
+    });
   },
 
   getOrderByUser: async (req, res, next) => {
@@ -102,11 +116,14 @@ module.exports = {
       {
         $unwind: "$product",
       },
-      // {
-      //   $unwind: "$freeProduct",
-      // },
-      
-     
+      {
+        $unwind: {
+          path: "$freeProduct",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
       {
         $lookup: {
           from: "product",
@@ -115,17 +132,14 @@ module.exports = {
           as: "product.productDetails",
         },
       },
-      { $unwind: "$product.productDetails" },
+
       {
-        $lookup: {
-          from: "product",
-          localField: "freeProduct.productId",
-          foreignField: "_id",
-          as: "freeProduct.freeProductDetails",
+        $unwind: {
+          path: "$product.productDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
         },
       },
-      { $unwind: "$freeProduct.freeProductDetails" },
-      
 
       {
         $lookup: {
@@ -145,6 +159,52 @@ module.exports = {
         },
       },
       { $unwind: "$product.productDetails.subcategory" },
+
+      {
+        $lookup: {
+          from: "product",
+          localField: "freeProduct.productId",
+          foreignField: "_id",
+          as: "freeProduct.freeProductDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$freeProduct.freeProductDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "freeProduct.freeProductDetails.categoryId",
+          foreignField: "_id",
+          as: "freeProduct.freeProductDetails.category",
+        },
+      },
+      {
+        $unwind: {
+          path: "$freeProduct.freeProductDetails.category",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "subcategory",
+          localField: "freeProduct.freeProductDetails.subCategoryId",
+          foreignField: "_id",
+          as: "freeProduct.freeProductDetails.subcategory",
+        },
+      },
+            {
+        $unwind: {
+          path: "$freeProduct.freeProductDetails.subcategory",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
 
       {
         $project: {
@@ -169,7 +229,6 @@ module.exports = {
             landmark: "$useraddress.landmark",
             country: "$useraddress.country",
           },
-          // freeProduct:1,
           product: {
             _id: "$product.productDetails._id",
             qty: "$product.qty",
@@ -187,26 +246,23 @@ module.exports = {
             categoryName: "$product.productDetails.category.category",
             subategoryName: "$product.productDetails.subcategory.subCategory",
           },
+
           freeProduct: {
             _id: "$freeProduct.freeProductDetails._id",
             qty: "$freeProduct.qty",
             productPrice: "$freeProduct.freeProductDetails.productPrice",
-            individualTotalPrice: {
-              $multiply: [
-                "$freeProduct.freeProductDetails.productPrice",
-                "$freeProduct.qty",
-              ],
-            },
-            productName: "$freeProduct.freeProductDetails.productName",
-            productImage: "$freeProduct.freeProductDetails.productImage",
-            productUOM: "$freeProduct.freeProductDetails.productUOM",
-            productDes: "$freeProduct.freeProductDetails.productDes",
-            categoryName: "$freeProduct.freeProductDetails.category.category",
-            subategoryName: "$freeProduct.freeProductDetails.subcategory.subCategory",
+            freeProductName: "$freeProduct.freeProductDetails.productName",
+            freeProductImage: "$freeProduct.freeProductDetails.productImage",
+            freeProductUOM: "$freeProduct.freeProductDetails.productUOM",
+            freeProductDes: "$freeProduct.freeProductDetails.productDes",
+            freeProductcategoryName: "$freeProduct.freeProductDetails.category.category",
+            freeProductsubategoryName: "$freeProduct.freeProductDetails.subcategory.subCategory",
           },
+
          
         },
       },
+      
       {
         $group: {
           _id: "$_id",
@@ -217,16 +273,12 @@ module.exports = {
           userDetails: { $first: "$usersDetails" },
           useraddressDetails: { $first: "$useraddress" },
           product: {
-            $push: "$product",
+            $addToSet: "$product",
           },
           freeProduct: {
-            $push: "$freeProduct",
+            $addToSet: "$freeProduct",
           },
-         
-          // freeproduct: {
-          //   $first: "$freeProduct",
-          // },
-         
+
           totalPrice: { $first: "$totalPrice" },
           vatAmount: { $first: "$vatAmount" },
           totalTaxablePrice: { $first: "$totalTaxablePrice" },
@@ -279,7 +331,7 @@ module.exports = {
     const skip = (pageNo - 1) * limit;
 
     var findAllOrderList = await ProductOrderModel.aggregate([
-      //   {
+      //  {
       //   $match: { activeStatus: "1",  },
       // },
       {
@@ -305,9 +357,18 @@ module.exports = {
       {
         $unwind: "$usersDetails",
       },
+      { $unset: "userId" },
       {
         $unwind: "$product",
       },
+      {
+        $unwind: {
+          path: "$freeProduct",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
       {
         $lookup: {
           from: "product",
@@ -316,7 +377,14 @@ module.exports = {
           as: "product.productDetails",
         },
       },
-      { $unwind: "$product.productDetails" },
+
+      {
+        $unwind: {
+          path: "$product.productDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
 
       {
         $lookup: {
@@ -338,12 +406,63 @@ module.exports = {
       { $unwind: "$product.productDetails.subcategory" },
 
       {
+        $lookup: {
+          from: "product",
+          localField: "freeProduct.productId",
+          foreignField: "_id",
+          as: "freeProduct.freeProductDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$freeProduct.freeProductDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "freeProduct.freeProductDetails.categoryId",
+          foreignField: "_id",
+          as: "freeProduct.freeProductDetails.category",
+        },
+      },
+      {
+        $unwind: {
+          path: "$freeProduct.freeProductDetails.category",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "subcategory",
+          localField: "freeProduct.freeProductDetails.subCategoryId",
+          foreignField: "_id",
+          as: "freeProduct.freeProductDetails.subcategory",
+        },
+      },
+            {
+        $unwind: {
+          path: "$freeProduct.freeProductDetails.subcategory",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
         $project: {
           _id: 1,
-          totalPrice: 1,
           orderId: 1,
-          // "usersDetails": 1,
+          totalPrice: 1,
+          transactionId: 1,
+          paymentstatus: 1,
+          vatAmount: 1,
+          totalTaxablePrice: 1,
+          status: 1,
           usersDetails: {
+            userId: "$usersDetails._id",
             name: "$usersDetails.name",
             email: "$usersDetails.email",
             mobile: "$usersDetails.mobile",
@@ -357,12 +476,12 @@ module.exports = {
           },
           product: {
             _id: "$product.productDetails._id",
-            quantity: "$product.quantity",
+            qty: "$product.qty",
             productPrice: "$product.productDetails.productPrice",
             individualTotalPrice: {
               $multiply: [
                 "$product.productDetails.productPrice",
-                "$product.quantity",
+                "$product.qty",
               ],
             },
             productName: "$product.productDetails.productName",
@@ -372,21 +491,44 @@ module.exports = {
             categoryName: "$product.productDetails.category.category",
             subategoryName: "$product.productDetails.subcategory.subCategory",
           },
+
+          freeProduct: {
+            _id: "$freeProduct.freeProductDetails._id",
+            qty: "$freeProduct.qty",
+            productPrice: "$freeProduct.freeProductDetails.productPrice",
+            freeProductName: "$freeProduct.freeProductDetails.productName",
+            freeProductImage: "$freeProduct.freeProductDetails.productImage",
+            freeProductUOM: "$freeProduct.freeProductDetails.productUOM",
+            freeProductDes: "$freeProduct.freeProductDetails.productDes",
+            freeProductcategoryName: "$freeProduct.freeProductDetails.category.category",
+            freeProductsubategoryName: "$freeProduct.freeProductDetails.subcategory.subCategory",
+          },
+
+         
         },
       },
+      
       {
         $group: {
           _id: "$_id",
-          totalPrice: { $first: "$totalPrice" },
           orderId: { $first: "$orderId" },
+          transactionId: { $first: "$transactionId" },
+          paymentstatus: { $first: "$paymentstatus" },
+          status: { $first: "$status" },
           userDetails: { $first: "$usersDetails" },
           useraddressDetails: { $first: "$useraddress" },
           product: {
-            $push: "$product",
+            $addToSet: "$product",
           },
+          freeProduct: {
+            $addToSet: "$freeProduct",
+          },
+
+          totalPrice: { $first: "$totalPrice" },
+          vatAmount: { $first: "$vatAmount" },
+          totalTaxablePrice: { $first: "$totalTaxablePrice" },
         },
       },
-      { $unset: "userId" },
       {
         $sort: {
           _id: 1,
@@ -427,6 +569,8 @@ module.exports = {
       data: findAllOrderList[0].data,
     });
   },
+  
+
 
   /** test api*/
   createTest: async (req, res) => {
