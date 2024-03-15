@@ -103,8 +103,8 @@ app.use(
 );
 
 app.use(
-  "/v" + process.env.VERSION + "/front/checkout/",
-  require("./route/frontRoute/checkOut_RF")
+  "/v" + process.env.VERSION + "/front/subscriptionCheckout/",
+  require("./route/frontRoute/subscriptionCheckOut_RF")
 );
 
 app.use(

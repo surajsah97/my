@@ -71,10 +71,10 @@ module.exports = {
             checkoutCart.userId = userId;
             checkoutCart.freeProduct = freeItem;
 
-            const create_Checkout = await ProductCheckOutModel.create(
+            const create_ProductCheckout = await ProductCheckOutModel.create(
               checkoutCart
             );
-            if (create_Checkout) {
+            if (create_ProductCheckout) {
               // let userUpdate = await UserModel.findByIdAndUpdate(
               //   { _id: userId },
               //   {
@@ -92,8 +92,8 @@ module.exports = {
 
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
-                message: global.CONFIGS.api.Productadded,
-                data: create_Checkout,
+                message: global.CONFIGS.api.ProductCheckOutadded,
+                data: create_ProductCheckout,
                 // userdata: userUpdate,
                 userdata: userdata,
               });
@@ -115,15 +115,15 @@ module.exports = {
             checkoutCart.product = product;
             checkoutCart.totalTaxablePrice = Math.round(totalTaxablePrice);
             checkoutCart.userId = userId;
-            const create_Checkout = await ProductCheckOutModel.create(
+            const create_ProductCheckout = await ProductCheckOutModel.create(
               checkoutCart
             );
-            if (create_Checkout) {
+            if (create_ProductCheckout) {
               let userdata = await UserModel.find({ _id: userId }).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
-                message: global.CONFIGS.api.Productadded,
-                data: create_Checkout,
+                message: global.CONFIGS.api.ProductCheckOutadded,
+                data: create_ProductCheckout,
                 userdata: userdata,
               });
             }

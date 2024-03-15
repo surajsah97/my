@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
-const SubModel = mongoose.model(constants.SubModel);
+const UserSubscriptionModel = mongoose.model(constants.UserSubscriptionModel);
 const common = require("../service/commonFunction");
 const ObjectId = mongoose.Types.ObjectId;
 const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
@@ -76,7 +76,7 @@ for(let i = 1; i <= differenceInDays; i++){
       addSubscription.subDurationId = req.body.subDurationId;
       addSubscription.totalTaxablePrice = Math.round(totalTaxablePrice);
       addSubscription.userId = userId;
-      const subscription = await SubModel.create(addSubscription);
+      const subscription = await UserSubscriptionModel.create(addSubscription);
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.subscriptionadded,
@@ -92,7 +92,7 @@ for(let i = 1; i <= differenceInDays; i++){
   },
 
   deletesub: async (req, res, next) => {
-    const existingSubscription = await SubModel.findById(req.params.id);
+    const existingSubscription = await UserSubscriptionModel.findById(req.params.id);
     if (!existingSubscription) {
       const err = new customError(
         global.CONFIGS.api.subscriptionNotfound,
@@ -100,7 +100,7 @@ for(let i = 1; i <= differenceInDays; i++){
       );
       return next(err);
     }
-    var delete_subscription = await SubModel.deleteOne({ _id: req.params.id });
+    var delete_subscription = await UserSubscriptionModel.deleteOne({ _id: req.params.id });
     if (delete_subscription.length == 0) {
       const err = new customError(
         global.CONFIGS.api.subscriptionInactive,
@@ -115,7 +115,7 @@ for(let i = 1; i <= differenceInDays; i++){
   },
 
   subscriptionListByAdmin: async (req, res, next) => {
-    var find_subscription = await SubModel.find({});
+    var find_subscription = await UserSubscriptionModel.find({});
     if (find_subscription.length == 0) {
       const err = new customError(
         global.CONFIGS.api.subscriptionInactive,
@@ -134,7 +134,7 @@ for(let i = 1; i <= differenceInDays; i++){
   },
   
   subscriptionListFront: async (req, res, next) => {
-   const find_subscription = await SubModel.aggregate([
+   const find_subscription = await UserSubscriptionModel.aggregate([
         {
           $match: {
             activeStatus: "Active",

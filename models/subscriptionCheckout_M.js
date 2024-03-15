@@ -1,7 +1,7 @@
 var constants = require("./modelConstants");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var productSchema = new Schema(
+var checkoutSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -15,11 +15,6 @@ var productSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: constants.ProductModel,
             required: [true, "Please enter productId."],
-          },productPrice: {
-            type: Number,
-          },
-          productImage: {
-            type: String,
           },
           qty: {
             type: Number,
@@ -35,13 +30,8 @@ var productSchema = new Schema(
       required: [true, "Please enter subDurationId."],
     },
     paymentStatus: {
-      type: Boolean,
-      default:false
-    },
-    activeStatus: {
-      type: String,
-      enum: ["Active", "Inactive", "Expired"],
-      default: "Active",
+        type: Boolean,
+        required: [true, "Please enter paymentStatus."]
     },
     totalPrice: {
       type: Number,
@@ -55,47 +45,21 @@ var productSchema = new Schema(
       type: Number,
       // required: [true, "Please enter price."],
     },
-    endDate: {
-      type: Date,
-      required: [true, "Please enter endDat."],
+    activeStatus: {
+      type: String,
+      enum: ["Active", "Inactive", "Expired"],
+      default: "Active",
     },
-    startDate: {
-      type: Date,
-      required: [true, "Please enter startDate."],
-    },
-    leftDuration:{
-      type:Number,
-      required: [true, "Please enter leftDuration."],
-    },
-    calendar:{
-      type: [
-        {
-          productId: {
-            type: Schema.Types.ObjectId,
-            ref: constants.ProductModel,
-            required: [true, "Please enter productId."],
-          },
-          day: {
-            type: Number,
-            required: [true, "Please enter Day."],
-          },
-          deliveryStatus:{
-            type:Boolean,
-            default:false
-          }
-        },
-      ],
-
-    }
   },
   {
-    collection: constants.UserSubscriptionModel,
+    collection: constants.SubscriptionCheckOutModel,
     versionKey: false,
     timestamps: true,
-    // toJSON: { virtuals: true, getters: true }
+    toObject: { virtuals: true, getters: true },
+    toJSON: { virtuals: true, getters: true },
   }
 );
 
 // productSchema.index({ 'createdAt': -1 });
 
-mongoose.model(constants.UserSubscriptionModel, productSchema);
+mongoose.model(constants.SubscriptionCheckOutModel, checkoutSchema);
