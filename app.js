@@ -40,7 +40,7 @@ console.log("here");
 // });
 
 const corsOptions = {
-  origin: [ "https://dhudu.ae", "https://admin.dhudu.ae"],
+  origin: [ "http://localhost:5173","https://dhudu.ae", "https://admin.dhudu.ae"],
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
