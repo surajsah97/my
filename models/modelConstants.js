@@ -6,9 +6,9 @@
 // exports.CategoryModel = "category";
 // exports.SubCategoryModel = "subcategory";
 // exports.ProductModel = "product";
-// exports.SubModel = "subscription";
+// exports.UserSubscriptionModel = "subscription";
 // exports.subscriptionPlanModel = "subscriptionplan";
-// exports.CheckOutModel = "subcheckout";
+// SubscriptionCheckOutModel: "subscriptioncheckout",
 // exports.BikeBrandModel = "bikebrand";
 // exports.BikeModelModel = "bikemodel";
 // exports.BikeModel = "bikedetails";
@@ -31,9 +31,9 @@ module.exports = {
   CategoryModel: "category",
   SubCategoryModel: "subcategory",
   ProductModel: "product",
-  SubModel: "subscription",
+  UserSubscriptionModel: "subscription",
   subscriptionPlanModel: "subscriptionplan",
-  CheckOutModel: "subcheckout",
+  SubscriptionCheckOutModel: "subscriptioncheckout",
   BikeBrandModel: "bikebrand",
   BikeModelModel: "bikemodel",
   BikeModel: "bikedetails",

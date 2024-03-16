@@ -1,16 +1,42 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
-const SubModel = mongoose.model(constants.SubModel);
+const UserSubscriptionModel = mongoose.model(constants.UserSubscriptionModel);
 const common = require("../service/commonFunction");
 const ObjectId = mongoose.Types.ObjectId;
 const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
 const ProductModel = mongoose.model(constants.ProductModel);
 var customError = require("../middleware/customerror");
+const UserModel = mongoose.model(constants.UserModel);
+const SubscriptionCheckOutModel = mongoose.model(constants.SubscriptionCheckOutModel);
 
 module.exports = {
-  addSub: async (req, res) => {
+  addSub: async (req, res, next) => {
     try {
       const { userId } = req.body;
+      const userDetail=await UserModel.findOne({_id:userId})
+      if (!userDetail) {
+        const err = new customError(
+        global.CONFIGS.api.userNotFound,
+        global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      var find_subscription = await UserSubscriptionModel.find({
+        userId: userId,
+      }).sort({ _id: -1 });
+      console.log(find_subscription, ".....find_subscription");
+      if (find_subscription) {
+        var prodinsubscription = find_subscription.some((item) => item.product[0].productId == req.body.product[0].productId);
+        console.log(prodinsubscription);
+        if (prodinsubscription === true) {
+            const err = new customError(
+              global.CONFIGS.api.subscriptionalreadyadded,
+              global.CONFIGS.responseCode.alreadyExist
+            );
+            return next(err);
+        }
+      }
+
       const subDuration = await subscriptionPlanModel
         .findById({ _id: new ObjectId(req.body.subDurationId) })
         .select("planDuration");
@@ -35,17 +61,18 @@ module.exports = {
       console.log(endDate, "....eeeeeee");
 
       const differenceInMilliseconds = endDate - startDate;
-      const differenceInDays = Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24));
-      const calendarItem=[];
+      const differenceInDays = Math.floor(
+        differenceInMilliseconds / (1000 * 60 * 60 * 24)
+      );
+      const calendarItem = [];
 
-for(let i = 1; i <= differenceInDays; i++){
-
-      let obj={};
-      obj.productId=req.body.product[0].productId
-      obj.day=i;
-      calendarItem.push(obj);
-      console.log(calendarItem,"....calendarItem");
-}
+      for (let i = 1; i <= differenceInDays; i++) {
+        let obj = {};
+        obj.productId = req.body.product[0].productId;
+        obj.day = i;
+        calendarItem.push(obj);
+      }
+      console.log(calendarItem, "....calendarItem");
 
       // console.log("Difference in days:", differenceInDays);
       // return;
@@ -76,12 +103,32 @@ for(let i = 1; i <= differenceInDays; i++){
       addSubscription.subDurationId = req.body.subDurationId;
       addSubscription.totalTaxablePrice = Math.round(totalTaxablePrice);
       addSubscription.userId = userId;
-      const subscription = await SubModel.create(addSubscription);
-      return res.status(global.CONFIGS.responseCode.success).json({
-        success: true,
-        message: global.CONFIGS.api.subscriptionadded,
-        data: subscription,
-      });
+      const subscription = await UserSubscriptionModel.create(addSubscription);
+      
+    if (subscription) {
+      var update_checkout = await SubscriptionCheckOutModel.findOneAndUpdate(
+        { userId: userId },
+        { activeStatus: "Expired" }
+      ).sort({_id:-1});
+        let userdata = {
+          name: userDetail.name,
+          email: userDetail.email,
+          mobile: userDetail.mobile,
+          isVerified: userDetail.isVerified,
+          userType: userDetail.userType,
+          activeStatus: userDetail.activeStatus,
+        };
+
+        return res.status(global.CONFIGS.responseCode.success).json({
+          success: true,
+          message: global.CONFIGS.api.subscriptionadded,
+          data: subscription,
+          userdata: userdata,
+        });
+      }
+
+
+
     } catch (error) {
       console.log(error);
       res.status(global.CONFIGS.responseCode.exception).json({
@@ -92,7 +139,9 @@ for(let i = 1; i <= differenceInDays; i++){
   },
 
   deletesub: async (req, res, next) => {
-    const existingSubscription = await SubModel.findById(req.params.id);
+    const existingSubscription = await UserSubscriptionModel.findById(
+      req.params.id
+    );
     if (!existingSubscription) {
       const err = new customError(
         global.CONFIGS.api.subscriptionNotfound,
@@ -100,7 +149,9 @@ for(let i = 1; i <= differenceInDays; i++){
       );
       return next(err);
     }
-    var delete_subscription = await SubModel.deleteOne({ _id: req.params.id });
+    var delete_subscription = await UserSubscriptionModel.deleteOne({
+      _id: req.params.id,
+    });
     if (delete_subscription.length == 0) {
       const err = new customError(
         global.CONFIGS.api.subscriptionInactive,
@@ -115,7 +166,7 @@ for(let i = 1; i <= differenceInDays; i++){
   },
 
   subscriptionListByAdmin: async (req, res, next) => {
-    var find_subscription = await SubModel.find({});
+    var find_subscription = await UserSubscriptionModel.find({});
     if (find_subscription.length == 0) {
       const err = new customError(
         global.CONFIGS.api.subscriptionInactive,
@@ -132,122 +183,121 @@ for(let i = 1; i <= differenceInDays; i++){
       data: find_subscription,
     });
   },
-  
+
   subscriptionListFront: async (req, res, next) => {
-   const find_subscription = await SubModel.aggregate([
-        {
-          $match: {
-            activeStatus: "Active",
-            userId: new ObjectId(req.query.userId),
-          },
+    const find_subscription = await UserSubscriptionModel.aggregate([
+      {
+        $match: {
+          activeStatus: "Active",
+          userId: new ObjectId(req.query.userId),
         },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "usersDetails",
-          },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "usersDetails",
         },
-        {
-          $unwind: "$usersDetails",
+      },
+      {
+        $unwind: "$usersDetails",
+      },
+      {
+        $lookup: {
+          from: "subscriptionplan",
+          localField: "subDurationId",
+          foreignField: "_id",
+          as: "subscriptionPlanDetails",
         },
-        {
-          $lookup: {
-            from: "subscriptionplan",
-            localField: "subDurationId",
-            foreignField: "_id",
-            as: "subscriptionPlanDetails",
-          },
+      },
+      {
+        $unwind: "$subscriptionPlanDetails",
+      },
+      {
+        $unwind: "$product",
+      },
+      {
+        $lookup: {
+          from: "product",
+          localField: "product.productId",
+          foreignField: "_id",
+          as: "product.productDetails",
         },
-        {
-          $unwind: "$subscriptionPlanDetails",
-        },
-        {
-          $unwind: "$product",
-        },
-        {
-          $lookup: {
-            from: "product",
-            localField: "product.productId",
-            foreignField: "_id",
-            as: "product.productDetails",
-          },
-        },
-        { $unwind: "$product.productDetails" },
-        { $unwind: "$calendar" },
-        
+      },
+      { $unwind: "$product.productDetails" },
+      { $unwind: "$calendar" },
 
-        {
-          $project: {
-            _id: 1,
-            //   _id: "$_id",
-            usersDetails: {
-              name: "$usersDetails.name",
-              email: "$usersDetails.email",
-              mobile: "$usersDetails.mobile",
-            },
-            product: {
-              _id: "$product.productDetails._id",
-              qty: "$product.qty",
-              productPrice: "$product.productDetails.productPrice",
-              productName: "$product.productDetails.productName",
-              productImage: "$product.productDetails.productImage",
-            },
-            totalPrice: 1,
-              planDuration: "$subscriptionPlanDetails.planDuration",
-            // "totalPrice": "$totalPrice",
-            vatAmount: 1,
-            totalTaxablePrice: 1,
-            paymentStatus: 1,
-            calendar: {
-              _id: "$product.productDetails._id",
-              day: "$calendar.day",
-              deliveryStatus: "$calendar.deliveryStatus",
-              productName: "$product.productDetails.productName",
-              productImage: "$product.productDetails.productImage",
-            },
-            startDate: 1,
-            endDate: 1,
+      {
+        $project: {
+          _id: 1,
+          //   _id: "$_id",
+          usersDetails: {
+            name: "$usersDetails.name",
+            email: "$usersDetails.email",
+            mobile: "$usersDetails.mobile",
           },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            userDetails: { $first: "$usersDetails" },
-            dailyChart: { $push: "$calendar" },
-            product: {
-              $first: "$product",
-            },
-            subscriptionDuration: {$first:"$planDuration"},
-            totalPrice: { $first: "$totalPrice" },
-            vatAmount: { $first: "$vatAmount" },
-            totalTaxablePrice: { $first: "$totalTaxablePrice" },
-            paymentStatus: { $first: "$paymentStatus" },
-            startDate: { $first: "$startDate" },
-            endDate: { $first: "$endDate" },
+          product: {
+            _id: "$product.productDetails._id",
+            qty: "$product.qty",
+            productPrice: "$product.productDetails.productPrice",
+            productName: "$product.productDetails.productName",
+            productImage: "$product.productDetails.productImage",
           },
-        },
-        { $unset: "userId" },
-        { $unset: "subDurationId" },
-        {
-          $sort: {
-            _id: 1,
+          totalPrice: 1,
+          planDuration: "$subscriptionPlanDetails.planDuration",
+          // "totalPrice": "$totalPrice",
+          vatAmount: 1,
+          totalTaxablePrice: 1,
+          paymentStatus: 1,
+          calendar: {
+            _id: "$product.productDetails._id",
+            day: "$calendar.day",
+            deliveryStatus: "$calendar.deliveryStatus",
+            productName: "$product.productDetails.productName",
+            productImage: "$product.productDetails.productImage",
           },
+          startDate: 1,
+          endDate: 1,
         },
-      ]);
-      if (find_subscription.length == 0) {
-        const err = new customError(
-          global.CONFIGS.api.subscriptionInactive,
-          global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-      }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          userDetails: { $first: "$usersDetails" },
+          dailyChart: { $push: "$calendar" },
+          product: {
+            $first: "$product",
+          },
+          subscriptionDuration: { $first: "$planDuration" },
+          totalPrice: { $first: "$totalPrice" },
+          vatAmount: { $first: "$vatAmount" },
+          totalTaxablePrice: { $first: "$totalTaxablePrice" },
+          paymentStatus: { $first: "$paymentStatus" },
+          startDate: { $first: "$startDate" },
+          endDate: { $first: "$endDate" },
+        },
+      },
+      { $unset: "userId" },
+      { $unset: "subDurationId" },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+    if (find_subscription.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.subscriptionInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
 
-      return res.status(global.CONFIGS.responseCode.success).json({
-        success: true,
-        message: global.CONFIGS.api.subscriptionListFront,
-        data: find_subscription,
-      });
-  }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.subscriptionListFront,
+      data: find_subscription,
+    });
+  },
 };
