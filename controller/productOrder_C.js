@@ -20,7 +20,7 @@ module.exports = {
     console.log(checkOutdata, ".......checkOutData");
     if (!checkOutdata) {
       const err = new customError(
-        global.CONFIGS.api.userNotFound,
+        global.CONFIGS.api.ProductCheckOutNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);

@@ -18,8 +18,23 @@ module.exports = {
           .json({ status: "400", message: "userId required" });
       }
       let userDetail = await UserModel.findOne({ _id: userId });
+      console.log(userDetail,".......userDetail");
+      if (!userDetail) {
+        const err = new customError(
+        global.CONFIGS.api.userNotFound,
+        global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
       if (userDetail) {
         let find_cart = await CartModel.findOne({ userId: req.body.userId });
+        if (!find_cart) {
+        const err = new customError(
+        global.CONFIGS.api.CartNotfound,
+        global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
         if (find_cart) {
           const product = find_cart.product;
           if (!product) {

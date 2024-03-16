@@ -31,7 +31,8 @@ var checkoutSchema = new Schema(
     },
     paymentStatus: {
         type: Boolean,
-        required: [true, "Please enter paymentStatus."]
+        default:false
+        // required: [true, "Please enter paymentStatus."]
     },
     totalPrice: {
       type: Number,
