@@ -28,7 +28,7 @@ module.exports = {
     });
     if (find_vehicle || find_Driver) {
       const err = new customError(
-        global.CONFIGS.api.Productalreadyadded,
+        global.CONFIGS.api.Driveralreadyadded,
         global.CONFIGS.responseCode.alreadyExist
       );
       return next(err);
@@ -242,32 +242,59 @@ module.exports = {
   /** */
   updateVehicle: async (req, res, next) => {
     try {
-      const { id } = req.params;
-      console.log({ _id: id });
-
       /**Update BikeDriver */
+      var find_Driver = await BikeDriverModel.findOne({
+      $or: [
+        { mobile:req.body.mobile },
+        // { licenseNumber: req.body.licenseNumber },
+        // { visaNumber: req.body.visaNumber },
+        // { emiratesId: req.body.emiratesId },
+      ],_id:{$nin:[req.params.id]}
+    });
+    console.log(find_Driver,"......find_Driver");
+    
+    
+    if (find_Driver) {
+      const err = new customError(
+        global.CONFIGS.api.Driveralreadyadded,
+        global.CONFIGS.responseCode.alreadyExist
+      );
+      return next(err);
+    }
+    var find_vehicle = await BikeModel.findOne({
+      chasisNumber: req.body.chasisNumber,
+    });
+    if (find_vehicle ) {
+      const err = new customError(
+        global.CONFIGS.api.BikeDetailsalreadyAdded,
+        global.CONFIGS.responseCode.alreadyExist
+      );
+      return next(err);
+    }
       const updatedDriver = await BikeDriverModel.findByIdAndUpdate(
-        id,
+        {_id:req.params.id},
         req.body,
         { new: true }
       );
       if (!updatedDriver) {
-        throw new Error("Driver not found");
+        const err = new customError(global.CONFIGS.api.DriverNotfound, global.CONFIGS.responseCode.notFound);
+        return next(err);
       }
+      console.log(updatedDriver,"......updatedDriver");
 
       /*  Update Bank Details*/
-      const updatedBankDetails = await DriverBankDetailsModel.findByIdAndUpdate(
-        updatedDriver.bankDetailsId,
+      const updatedBankDetails = await DriverBankDetailsModel.findByIdAndUpdate({_id:updatedDriver.bankDetailsId},
         req.body,
         { new: true }
       );
       if (!updatedBankDetails) {
-        throw new Error("Bank details not found");
+        const err = new customError(global.CONFIGS.api.driverBankDetailsNotfound, global.CONFIGS.responseCode.notFound);
+        return next(err);      
       }
 
       /* Update Driver Documents*/
       const updatedDriverDoc = await DriverDocModel.findByIdAndUpdate(
-        updatedDriver.docId,
+        {_id:updatedDriver.docId},
         {
           $set: {
             passportImg: req.body.passportImg,
@@ -280,11 +307,12 @@ module.exports = {
         { new: true }
       );
       if (!updatedDriverDoc) {
-        throw new Error("Driver documents not found");
+        const err = new customError(global.CONFIGS.api.DriverDocNotfound, global.CONFIGS.responseCode.notFound);
+        return next(err);        
       }
       /* Update Driver Address*/
       const updateDriverAddress = await DriverAddressModel.findByIdAndUpdate(
-        updatedDriver.addressId,
+        {_id:updatedDriver.addressId},
         {
           $set: {
             emergencyContact: {
@@ -312,11 +340,25 @@ module.exports = {
         { new: true }
       );
       if (!updateDriverAddress) {
-        throw new Error("Driver address not found");
+        const err = new customError(global.CONFIGS.api.driverAddressNotfound, global.CONFIGS.responseCode.notFound);
+        return next(err); 
+      }
+
+      /* find and match chassis number of Bike Details*/
+
+      var find_vehicle = await BikeModel.findOne({
+        chasisNumber: req.body.chasisNumber,_id:{$nin:[req.params.id.bikeDetailsId]}
+      });
+      if (find_vehicle ) {
+        const err = new customError(
+        global.CONFIGS.api.BikeDetailsalreadyAdded,
+        global.CONFIGS.responseCode.alreadyExist
+        );
+        return next(err);
       }
       /* Update Bike Details*/
       const updateBikeDetails = await BikeModel.findByIdAndUpdate(
-        updatedDriver.bikeDetailsId,
+        {_id:updatedDriver.bikeDetailsId},
         {
           $set: {
             brandId: req.body.brandId,
@@ -354,7 +396,8 @@ module.exports = {
         { new: true }
       );
       if (!updateBikeDetails) {
-        throw new Error("Bike Details  not found");
+          const err = new customError(global.CONFIGS.api.BikeDetailsNotfound, global.CONFIGS.responseCode.notFound);
+          return next(err);      
       }
       if (
         updateDriverAddress &&

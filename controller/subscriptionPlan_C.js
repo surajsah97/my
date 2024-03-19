@@ -31,7 +31,7 @@ module.exports = {
             return next(err);
         }
         
-         const existingPlan = await subscriptionPlanModel.findById(req.params.id);
+        const existingPlan = await subscriptionPlanModel.findById(req.params.id);
         if (!existingPlan) {
             const err = new customError(global.CONFIGS.api.subscriptionPlanNotfound, global.CONFIGS.responseCode.notFound);
             return next(err);

@@ -19,6 +19,11 @@ module.exports = {
     },
 
     updateBrand: async (req, res, next) => {
+        const validactiveStatus = ["0","1"];
+        if (!validactiveStatus.includes(req.body.activeStatus)) {
+            const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
+            return next(err);
+        }
         var find_brand = await BikeBrandModel.findOne({ bikeBrand: req.body.bikeBrand, _id: { $nin: [req.params.id] } });
         if (find_brand) {
             const err = new customError(global.CONFIGS.api.brandalreadyadded, global.CONFIGS.responseCode.alreadyExist);
@@ -31,8 +36,8 @@ module.exports = {
         })
     },
 
-    brandList: async (req, res, next) => {
-        var find_brand = await BikeBrandModel.find({}).sort({ bikeBrand: 1 });
+    brandListAdmin: async (req, res, next) => {
+        var find_brand = await BikeBrandModel.find({}).sort({ bikeBrand: 1});
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getBrandSuccess,

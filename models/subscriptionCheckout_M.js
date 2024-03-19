@@ -16,6 +16,9 @@ var checkoutSchema = new Schema(
             ref: constants.ProductModel,
             required: [true, "Please enter productId."],
           },
+          productImage: {
+            type: String,
+          },
           qty: {
             type: Number,
             min: [1, "Quantity cannot be less than 1"],
@@ -50,6 +53,45 @@ var checkoutSchema = new Schema(
       type: String,
       enum: ["Active", "Inactive", "Expired"],
       default: "Active",
+    },
+    endDate: {
+      type: Date,
+      required: [true, "Please enter endDat."],
+    },
+    startDate: {
+      type: Date,
+      required: [true, "Please enter startDate."],
+    },
+    leftDuration:{
+      type:Number,
+      required: [true, "Please enter leftDuration."],
+    },
+    calendar:{
+      type: [
+        {
+          productId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.ProductModel,
+            required: [true, "Please enter productId."],
+          },
+          day: {
+            type: Number,
+            required: [true, "Please enter Day."],
+          },
+    dates: {
+      type: Date,
+      required: [true, "Please enter startDate."],
+    },
+          deliveryStatus:{
+            type:Boolean,
+            default:false
+          }
+        },
+      ],
+    },
+    dailyInterval: {
+      type: String,
+      enum: ["daily", "alternate"],
     },
   },
   {
