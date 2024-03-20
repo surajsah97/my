@@ -5,7 +5,8 @@ const BikeDetails = require("../../controller/bikeDetails_C")
 const Auth = require("../../middleware/auth");
 const multer = require("multer");
 
-const errorfun=require("../../middleware/catchAsyncErrors")
+const errorfun=require("../../middleware/catchAsyncErrors");
+const bikeDetails_C = require('../../controller/bikeDetails_C');
 
 
 const localStorage = multer.diskStorage({
@@ -36,12 +37,18 @@ var cpUpload = upload1.fields([
 ])
 
 router.route('/')
-    .get(errorfun(BikeDetails.vehicleListAdmin))
-    .post(cpUpload, errorfun(BikeDetails.addVehicle))
+    // .get(errorfun(BikeDetails.vehicleListAdmin))
+    .get(Auth.adminValidateToken,errorfun(BikeDetails.vehicleListAdmin))
+    // .post(cpUpload, errorfun(BikeDetails.addVehicle))
+    .post(Auth.adminValidateToken,cpUpload, errorfun(BikeDetails.addVehicle))
 
 router.route('/:id')
-    .put(cpUpload, errorfun(BikeDetails.updateVehicle))
-    .delete(errorfun(BikeDetails.deletevehicle))
+    // .put(cpUpload, errorfun(BikeDetails.updateVehicle))
+    .put(Auth.adminValidateToken,cpUpload, errorfun(BikeDetails.updateVehicle))
+    // .delete(errorfun(BikeDetails.deletevehicle))
+    .delete(Auth.adminValidateToken,errorfun(BikeDetails.deletevehicle))
+    // .get(errorfun(BikeDetails.getVehicleSingleAdmin))
+    .get(Auth.adminValidateToken,errorfun(BikeDetails.getVehicleSingleAdmin))
 
 
 
