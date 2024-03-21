@@ -140,8 +140,16 @@ app.use(
   require("./route/adminRoute/BikeBrand_RA")
 );
 app.use(
+  "/v" + process.env.VERSION + "/front/bikebrand/",
+  require("./route/frontRoute/BikeBrand_RF")
+);
+app.use(
   "/v" + process.env.VERSION + "/admin/bikemodel/",
   require("./route/adminRoute/BikeModel_RA")
+);
+app.use(
+  "/v" + process.env.VERSION + "/front/bikemodel/",
+  require("./route/frontRoute/BikeModel_RF")
 );
 
 app.use(

@@ -1,9 +1,9 @@
-var mongoose = require("mongoose");
+let mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
 const BikeModel = mongoose.model(constants.BikeModel);
 const BikeDriverModel = mongoose.model(constants.BikeDriverModel);
 const common = require("../service/commonFunction");
-var customError = require("../middleware/customerror");
+let customError = require("../middleware/customerror");
 const bcrypt = require("bcrypt");
 const DriverDocModel = mongoose.model(constants.DriverDocModel);
 const DriverAddressModel = mongoose.model(constants.DriverAddressModel);
@@ -13,9 +13,7 @@ const ObjectId = mongoose.Types.ObjectId;
 module.exports = {
   /** */
   addVehicle: async (req, res, next) => {
-    console.log(req.files, "....files");
-    console.log(req.body, ".....body");
-    var find_Driver = await BikeDriverModel.findOne({
+    let find_Driver = await BikeDriverModel.findOne({
       $or: [
         { mobile: req.body.mobile },
         { licenseNumber: req.body.licenseNumber },
@@ -23,12 +21,12 @@ module.exports = {
         { emiratesId: req.body.emiratesId },
       ],
     });
-    var find_vehicle = await BikeModel.findOne({
+    let find_vehicle = await BikeModel.findOne({
       chasisNumber: req.body.chasisNumber,
     });
     if (find_vehicle || find_Driver) {
       const err = new customError(
-        global.CONFIGS.api.Productalreadyadded,
+        global.CONFIGS.api.Driveralreadyadded,
         global.CONFIGS.responseCode.alreadyExist
       );
       return next(err);
@@ -146,128 +144,232 @@ module.exports = {
       const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
       const hash = await bcrypt.hashSync(req.body.password, salt);
       req.body.password = hash;
+    }
 
-      try {
-        const createDriver = await BikeDriverModel.create(req.body);
-        if (!createDriver) {
-          throw new Error("Failed to create driver");
-        }
-        const createVehicle = await BikeModel.create(req.body);
-        if (!createVehicle) {
-          throw new Error("Failed to create Vehicle");
-        }
+    const createDriver = await BikeDriverModel.create(req.body);
 
-        // Create DriverAddressModel and DriverBankDetailsModel with driverId from createDriver
-        const createAddress = await DriverAddressModel.create({
-          emergencyContact: {
-            namr: req.body.ecName,
-            relation: req.body.ecRelation,
-            mobile: req.body.ecMobile,
-          },
-          homeCountryAddress: {
-            houseNo: req.body.hcHouseNo,
-            buildingName: req.body.hcBuildingName,
-            street: req.body.hcStreet,
-            landmark: req.body.hcLandmark,
-            city: req.body.hcCity,
-            state: req.body.hcState,
-            pinCode: req.body.hcPinCode,
-          },
-          localAddress: {
-            houseNo: req.body.lHouseNo,
-            buildingName: req.body.lBuildingName,
-            street: req.body.lStreet,
-            landmark: req.body.lLandmark,
-          },
-          driverId: createDriver._id, // Use _id from createDriver
-        });
-
-        if (!createAddress) {
-          throw new Error("Failed to create address");
-        }
-        const createDoc = await DriverDocModel.create({
-          passportImg: req.body.passportImg,
-          emiratesIdImg: req.body.emiratesIdImg,
-          licenseImg: req.body.licenseImg,
-          visaImg: req.body.visaImg,
-          driverImg: req.body.driverImg,
-          driverId: createDriver._id,
-        });
-        if (!createDoc) {
-          throw new Error("Failed to create driver document");
-        }
-
-        const createBankDetails = await DriverBankDetailsModel.create({
-          driverId: createDriver._id, // Use _id from createDriver
-          IBAN: req.body.IBAN,
-          accountHolderName: req.body.accountHolderName,
-          accountNumber: req.body.accountNumber,
-          branchName: req.body.branchName,
-          bankName: req.body.bankName,
-        });
-
-        if (!createBankDetails) {
-          throw new Error("Failed to create bank details");
-        }
-        if (createVehicle && createAddress && createBankDetails && createDoc) {
-          const updateDriver = await BikeDriverModel.updateOne(
-            { _id: createDriver._id },
-            {
-              addressId: createAddress._id,
-              bankDetailsId: createBankDetails._id,
-              bikeDetailsId: createVehicle._id,
-              docId: createDoc._id,
-            }
-          );
-          return res.status(global.CONFIGS.responseCode.success).json({
-            success: true,
-            message: global.CONFIGS.api.Productadded,
-            updateDriver: updateDriver,
-          });
-        }
-      } catch (error) {
-        // Handle errors
-        return next(error);
-      }
-    } else {
-      // If any of the required files are missing, return an error response
+    if (!createDriver) {
       const err = new customError(
-        global.CONFIGS.api.RequiredFilesMissing,
-        global.CONFIGS.responseCode.badRequest
+        global.CONFIGS.api.DriverNotAdded,
+        global.CONFIGS.responseCode.notFound
       );
       return next(err);
     }
-  },
+    const createVehicle = await BikeModel.create(req.body);
+    if (!createVehicle) {
+      const err = new customError(
+        global.CONFIGS.api.vehicleNotAdded,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
 
+    // Create DriverAddressModel and DriverBankDetailsModel with driverId from createDriver
+    const createAddress = await DriverAddressModel.create({
+      emergencyContact: {
+        namr: req.body.ecName,
+        relation: req.body.ecRelation,
+        mobile: req.body.ecMobile,
+      },
+      homeCountryAddress: {
+        houseNo: req.body.hcHouseNo,
+        buildingName: req.body.hcBuildingName,
+        street: req.body.hcStreet,
+        landmark: req.body.hcLandmark,
+        city: req.body.hcCity,
+        state: req.body.hcState,
+        pinCode: req.body.hcPinCode,
+      },
+      localAddress: {
+        houseNo: req.body.lHouseNo,
+        buildingName: req.body.lBuildingName,
+        street: req.body.lStreet,
+        landmark: req.body.lLandmark,
+      },
+      driverId: createDriver._id, // Use _id from createDriver
+    });
+
+    if (!createAddress) {
+      const err = new customError(
+        global.CONFIGS.api.AddressNotAdded,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const createDoc = await DriverDocModel.create({
+      passportImg: req.body.passportImg,
+      emiratesIdImg: req.body.emiratesIdImg,
+      licenseImg: req.body.licenseImg,
+      visaImg: req.body.visaImg,
+      driverImg: req.body.driverImg,
+      driverId: createDriver._id,
+    });
+    if (!createDoc) {
+      const err = new customError(
+        global.CONFIGS.api.DocNotAdded,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+    const createBankDetails = await DriverBankDetailsModel.create({
+      driverId: createDriver._id, // Use _id from createDriver
+      IBAN: req.body.IBAN,
+      accountHolderName: req.body.accountHolderName,
+      accountNumber: req.body.accountNumber,
+      branchName: req.body.branchName,
+      bankName: req.body.bankName,
+    });
+
+    if (!createBankDetails) {
+      const err = new customError(
+        global.CONFIGS.api.BankDetailsNotAdded,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    if (createVehicle && createAddress && createBankDetails && createDoc) {
+      const updateDriver = await BikeDriverModel.updateOne(
+        { _id: createDriver._id },
+        {
+          addressId: createAddress._id,
+          bankDetailsId: createBankDetails._id,
+          bikeDetailsId: createVehicle._id,
+          docId: createDoc._id,
+        }
+      );
+      return res.status(global.CONFIGS.responseCode.success).json({
+        success: true,
+        message: global.CONFIGS.api.DriverDetailsAdded,
+        updateDriver: updateDriver,
+      });
+    }
+  },
   /** */
   updateVehicle: async (req, res, next) => {
     try {
-      const { id } = req.params;
-      console.log({ _id: id });
-
       /**Update BikeDriver */
+      let find_Driver = await BikeDriverModel.findOne({
+        _id: req.params.id,
+      });
+      if (!find_Driver) {
+        const err = new customError(
+          global.CONFIGS.api.DriverNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_Driver, "......find_Driver");
+
+      let find_BankDetails = await DriverBankDetailsModel.findOne({
+        _id: find_Driver.bankDetailsId,
+      });
+      if (!find_BankDetails) {
+        const err = new customError(
+          global.CONFIGS.api.driverBankDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_BankDetails, "......find_BankDetails");
+
+      let find_address = await DriverAddressModel.findOne({
+        _id: find_Driver.addressId,
+      });
+      if (!find_address) {
+        const err = new customError(
+          global.CONFIGS.api.driverAddressNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_address, "......find_address");
+
+      let find_vehicle = await BikeModel.findOne({
+        _id: find_Driver.bikeDetailsId,
+      });
+      if (!find_vehicle) {
+        const err = new customError(
+          global.CONFIGS.api.BikeDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_vehicle, "......find_vehicle");
+
+      let find_driverdoc = await DriverDocModel.findOne({
+        _id: find_Driver.docId,
+      });
+      if (!find_driverdoc) {
+        const err = new customError(
+          global.CONFIGS.api.DriverDocNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_driverdoc, "......find_driverdoc");
+
+      let find_Exist_Driver = await BikeDriverModel.findOne({
+        $or: [
+          { mobile: req.body.mobile },
+          { licenseNumber: req.body.licenseNumber },
+          { visaNumber: req.body.visaNumber },
+          { emiratesId: req.body.emiratesId },
+        ],
+        _id: { $nin: [req.params.id] },
+      });
+      console.log(find_Exist_Driver, "......find_Exist_Driver");
+
+      if (find_Exist_Driver) {
+        const err = new customError(
+          global.CONFIGS.api.Driveralreadyadded,
+          global.CONFIGS.responseCode.alreadyExist
+        );
+        return next(err);
+      }
+
+      let findExistVehicle = await BikeModel.findOne({
+        chasisNumber: req.body.chasisNumber,
+        _id: { $nin: [find_Driver.bikeDetailsId] },
+      });
+      if (findExistVehicle) {
+        const err = new customError(
+          global.CONFIGS.api.BikeDetailsalreadyAdded,
+          global.CONFIGS.responseCode.alreadyExist
+        );
+        return next(err);
+      }
       const updatedDriver = await BikeDriverModel.findByIdAndUpdate(
-        id,
+        { _id: req.params.id },
         req.body,
         { new: true }
       );
       if (!updatedDriver) {
-        throw new Error("Driver not found");
+        const err = new customError(
+          global.CONFIGS.api.DriverNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
+      console.log(updatedDriver, "......updatedDriver");
 
       /*  Update Bank Details*/
       const updatedBankDetails = await DriverBankDetailsModel.findByIdAndUpdate(
-        updatedDriver.bankDetailsId,
+        { _id: updatedDriver.bankDetailsId },
         req.body,
         { new: true }
       );
       if (!updatedBankDetails) {
-        throw new Error("Bank details not found");
+        const err = new customError(
+          global.CONFIGS.api.driverBankDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
 
       /* Update Driver Documents*/
       const updatedDriverDoc = await DriverDocModel.findByIdAndUpdate(
-        updatedDriver.docId,
+        { _id: updatedDriver.docId },
         {
           $set: {
             passportImg: req.body.passportImg,
@@ -280,11 +382,15 @@ module.exports = {
         { new: true }
       );
       if (!updatedDriverDoc) {
-        throw new Error("Driver documents not found");
+        const err = new customError(
+          global.CONFIGS.api.DriverDocNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
       /* Update Driver Address*/
       const updateDriverAddress = await DriverAddressModel.findByIdAndUpdate(
-        updatedDriver.addressId,
+        { _id: updatedDriver.addressId },
         {
           $set: {
             emergencyContact: {
@@ -312,11 +418,15 @@ module.exports = {
         { new: true }
       );
       if (!updateDriverAddress) {
-        throw new Error("Driver address not found");
+        const err = new customError(
+          global.CONFIGS.api.driverAddressNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
       /* Update Bike Details*/
       const updateBikeDetails = await BikeModel.findByIdAndUpdate(
-        updatedDriver.bikeDetailsId,
+        { _id: updatedDriver.bikeDetailsId },
         {
           $set: {
             brandId: req.body.brandId,
@@ -354,7 +464,11 @@ module.exports = {
         { new: true }
       );
       if (!updateBikeDetails) {
-        throw new Error("Bike Details  not found");
+        const err = new customError(
+          global.CONFIGS.api.BikeDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
       if (
         updateDriverAddress &&
@@ -364,7 +478,7 @@ module.exports = {
       ) {
         return res.status(global.CONFIGS.responseCode.success).json({
           success: true,
-          message: global.CONFIGS.api.ProductUpdated,
+          message: global.CONFIGS.api.DriverDetailsUpdated,
         });
       } else {
         throw new Error("Failed to update driver");
@@ -377,21 +491,101 @@ module.exports = {
 
   /** */
   deletevehicle: async (req, res, next) => {
-    try {
       const { id } = req.params;
+
+      let find_Driver = await BikeDriverModel.findOne({ _id: id });
+      if (!find_Driver) {
+        const err = new customError(
+          global.CONFIGS.api.DriverNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_Driver, "......find_Driver");
+
+      let find_BankDetails = await DriverBankDetailsModel.findOne({
+        _id: find_Driver.bankDetailsId,
+      });
+      if (!find_BankDetails) {
+        const err = new customError(
+          global.CONFIGS.api.driverBankDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_BankDetails, "......find_BankDetails");
+
+      let find_address = await DriverAddressModel.findOne({
+        _id: find_Driver.addressId,
+      });
+      if (!find_address) {
+        const err = new customError(
+          global.CONFIGS.api.driverAddressNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_address, "......find_address");
+
+      let find_vehicle = await BikeModel.findOne({
+        _id: find_Driver.bikeDetailsId,
+      });
+      if (!find_vehicle) {
+        const err = new customError(
+          global.CONFIGS.api.BikeDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_vehicle, "......find_vehicle");
+
+      let find_driverdoc = await DriverDocModel.findOne({
+        _id: find_Driver.docId,
+      });
+      if (!find_driverdoc) {
+        const err = new customError(
+          global.CONFIGS.api.DriverDocNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_driverdoc, "......find_driverdoc");
 
       /* Delete BikeDriver*/
       const deletedDriver = await BikeDriverModel.findByIdAndRemove(id);
+
       if (!deletedDriver) {
-        throw new Error("Driver not found");
+        const err = new customError(
+          global.CONFIGS.api.DriverNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
 
       /* Delete Bank Details*/
       const deletedBankDetails = await DriverBankDetailsModel.findByIdAndRemove(
         deletedDriver.bankDetailsId
       );
+
       if (!deletedBankDetails) {
-        throw new Error("Bank details not found");
+        const err = new customError(
+          global.CONFIGS.api.driverBankDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+
+      /* Delete Bike Details*/
+      const deletedBikeDetails = await BikeModel.findByIdAndRemove(
+        deletedDriver.bikeDetailsId
+      );
+
+      if (!deletedBikeDetails) {
+        const err = new customError(
+          global.CONFIGS.api.BikeDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
 
       /* Delete Driver Documents*/
@@ -399,46 +593,210 @@ module.exports = {
         deletedDriver.docId
       );
       if (!deletedDriverDoc) {
-        throw new Error("Driver documents not found");
+        const err = new customError(
+          global.CONFIGS.api.DriverDocNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
-
       /* Delete Driver Address*/
       const deletedDriverAddress = await DriverAddressModel.findByIdAndRemove(
         deletedDriver.addressId
       );
       if (!deletedDriverAddress) {
-        throw new Error("Driver address not found");
-      }
-
-      /* Delete Bike Details*/
-      const deletedBikeDetails = await BikeModel.findByIdAndRemove(
-        deletedDriver.bikeDetailsId
-      );
-      if (!deletedBikeDetails) {
-        throw new Error("Bike Details not found");
+        const err = new customError(
+          global.CONFIGS.api.driverAddressNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
       }
 
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
-        message: global.CONFIGS.api.ProductDelete,
-        deleteBikeDetails: deletedBikeDetails,
-        deleteBikedriver: deletedDriver,
+        message: global.CONFIGS.api.DriverDetailsDeleted,
       });
-    } catch (error) {
-      // Handle errors
-      return next(error);
-    }
+    
   },
 
   /** */
 
-  /**get single vehicleDetails */
+  /**get single vehicleDetails by user */
 
   getVehicleSingleFront: async (req, res, next) => {
     // console.log(req.body);
-    var find_user = await BikeDriverModel.aggregate([
+    let find_user = await BikeDriverModel.aggregate([
       {
         $match: { activeStatus: "1", _id: new ObjectId(req.query.id) },
+      },
+      /**driverbankdetails */
+      {
+        $lookup: {
+          from: "driverbankdetails",
+          localField: "bankDetailsId",
+          foreignField: "_id",
+          as: "driverbankdetails",
+        },
+      },
+      { $unwind: "$driverbankdetails" },
+      { $unset: "bankDetailsId" },
+      /**bikedetails */
+      {
+        $lookup: {
+          from: "bikedetails",
+          localField: "bikeDetailsId",
+          foreignField: "_id",
+          as: "bikedetails",
+        },
+      },
+      { $unwind: "$bikedetails" },
+      { $unset: "bikeDetailsId" },
+      { $unset: "bikedetails.mulkiyaDocImg._id" },
+      { $unset: "bikedetails.vehicleImage._id" },
+
+      /**fetch bikeMrand into bikedetails */
+
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "bikedetails.brandId",
+          foreignField: "_id",
+          as: "bikebrandName",
+        },
+      },
+      { $unwind: "$bikebrandName" },
+      { $unset: "bikedetails.brandId" },
+
+      /**fetch bikeModel into bikedetails */
+      /**bikemodel */
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "bikedetails.modelId",
+          foreignField: "_id",
+          as: "bikemodelName",
+        },
+      },
+      { $unwind: "$bikemodelName" },
+      { $unset: "bikedetails.modelId" },
+      /**driveraddress */
+
+      {
+        $lookup: {
+          from: "driveraddress",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "driveraddress",
+        },
+      },
+      { $unwind: "$driveraddress" },
+      { $unset: "addressId" },
+      { $unset: "driveraddress.localAddress._id" },
+      { $unset: "driveraddress.homeCountryAddress._id" },
+      { $unset: "driveraddress.emergencyContact._id" },
+      /**driverdoc */
+      {
+        $lookup: {
+          from: "driverdoc",
+          localField: "docId",
+          foreignField: "_id",
+          as: "driverdoc",
+        },
+      },
+      { $unwind: "$driverdoc" },
+      { $unset: "docId" },
+      { $unset: "driverdoc.passportImg._id" },
+      { $unset: "driverdoc.emiratesIdImg._id" },
+      { $unset: "driverdoc.licenseImg._id" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+      {
+        $project: {
+          _id: "$_id",
+          /**bikedriverdetails */
+          name: "$name",
+          email: "$email",
+          mobile: "$mobile",
+          nationality: "$nationality",
+          altMobile: "$altMobile",
+          passportNumber: "$passportNumber",
+          passwordassportValidity: "$passwordassportValidity",
+          visaNumber: "$visaNumber",
+          visaValidity: "$visaValidity",
+          emiratesId: "$emiratesId",
+          emiratesIdValidity: "$emiratesIdValidity",
+          InsuranceComp: "$InsuranceComp",
+          insuranceValidity: "$insuranceValidity",
+          password: "$password",
+          licenseNumber: "$licenseNumber",
+          licenseCity: "$licenseCity",
+          licenseType: "$licenseType",
+          licenseValidity: "$licenseValidity",
+          isVerified: "$isVerified",
+          driverType: "$driverType",
+          activeStatus: "$activeStatus",
+          /**driveraddress */
+          localAddress: "$driveraddress.localAddress",
+          homeCountryAddress: "$driveraddress.homeCountryAddress",
+          emergencyContact: "$driveraddress.emergencyContact",
+          /**driverbankdetails */
+          bankName: "$driverbankdetails.bankName",
+          branchName: "$driverbankdetails.branchName",
+          accountNumber: "$driverbankdetails.accountNumber",
+          accountHolderName: "$driverbankdetails.accountHolderName",
+          IBAN: "$driverbankdetails.IBAN",
+          /**driverdoc */
+          passportImg: "$driverdoc.passportImg",
+          emiratesIdImg: "$driverdoc.emiratesIdImg",
+          licenseImg: "$driverdoc.licenseImg",
+          visaImg: "$driverdoc.visaImg",
+          driverImg: "$driverdoc.driverImg",
+          /**bikedetails */
+          ownerName: "$bikedetails.ownerName",
+          vehicleNumber: "$bikedetails.vehicleNumber",
+          registrationZone: "$bikedetails.registrationZone",
+          registrationDate: "$bikedetails.registrationDate",
+          vehicleColor: "$bikedetails.vehicleColor",
+          vehicleYear: "$bikedetails.vehicleYear",
+          vehicleAge: "$bikedetails.vehicleAge",
+          chasisNumber: "$bikedetails.chasisNumber",
+          bikeInsuranceValidity: "$bikedetails.bikeInsuranceValidity",
+          fitnessValidity: "$bikedetails.fitnessValidity",
+          mulkiyaValidity: "$bikedetails.mulkiyaValidity",
+          mulkiyaDocImg: "$bikedetails.mulkiyaDocImg",
+          vehicleImage: "$bikedetails.vehicleImage",
+          bikeActiveStatus: "$bikedetails.activeStatus",
+          bikeBrand: "$bikebrandName.bikeBrand",
+          bikeModel: "$bikemodelName.bikeModel",
+        },
+      },
+    ]);
+    // return res.send(find_user)
+    if (find_user.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.getUserDetailsFail,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.getUserDetailsSuccess,
+      // totalPage: totalPage,
+      data: find_user,
+    });
+  },
+  /** */
+  /**get single vehicleDetails by Admin */
+
+  getVehicleSingleAdmin: async (req, res, next) => {
+    // console.log(req.body);
+    let find_user = await BikeDriverModel.aggregate([
+      {
+        $match: { _id: new ObjectId(req.query.id) },
       },
       /**driverbankdetails */
       {
@@ -608,7 +966,7 @@ module.exports = {
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
     // console.log(skip, "...skip");
-    var bikeDriverList = await BikeDriverModel.aggregate([
+    let bikeDriverList = await BikeDriverModel.aggregate([
       {
         $match: { activeStatus: "1" },
       },
@@ -790,13 +1148,12 @@ module.exports = {
     });
   },
 
-  
   vehicleListAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
     // console.log(skip, "...skip");
-    var bikeDriverList = await BikeDriverModel.aggregate([
+    let bikeDriverList = await BikeDriverModel.aggregate([
       /**driverbankdetails */
       {
         $lookup: {
@@ -883,7 +1240,8 @@ module.exports = {
       },
       {
         $project: {
-          _id: "$_id",
+          _id: 1,
+          // _id: "$_id",
           /**bikedriverdetails */
           name: 1,
           email: 1,
@@ -978,6 +1336,3 @@ module.exports = {
     });
   },
 };
-
-
-
