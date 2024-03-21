@@ -85,13 +85,23 @@ module.exports = {
 
     differenceInDays =subDuration.planDuration*2;
     // console.log(differenceInDays,"...differenceInDays");
-      for (let i = 0; i < differenceInDays; i+=2) {
+      for (let i = 1; i <= differenceInDays; i++) {
         let currentDate = new Date(startDate);
-        currentDate.setDate(currentDate.getDate() + i);
+        currentDate.setDate(currentDate.getDate() + i-1);
         let obj = {};
-        obj.productId = product[0].productId;
-        obj.day = i/2 + 1;
-        obj.dates = currentDate;
+        if (i % 2 !== 0) { 
+          obj.productId = product[0].productId;
+          obj.day = i ;
+          obj.dates = currentDate; 
+          obj.deliveryStatus=false
+        } else {
+          // obj.productId = product[0].productId;
+          obj.day = i ;
+          obj.dates = currentDate;
+        }
+        // obj.productId = product[0].productId;
+        // obj.day = i + 1;
+        // obj.dates = currentDate;
         calendarItem.push(obj);
       }
     }

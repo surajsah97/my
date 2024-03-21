@@ -72,19 +72,19 @@ var checkoutSchema = new Schema(
           productId: {
             type: Schema.Types.ObjectId,
             ref: constants.ProductModel,
-            required: [true, "Please enter productId."],
+            // required: [true, "Please enter productId."],
           },
           day: {
             type: Number,
             required: [true, "Please enter Day."],
           },
-    dates: {
-      type: Date,
-      required: [true, "Please enter startDate."],
-    },
+          dates: {
+            type: Date,
+            required: [true, "Please enter startDate."],
+          },
           deliveryStatus:{
-            type:Boolean,
-            default:false
+            type: Boolean,
+            // default:false
           }
         },
       ],
