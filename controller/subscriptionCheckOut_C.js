@@ -78,22 +78,19 @@ module.exports = {
         calendarItem.push(obj);
       }
     } else if (dailyInterval === "alternate") {
-    // const startDate = new Date();
-    // startDate.setDate(startDate.getDate()); // Today
-    // let endDate = new Date(startDate.getTime());
     endDate.setDate(endDate.getDate() + ((subDuration.planDuration*2)-1)); // 15 days includes today
 
     console.log(startDate, "...currentDate...");
     console.log(endDate, "....eeeeeee");
 
     differenceInDays =subDuration.planDuration*2;
-    // console.log(differenceInDays,"...diffinday");
-      for (let i = 0; i < differenceInDays; i++) {
+    // console.log(differenceInDays,"...differenceInDays");
+      for (let i = 0; i < differenceInDays; i+=2) {
         let currentDate = new Date(startDate);
         currentDate.setDate(currentDate.getDate() + i);
         let obj = {};
         obj.productId = product[0].productId;
-        obj.day = i + 1;
+        obj.day = i/2 + 1;
         obj.dates = currentDate;
         calendarItem.push(obj);
       }
