@@ -19,34 +19,31 @@ module.exports = {
     },
 
     updateBrand: async (req, res, next) => {
-        let validactiveStatus = ["0","1"];
-        var find_brand = await BikeBrandModel.findOne({ bikeBrand: req.body.bikeBrand, _id: { $nin: [req.params.id] } });
-        if (find_brand) {
+        let find_brand = await BikeBrandModel.findById(req.params.id);
+        if (!find_brand) {
+        const err = new customError(global.CONFIGS.api.brandInactive, global.CONFIGS.responseCode.notFound);
+        return next(err);
+        }
+        const existing_brand = await BikeBrandModel.findOne({ bikeBrand: req.body.bikeBrand, _id: { $nin: [req.params.id] } });
+        if (existing_brand) {
             const err = new customError(global.CONFIGS.api.brandalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             return next(err);
         }
 
-        let existing_brand = await BikeBrandModel.findById(req.params.id);
-        if (!existing_brand) {
-        const err = new customError(global.CONFIGS.api.brandInactive, global.CONFIGS.responseCode.notFound);
-        return next(err);
-        }
-
-        if (!req.body.hasOwnProperty('activeStatus')) {
-            req.body.activeStatus = existing_brand.activeStatus;
-        }
-
-        if (!validactiveStatus.includes(req.body.activeStatus)) {
+        if(req.body.activeStatus!=undefined){
+            let validactiveStatus = ["0","1"];
+            if (!validactiveStatus.includes(req.body.activeStatus)) {
             const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
             return next(err);
+            }
         }
 
-         existing_brand = await BikeBrandModel.findByIdAndUpdate(req.params.id , req.body,{new:true});
+         find_brand = await BikeBrandModel.findByIdAndUpdate(req.params.id , req.body,{new:true});
         
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.brandUpdated,
-            data:existing_brand
+            data:find_brand
         })
     },
 
@@ -75,7 +72,7 @@ module.exports = {
     },
 
     brandDelete: async (req, res, next) => {
-        var delete_brand = await BikeBrandModel.findByIdAndDelete({ _id: req.params.id });
+        const delete_brand = await BikeBrandModel.findByIdAndDelete({ _id: req.params.id });
         if(!delete_brand){
             const err = new customError(
           global.CONFIGS.api.brandInactive,

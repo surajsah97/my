@@ -1,17 +1,20 @@
 const express = require('express')
 const router = express.Router();
-const Brand = require("../../controller/truckBrand_C")
+const truckBrand = require("../../controller/truckBrand_C")
 const Auth = require("../../middleware/auth");
 
 const errorfun=require("../../middleware/catchAsyncErrors")
 
-
 router.route('/')
-    .get(errorfun(Brand.brandList))
-    .post(errorfun(Brand.addBrand))
+    // .get(errorfun(truckBrand.brandListAdmin))
+    .get(Auth.adminValidateToken,errorfun(truckBrand.brandList))
+    // .post(errorfun(truckBrand.addBrand))
+    .post(Auth.adminValidateToken,errorfun(truckBrand.addBrand))
 
 router.route('/:id')
-    .put(errorfun(Brand.updateBrand))
-    .delete(errorfun(Brand.brandDelete))
+    // .put(errorfun(truckBrand.updateBrand))
+    .put(Auth.adminValidateToken,errorfun(truckBrand.updateBrand))
+    // .delete(errorfun(truckBrand.brandDelete))
+    .delete(Auth.adminValidateToken,errorfun(truckBrand.brandDelete))
 
 module.exports = router;
