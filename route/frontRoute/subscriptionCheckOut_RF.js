@@ -8,5 +8,7 @@ const errorfun=require("../../middleware/catchAsyncErrors")
 router.route('/')
     .post( errorfun(subscriptionCheckOut.checkoutSubscription))
     // .post(Auth.apiValidateToken, errorfun(subscriptionCheckOut.checkoutSubscription));
+    .get( errorfun(subscriptionCheckOut.subscriptionCheckoutListFront))
+    // .post(Auth.apiValidateToken, errorfun(subscriptionCheckOut.subscriptionCheckoutListFront));
 
 module.exports = router;
