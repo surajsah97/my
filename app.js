@@ -138,10 +138,10 @@ app.use(
   "/v" + process.env.VERSION + "/admin/truckmodel/",
   require("./route/adminRoute/TruckModel_RA")
 );
-// app.use(
-//   "/v" + process.env.VERSION + "/front/truckmodel/",
-//   require("./route/frontRoute/TruckModel_RF")
-// );
+app.use(
+  "/v" + process.env.VERSION + "/front/truckmodel/",
+  require("./route/frontRoute/TruckModel_RF")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/admin/bikebrand/",

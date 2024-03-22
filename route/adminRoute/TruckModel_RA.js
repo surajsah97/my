@@ -5,9 +5,8 @@ const Auth = require("../../middleware/auth");
 
 const errorfun=require("../../middleware/catchAsyncErrors")
 
-
 router.route('/')
-    .get(errorfun(Model.modelList))
+    .get(errorfun(Model.modelListAdmin))
     .post(errorfun(Model.addmodel))
 
 router.route('/:id')
