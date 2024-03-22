@@ -19,12 +19,17 @@ const localStorage = multer.diskStorage({
 var upload1 = multer({ storage: localStorage });
 /* GET home page. */
 var cpUpload = upload1.fields([
-    { name: 'productImage', maxCount: 1 },
+    { name: 'mulkiyaImgFront', maxCount: 1 },
+    { name: 'mulkiyaImgBack', maxCount: 1 },
+    { name: 'vehicleImgFront', maxCount: 1 },
+    { name: 'vehicleImgBack', maxCount: 1 },
+    { name: 'vehicleImgLeft', maxCount: 1 },
+    { name: 'vehicleImgRight', maxCount: 1 },,
 ])
 
 router.route('/')
     .get(errorfun(TruckDetails.productListAdmin))
-    .post(cpUpload, errorfun(TruckDetails.addProduct))
+    .post(cpUpload, errorfun(TruckDetails.addVehicle))
 
 router.route('/:id')
     .put(cpUpload, errorfun(TruckDetails.updateProduct))

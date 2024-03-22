@@ -49,5 +49,6 @@ module.exports = {
   ProductCheckOutModel: "productcheckout",
   DeliveryLocationModel: "deliverylocation",
   ProductOrderModel: "productorder",
+  VatModel: "vat",
   CartModel : "cart"
 };

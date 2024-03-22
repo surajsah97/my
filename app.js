@@ -84,6 +84,10 @@ app.use(
   "/v" + process.env.VERSION + "/admin/product/",
   require("./route/adminRoute/product_RA")
 );
+app.use(
+  "/v" + process.env.VERSION + "/admin/vat/",
+  require("./route/adminRoute/Vat_RA")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/front/subplan/",
@@ -141,6 +145,10 @@ app.use(
 app.use(
   "/v" + process.env.VERSION + "/front/truckmodel/",
   require("./route/frontRoute/TruckModel_RF")
+);
+app.use(
+  "/v" + process.env.VERSION + "/admin/truckdetail/",
+  require("./route/adminRoute/TruckDetails_RA")
 );
 
 app.use(

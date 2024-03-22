@@ -9,26 +9,40 @@ module.exports = {
         console.log(req.files)
         var mulkiyaDocImg = {};
         var vehicleImage = {}
-        if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
-            mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`
-            mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`
+
+        if(req.files.mulkiyaImgFront && req.files.mulkiyaImgBack && req.files.vehicleImgFront && req.files.vehicleImgBack && req.files.vehicleImgLeft && req.files.vehicleImgRight && req.body.truckBrandId &&
+      req.body.truckModelId &&
+      req.body.ownerName &&
+      req.body.vehicleNumber &&
+      req.body.registrationZone &&
+      req.body.vehicleColor &&
+      req.body.registrationDate &&
+      req.body.vehicleYear &&
+      req.body.fuelType &&
+      req.body.vehicleAge &&
+      req.body.chasisNumber &&
+      req.body.insuranceValidity &&
+      req.body.fitnessValidity &&
+      req.body.mulkiyaValidity 
+    ){
+        mulkiyaDocImg.frontImg = `uploads/truck/${req.files.mulkiyaImgFront[0].filename}`
+        mulkiyaDocImg.backImg = `uploads/truck/${req.files.mulkiyaImgBack[0].filename}`
             req.body.mulkiyaDocImg = mulkiyaDocImg;
-            return res.send(req.body)
-        }
-        if (req.files.vehicleImgFront && req.files.vehicleImgBack && req.files.vehicleImgLeft && req.files.vehicleImgRight) {
-            vehicleImage.frontImage = `uploads/bike/${req.files.vehicleImgFront[0].filename}`
-            vehicleImage.backImage = `uploads/bike/${req.files.vehicleImgBack[0].filename}`
-            vehicleImage.leftImage = `uploads/bike/${req.files.vehicleImgLeft[0].filename}`
-            vehicleImage.rightImage = `uploads/bike/${req.files.vehicleImgRight[0].filename}`
-            req.body.vehicleImage = vehicleImage;
-            return res.send(req.body)
-        }
+
+        vehicleImage.frontImage = `uploads/truck/${req.files.vehicleImgFront[0].filename}`
+        vehicleImage.backImage = `uploads/truck/${req.files.vehicleImgBack[0].filename}`
+        vehicleImage.leftImage = `uploads/truck/${req.files.vehicleImgLeft[0].filename}`
+        vehicleImage.rightImage = `uploads/truck/${req.files.vehicleImgRight[0].filename}`
+        req.body.vehicleImage = vehicleImage;
+    }
+
         var find_vehicle = await TruckModel.findOne({ chasisNumber: req.body.chasisNumber });
         if (find_vehicle) {
             const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-            next(err);
+            return next(err);
         }
         var create_vehicle = await TruckModel.create(req.body);
+        console.log(create_vehicle,"dgfdf = hvvhh =========")
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.Productadded,
@@ -36,20 +50,80 @@ module.exports = {
         })
     },
 
+    /** */
+//     addVehicle: async (req, res, next) => {
+//         console.log(req.files)
+//         var mulkiyaDocImg = {};
+//         var vehicleImage = {}
+
+//         if(req.files.mulkiyaImgFront && req.files.mulkiyaImgBack && req.files.vehicleImgFront && req.files.vehicleImgBack && req.files.vehicleImgLeft && req.files.vehicleImgRight && req.body.truckBrandId &&
+//       req.body.truckModelId &&
+//       req.body.ownerName &&
+//       req.body.vehicleNumber &&
+//       req.body.registrationZone &&
+//       req.body.vehicleColor &&
+//       req.body.registrationDate &&
+//       req.body.vehicleYear &&
+//       req.body.fuelType &&
+//       req.body.vehicleAge &&
+//       req.body.chasisNumber &&
+//       req.body.insuranceValidity &&
+//       req.body.fitnessValidity &&
+//       req.body.mulkiyaValidity 
+//     ){
+//         mulkiyaDocImg.frontImg = `uploads/truck/${req.files.mulkiyaImgFront[0].filename}`
+//         mulkiyaDocImg.backImg = `uploads/truck/${req.files.mulkiyaImgBack[0].filename}`
+//             req.body.mulkiyaDocImg = mulkiyaDocImg;
+
+//         vehicleImage.frontImage = `uploads/truck/${req.files.vehicleImgFront[0].filename}`
+//         vehicleImage.backImage = `uploads/truck/${req.files.vehicleImgBack[0].filename}`
+//         vehicleImage.leftImage = `uploads/truck/${req.files.vehicleImgLeft[0].filename}`
+//         vehicleImage.rightImage = `uploads/truck/${req.files.vehicleImgRight[0].filename}`
+//         req.body.vehicleImage = vehicleImage;
+//     }
+
+// /** */
+//         // if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
+//         //     mulkiyaDocImg.frontImg = `uploads/truck/${req.files.mulkiyaImgFront[0].filename}`
+//         //     mulkiyaDocImg.backImg = `uploads/truck/${req.files.mulkiyaImgBack[0].filename}`
+//         //     req.body.mulkiyaDocImg = mulkiyaDocImg;
+//         // }
+//         // if (req.files.vehicleImgFront && req.files.vehicleImgBack && req.files.vehicleImgLeft && req.files.vehicleImgRight) {
+//         //     vehicleImage.frontImage = `uploads/truck/${req.files.vehicleImgFront[0].filename}`
+//         //     vehicleImage.backImage = `uploads/truck/${req.files.vehicleImgBack[0].filename}`
+//         //     vehicleImage.leftImage = `uploads/truck/${req.files.vehicleImgLeft[0].filename}`
+//         //     vehicleImage.rightImage = `uploads/truck/${req.files.vehicleImgRight[0].filename}`
+//         //     req.body.vehicleImage = vehicleImage;
+//         // }
+//         /** */
+//         var find_vehicle = await TruckModel.findOne({ chasisNumber: req.body.chasisNumber });
+//         if (find_vehicle) {
+//             const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
+//             return next(err);
+//         }
+//         var create_vehicle = await TruckModel.create(req.body);
+//         console.log(create_vehicle,"dgfdf = hvvhh =========")
+//         return res.status(global.CONFIGS.responseCode.success).json({
+//             success: true,
+//             message: global.CONFIGS.api.Productadded,
+//             data: create_vehicle
+//         })
+//     },
+/** */
     updateVehicle: async (req, res, next) => {
         var mulkiyaDocImg = {};
         var vehicleImage = {}
         if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
-            mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`
-            mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`
+            mulkiyaDocImg.frontImg = `uploads/truck/${req.files.mulkiyaImgFront[0].filename}`
+            mulkiyaDocImg.backImg = `uploads/truck/${req.files.mulkiyaImgBack[0].filename}`
             req.body.mulkiyaDocImg = mulkiyaDocImg;
             return res.send(req.body)
         }
         if (req.files.vehicleImgFront && req.files.vehicleImgBack && req.files.vehicleImgLeft && req.files.vehicleImgRight) {
-            vehicleImage.frontImage = `uploads/bike/${req.files.vehicleImgFront[0].filename}`
-            vehicleImage.backImage = `uploads/bike/${req.files.vehicleImgBack[0].filename}`
-            vehicleImage.leftImage = `uploads/bike/${req.files.vehicleImgLeft[0].filename}`
-            vehicleImage.rightImage = `uploads/bike/${req.files.vehicleImgRight[0].filename}`
+            vehicleImage.frontImage = `uploads/truck/${req.files.vehicleImgFront[0].filename}`
+            vehicleImage.backImage = `uploads/truck/${req.files.vehicleImgBack[0].filename}`
+            vehicleImage.leftImage = `uploads/truck/${req.files.vehicleImgLeft[0].filename}`
+            vehicleImage.rightImage = `uploads/truck/${req.files.vehicleImgRight[0].filename}`
             req.body.vehicleImage = vehicleImage;
             return res.send(req.body)
         }
