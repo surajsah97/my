@@ -1,8 +1,20 @@
 var constants = require("./modelConstants");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+const { randomUUID } = require('crypto'); 
+
 var productSchema = new Schema(
   {
+    subscriptionId: {
+      type: String,
+      default: randomUUID(),
+    },
+    transactionId: {
+      type: String,
+      // ref: "Payment",
+      // required: true,
+      default:0
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: constants.UserModel,
@@ -28,6 +40,11 @@ var productSchema = new Schema(
           },
         },
       ],
+    },
+    addressId: {
+      type: Schema.Types.ObjectId,
+      ref: constants.UserAddressModel,
+      required: [true, "Please enter addressId."],
     },
     subDurationId: {
       type: Schema.Types.ObjectId,

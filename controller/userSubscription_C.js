@@ -7,6 +7,7 @@ const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
 const ProductModel = mongoose.model(constants.ProductModel);
 var customError = require("../middleware/customerror");
 const UserModel = mongoose.model(constants.UserModel);
+const UserAddressModel = mongoose.model(constants.UserAddressModel);
 const SubscriptionCheckOutModel = mongoose.model(
   constants.SubscriptionCheckOutModel
 );
@@ -14,15 +15,7 @@ const SubscriptionCheckOutModel = mongoose.model(
 module.exports = {
  addSub: async (req, res, next) => {
     try {
-      const { userId } = req.body;
-      const userDetail = await UserModel.findOne({ _id: userId });
-      if (!userDetail) {
-        const err = new customError(
-          global.CONFIGS.api.userNotFound,
-          global.CONFIGS.responseCode.notFound
-        );  
-        return next(err);
-      }
+      
 
       const subscriptioncheckOutdata = await SubscriptionCheckOutModel.findOne({
         _id: req.body.subscriptionCheckoutId,
@@ -38,9 +31,21 @@ module.exports = {
         );
         return next(err);
       }
+      const userDetail = await UserModel.findOne({ _id: subscriptioncheckOutdata.userId });
+      if (!userDetail) {
+        const err = new customError(
+          global.CONFIGS.api.userNotFound,
+          global.CONFIGS.responseCode.notFound
+        );  
+        return next(err);
+      }
+      const userAddress = await UserAddressModel.findOne(
+        { userId: subscriptioncheckOutdata.userId },
+        { _id: -1 }
+        ).sort({ _id: -1 });
 
       var find_subscription = await UserSubscriptionModel.findOne({
-        userId: userId,
+        userId: subscriptioncheckOutdata.userId,
         "product.productId": subscriptioncheckOutdata.product[0].productId,
       }).sort({ _id: -1 });
       console.log(find_subscription, ".....find_subscription");
@@ -69,6 +74,7 @@ module.exports = {
         subscriptioncheckOutdata.totalPrice
       );
       addSubscription.product = subscriptioncheckOutdata.product;
+      addSubscription.addressId = userAddress._id;
       addSubscription.startDate = subscriptioncheckOutdata.startDate;
       addSubscription.endDate = subscriptioncheckOutdata.endDate;
       addSubscription.leftDuration = subscriptioncheckOutdata.leftDuration;
@@ -78,7 +84,9 @@ module.exports = {
       addSubscription.totalTaxablePrice = Math.round(
         subscriptioncheckOutdata.totalTaxablePrice
       );
-      addSubscription.userId = userId;
+      addSubscription.userId = subscriptioncheckOutdata.userId;
+      addSubscription.transactionId = req.body.transactionId;
+      addSubscription.paymentStatus = req.body.paymentStatus;
       const subscription = await UserSubscriptionModel.create(addSubscription);
 
       if (subscription) {
