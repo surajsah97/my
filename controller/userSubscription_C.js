@@ -72,6 +72,7 @@ module.exports = {
       addSubscription.startDate = subscriptioncheckOutdata.startDate;
       addSubscription.endDate = subscriptioncheckOutdata.endDate;
       addSubscription.leftDuration = subscriptioncheckOutdata.leftDuration;
+      addSubscription.dailyInterval = subscriptioncheckOutdata.dailyInterval;
       addSubscription.calendar = subscriptioncheckOutdata.calendar;
       addSubscription.subDurationId = subscriptioncheckOutdata.subDurationId;
       addSubscription.totalTaxablePrice = Math.round(
@@ -112,167 +113,7 @@ module.exports = {
 
 
 
-  /** */
-//     addSubfutureWorkPending: async (req, res, next) => {
-//       try {
-//         const { userId } = req.body;
-//         const userDetail = await UserModel.findOne({ _id: userId });
-//         if (!userDetail) {
-//           const err = new customError(
-//             global.CONFIGS.api.userNotFound,
-//             global.CONFIGS.responseCode.notFound
-//           );
-//           return next(err);
-//         }
-
-//         const subscriptioncheckOutdata = await SubscriptionCheckOutModel.findOne({
-//           _id: req.body.subscriptionCheckoutId,
-//           activeStatus: "Active",
-//         }).sort({
-//           _id: -1,
-//         });
-//         console.log(subscriptioncheckOutdata, ".......checkOutData");
-//         if (!subscriptioncheckOutdata) {
-//           const err = new customError(
-//             global.CONFIGS.api.SubscriptionCheckOutNotFound,
-//             global.CONFIGS.responseCode.notFound
-//           );
-//           return next(err);
-//         }
-
-//         var find_subscription = await UserSubscriptionModel.findOne({
-//           userId: userId,
-//           "product.productId": subscriptioncheckOutdata.product[0].productId,
-//         }).sort({ _id: -1 });
-//         console.log(find_subscription, ".....find_subscription");
-//         console.log(subscriptioncheckOutdata.product[0].productId, "......222");
-//         if (find_subscription) {
-//           var prodinsubscription =
-//             find_subscription.product[0].productId.toString() ==
-//             subscriptioncheckOutdata.product[0].productId.toString();
-//           console.log(prodinsubscription);
-//           if (prodinsubscription === true) {
-//             /** */
-//             // const err = new customError(
-//             //   global.CONFIGS.api.subscriptionalreadyadded,
-//             //   global.CONFIGS.responseCode.alreadyExist
-//             // );
-//             // return next(err);
-//             /** */
-//             const subDuration = await subscriptionPlanModel
-//           .findById({ _id: new ObjectId(subscriptioncheckOutdata.subDurationId) })
-//           .select("planDuration");
-//         console.log(subDuration, "............subduration");
-//         if (!subDuration) {
-//           return res.status(404).json({
-//             success: false,
-//             message: "Subscription duration not found.",
-//           });
-//         };
-//         const startDate = new Date();
-//         startDate.setDate(startDate.getDate() + 1); // Tomorrow
-//         let endDate = new Date(startDate.getTime());
-//         endDate.setDate(endDate.getDate() + subDuration.planDuration); // 15 days after tomorrow
-//         console.log(startDate, "...currentDate...");
-//         console.log(endDate, "....eeeeeee");
-//         const differenceInMilliseconds = endDate - startDate;
-//         const differenceInDays = Math.floor(
-//           differenceInMilliseconds / (1000 * 60 * 60 * 24)
-//         );
-//         const calendarItem = [];
-
-//         for (let i = 1; i <= differenceInDays; i++) {
-//           let obj = {};
-//           obj.productId = subscriptioncheckOutdata.product[0].productId;
-//           obj.day = i;
-//           calendarItem.push(obj);
-//         }
-//         console.log(calendarItem, "....calendarItem");
-//         let totalCalendarItem=subscriptioncheckOutdata.calendar.push(...calendarItem);
-
-//         console.log(totalCalendarItem,"........totalCalendarItem")
-//           const productDetails = await ProductModel.find({
-//           _id: { $in: subscriptioncheckOutdata.product[0].productId },
-//         });
-//         // console.log(productDetails,".......productDetails");
-//         let productPrice = {};
-//         productDetails.map((el) => {
-//           productPrice = el.productPrice;
-//         });
-//           console.log(productPrice, "...productPrice...");
-//           const totalSubPrice =
-//           productPrice * subscriptioncheckOutdata.product[0].qty * subDuration.planDuration;
-
-// const totalPrice=subscriptioncheckOutdata.totalPrice
-//         console.log(totalPrice, "....totalPrice");
-//         const finalPrice=subscriptioncheckOutdata.totalPrice+totalSubPrice;
-//         console.log(finalPrice,"....finalPrice");
-//   console.log(subscriptioncheckOutdata.product,"........//////")
-//           return;
-//           var update_subscription = await UserSubscriptionModel.updateOne(
-//             { _id: find_subscription._id },
-//             {
-//               product: subscriptioncheckOutdata.product,
-//               totalPrice: finalPrice,
-//             }
-//           );
-
-//           }
-//         }
-
-//         let addSubscription = {};
-//         const vat = 5;
-
-//         addSubscription.vatAmount = Math.round(
-//           subscriptioncheckOutdata.vatAmount
-//         );
-//         addSubscription.totalPrice = Math.round(
-//           subscriptioncheckOutdata.totalPrice
-//         );
-//         addSubscription.product = subscriptioncheckOutdata.product;
-//         addSubscription.startDate = subscriptioncheckOutdata.startDate;
-//         addSubscription.endDate = subscriptioncheckOutdata.endDate;
-//         addSubscription.leftDuration = subscriptioncheckOutdata.leftDuration;
-//         addSubscription.calendar = subscriptioncheckOutdata.calendar;
-//         addSubscription.subDurationId = subscriptioncheckOutdata.subDurationId;
-//         addSubscription.totalTaxablePrice = Math.round(
-//           subscriptioncheckOutdata.totalTaxablePrice
-//         );
-//         addSubscription.userId = userId;
-//         const subscription = await UserSubscriptionModel.create(addSubscription);
-
-//         if (subscription) {
-//           var update_checkout = await SubscriptionCheckOutModel.findOneAndUpdate(
-//             { _id: req.body.subscriptionCheckoutId },
-//             { activeStatus: "Expired" }
-//           ).sort({ _id: -1 });
-//           let userdata = {
-//             name: userDetail.name,
-//             email: userDetail.email,
-//             mobile: userDetail.mobile,
-//             isVerified: userDetail.isVerified,
-//             userType: userDetail.userType,
-//             activeStatus: userDetail.activeStatus,
-//           };
-
-//           return res.status(global.CONFIGS.responseCode.success).json({
-//             success: true,
-//             message: global.CONFIGS.api.subscriptionadded,
-//             data: subscription,
-//             userdata: userdata,
-//           });
-//         }
-//       } catch (error) {
-//         console.log(error);
-//         res.status(global.CONFIGS.responseCode.exception).json({
-//           success: false,
-//           message: error.message,
-//         });
-//       }
-//     },
   
-  
-
  
   /** */
   // addSubOld: async (req, res, next) => {
@@ -402,7 +243,6 @@ module.exports = {
   // },
 
   /** */
-
   deletesub: async (req, res, next) => {
     const existingSubscription = await UserSubscriptionModel.findById(
       req.params.id
@@ -575,6 +415,13 @@ module.exports = {
         $unwind: "$product",
       },
       {
+        $unwind: {
+          path: "$calendar",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $lookup: {
           from: "product",
           localField: "product.productId",
@@ -583,8 +430,28 @@ module.exports = {
         },
       },
       { $unwind: "$product.productDetails" },
-      { $unwind: "$calendar" },
-
+      // {
+      //   $unwind: {
+      //     path: "$product.productDetails",
+      //     includeArrayIndex: "string",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      {
+        $lookup: {
+          from: "product",
+          localField: "calendar.productId",
+          foreignField: "_id",
+          as: "calendar.calendarProductDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$calendar.calendarProductDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       {
         $project: {
           _id: 1,
@@ -604,15 +471,18 @@ module.exports = {
           totalPrice: 1,
           planDuration: "$subscriptionPlanDetails.planDuration",
           // "totalPrice": "$totalPrice",
+          leftDuration: 1,
+          dailyInterval: 1,
           vatAmount: 1,
           totalTaxablePrice: 1,
           paymentStatus: 1,
           calendar: {
-            _id: "$product.productDetails._id",
+           _id: "$calendar._id",
             day: "$calendar.day",
+            dates: "$calendar.dates",
             deliveryStatus: "$calendar.deliveryStatus",
-            productName: "$product.productDetails.productName",
-            productImage: "$product.productDetails.productImage",
+            productName: "$calendar.calendarProductDetails.productName",
+            productImage: "$calendar.calendarProductDetails.productImage",
           },
           startDate: 1,
           endDate: 1,
@@ -622,12 +492,14 @@ module.exports = {
         $group: {
           _id: "$_id",
           userDetails: { $first: "$usersDetails" },
-          dailyChart: { $push: "$calendar" },
           product: {
             $first: "$product",
           },
+          dailyChart: { $push: "$calendar" },
           subscriptionDuration: { $first: "$planDuration" },
           totalPrice: { $first: "$totalPrice" },
+          leftDuration: { $first: "$leftDuration" },
+          dailyInterval: { $first: "$dailyInterval" },
           vatAmount: { $first: "$vatAmount" },
           totalTaxablePrice: { $first: "$totalTaxablePrice" },
           paymentStatus: { $first: "$paymentStatus" },

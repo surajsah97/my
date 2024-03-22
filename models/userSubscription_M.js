@@ -73,20 +73,28 @@ var productSchema = new Schema(
           productId: {
             type: Schema.Types.ObjectId,
             ref: constants.ProductModel,
-            required: [true, "Please enter productId."],
+            // required: [true, "Please enter productId."],
           },
           day: {
             type: Number,
             required: [true, "Please enter Day."],
           },
+          dates: {
+            type: Date,
+            required: [true, "Please enter startDate."],
+          },
           deliveryStatus:{
             type:Boolean,
-            default:false
+            // default:false
           }
         },
       ],
 
-    }
+    },
+    dailyInterval: {
+      type: String,
+      enum: ["daily", "alternate"],
+    },
   },
   {
     collection: constants.UserSubscriptionModel,

@@ -75,6 +75,7 @@ module.exports = {
         obj.productId = product[0].productId;
         obj.day = i + 1;
         obj.dates = currentDate.toISOString().slice(0, 10);
+        obj.deliveryStatus=false;
         calendarItem.push(obj);
       }
     } else if (dailyInterval === "alternate") {
@@ -95,7 +96,6 @@ module.exports = {
           obj.dates = currentDate; 
           obj.deliveryStatus=false
         } else {
-          // obj.productId = product[0].productId;
           obj.day = i ;
           obj.dates = currentDate;
         }
@@ -192,6 +192,13 @@ subscriptionCheckoutListFront: async (req, res, next) => {
         $unwind: "$product",
       },
       {
+        $unwind: {
+          path: "$calendar",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $lookup: {
           from: "product",
           localField: "product.productId",
@@ -199,9 +206,29 @@ subscriptionCheckoutListFront: async (req, res, next) => {
           as: "product.productDetails",
         },
       },
-      { $unwind: "$product.productDetails" },
-      { $unwind: "$calendar" },
-
+      {
+        $unwind: {
+          path: "$product.productDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "product",
+          localField: "calendar.productId",
+          foreignField: "_id",
+          as: "calendar.calendarProductDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$calendar.calendarProductDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      
       {
         $project: {
           _id: 1,
@@ -221,16 +248,18 @@ subscriptionCheckoutListFront: async (req, res, next) => {
           totalPrice: 1,
           planDuration: "$subscriptionPlanDetails.planDuration",
           leftDuration: 1,
+          dailyInterval: 1,
           // "totalPrice": "$totalPrice",
           vatAmount: 1,
           totalTaxablePrice: 1,
           paymentStatus: 1,
           calendar: {
-            _id: "$product.productDetails._id",
+            _id: "$calendar._id",
             day: "$calendar.day",
+            dates: "$calendar.dates",
             deliveryStatus: "$calendar.deliveryStatus",
-            productName: "$product.productDetails.productName",
-            productImage: "$product.productDetails.productImage",
+            productName: "$calendar.calendarProductDetails.productName",
+            productImage: "$calendar.calendarProductDetails.productImage",
           },
           startDate: 1,
           endDate: 1,
@@ -240,12 +269,13 @@ subscriptionCheckoutListFront: async (req, res, next) => {
         $group: {
           _id: "$_id",
           userDetails: { $first: "$usersDetails" },
-          dailyChart: { $push: "$calendar" },
           product: {
             $first: "$product",
           },
+          dailyChart: { $push: "$calendar" },
           subscriptionDuration: { $first: "$planDuration" },
           leftDuration: { $first: "$leftDuration" },
+          dailyInterval: { $first: "$dailyInterval" },
           totalPrice: { $first: "$totalPrice" },
           vatAmount: { $first: "$vatAmount" },
           totalTaxablePrice: { $first: "$totalTaxablePrice" },
