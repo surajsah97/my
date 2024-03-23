@@ -88,6 +88,10 @@ app.use(
   "/v" + process.env.VERSION + "/admin/vat/",
   require("./route/adminRoute/Vat_RA")
 );
+app.use(
+  "/v" + process.env.VERSION + "/front/vat/",
+  require("./route/frontRoute/Vat_RF")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/front/subplan/",

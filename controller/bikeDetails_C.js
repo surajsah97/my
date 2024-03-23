@@ -145,8 +145,26 @@ module.exports = {
       const hash = await bcrypt.hashSync(req.body.password, salt);
       req.body.password = hash;
     }
+  
+  let bikeDetails = {};
+    bikeDetails.truckBrandId = req.body.truckBrandId;
+    bikeDetails.truckModelId = req.body.truckModelId;
+    bikeDetails.ownerName = req.body.ownerName;
+    bikeDetails.vehicleNumber = req.body.vehicleNumber;
+    bikeDetails.registrationZone = req.body.registrationZone;
+    bikeDetails.vehicleColor = req.body.vehicleColor;
+    bikeDetails.registrationDate = req.body.registrationDate;
+    bikeDetails.vehicleYear = req.body.vehicleYear;
+    bikeDetails.fuelType = req.body.fuelType;
+    bikeDetails.vehicleAge = req.body.vehicleAge;
+    bikeDetails.chasisNumber = req.body.chasisNumber;
+    bikeDetails.insuranceValidity = req.body.insuranceValidity;
+    bikeDetails.fitnessValidity = req.body.fitnessValidity;
+    bikeDetails.mulkiyaValidity = req.body.mulkiyaValidity;
+    bikeDetails.mulkiyaDocImg = mulkiyaDocImg;
+    bikeDetails.vehicleImage = vehicleImage;
 
-    const createDriver = await BikeDriverModel.create(req.body);
+    const createDriver = await BikeDriverModel.create(bikeDetails);
 
     if (!createDriver) {
       const err = new customError(
@@ -246,6 +264,241 @@ module.exports = {
     }
   },
   /** */
+  // /** */
+  // addVehicle: async (req, res, next) => {
+  //   let find_Driver = await BikeDriverModel.findOne({
+  //     $or: [
+  //       { mobile: req.body.mobile },
+  //       { licenseNumber: req.body.licenseNumber },
+  //       { visaNumber: req.body.visaNumber },
+  //       { emiratesId: req.body.emiratesId },
+  //     ],
+  //   });
+  //   let find_vehicle = await BikeModel.findOne({
+  //     chasisNumber: req.body.chasisNumber,
+  //   });
+  //   if (find_vehicle || find_Driver) {
+  //     const err = new customError(
+  //       global.CONFIGS.api.Driveralreadyadded,
+  //       global.CONFIGS.responseCode.alreadyExist
+  //     );
+  //     return next(err);
+  //   }
+
+  //   let mulkiyaDocImg = {};
+  //   let vehicleImage = {};
+  //   let passportImg = {};
+  //   let emiratesIdImg = {};
+  //   let licenseImg = {};
+
+  //   // Check if all required files are present
+  //   if (
+  //     req.files.mulkiyaImgFront &&
+  //     req.files.mulkiyaImgBack &&
+  //     req.files.vehicleImgFront &&
+  //     req.files.vehicleImgBack &&
+  //     req.files.vehicleImgLeft &&
+  //     req.files.vehicleImgRight &&
+  //     req.files.passportImgFront &&
+  //     req.files.passportImgBack &&
+  //     req.files.emiratesIdImgFront &&
+  //     req.files.emiratesIdImgBack &&
+  //     req.files.licenseImgFront &&
+  //     req.files.licenseImgBack &&
+  //     req.files.visaImg &&
+  //     req.files.driverImg &&
+  //     req.body.brandId &&
+  //     req.body.modelId &&
+  //     req.body.ownerName &&
+  //     req.body.vehicleNumber &&
+  //     req.body.registrationZone &&
+  //     req.body.vehicleColor &&
+  //     req.body.registrationDate &&
+  //     req.body.vehicleYear &&
+  //     req.body.chasisNumber &&
+  //     req.body.bikeInsuranceValidity &&
+  //     req.body.fitnessValidity &&
+  //     req.body.mulkiyaValidity &&
+  //     req.body.vehicleAge &&
+  //     req.body.name &&
+  //     req.body.email &&
+  //     req.body.mobile &&
+  //     req.body.nationality &&
+  //     req.body.altMobile &&
+  //     req.body.passportNumber &&
+  //     req.body.passwordassportValidity &&
+  //     req.body.visaNumber &&
+  //     req.body.visaValidity &&
+  //     req.body.emiratesId &&
+  //     req.body.emiratesIdValidity &&
+  //     req.body.InsuranceComp &&
+  //     req.body.insuranceValidity &&
+  //     req.body.password &&
+  //     req.body.licenseNumber &&
+  //     req.body.licenseCity &&
+  //     req.body.licenseType &&
+  //     req.body.licenseValidity &&
+  //     req.body.lHouseNo &&
+  //     req.body.lBuildingName &&
+  //     req.body.lStreet &&
+  //     req.body.lLandmark &&
+  //     req.body.hcHouseNo &&
+  //     req.body.hcBuildingName &&
+  //     req.body.hcStreet &&
+  //     req.body.hcLandmark &&
+  //     req.body.hcCity &&
+  //     req.body.hcState &&
+  //     req.body.hcPinCode &&
+  //     req.body.ecName &&
+  //     req.body.ecRelation &&
+  //     req.body.ecMobile &&
+  //     req.body.bankName &&
+  //     req.body.branchName &&
+  //     req.body.accountNumber &&
+  //     req.body.accountHolderName &&
+  //     req.body.IBAN
+  //     /** */
+  //     //  && req.body.long &&
+  //     //    req.body.lat
+  //     /** */
+  //   ) {
+  //     mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`;
+  //     mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`;
+  //     req.body.mulkiyaDocImg = mulkiyaDocImg;
+
+  //     vehicleImage.frontImage = `uploads/bike/${req.files.vehicleImgFront[0].filename}`;
+  //     vehicleImage.backImage = `uploads/bike/${req.files.vehicleImgBack[0].filename}`;
+  //     vehicleImage.leftImage = `uploads/bike/${req.files.vehicleImgLeft[0].filename}`;
+  //     vehicleImage.rightImage = `uploads/bike/${req.files.vehicleImgRight[0].filename}`;
+  //     req.body.vehicleImage = vehicleImage;
+
+  //     passportImg.frontImg = `uploads/bike/${req.files.passportImgFront[0].filename}`;
+  //     passportImg.backImg = `uploads/bike/${req.files.passportImgBack[0].filename}`;
+  //     req.body.passportImg = passportImg;
+
+  //     emiratesIdImg.frontImg = `uploads/bike/${req.files.emiratesIdImgFront[0].filename}`;
+  //     emiratesIdImg.backImg = `uploads/bike/${req.files.emiratesIdImgBack[0].filename}`;
+  //     req.body.emiratesIdImg = emiratesIdImg;
+
+  //     licenseImg.frontImg = `uploads/bike/${req.files.licenseImgFront[0].filename}`;
+  //     licenseImg.backImg = `uploads/bike/${req.files.licenseImgBack[0].filename}`;
+  //     req.body.licenseImg = licenseImg;
+
+  //     req.body.visaImg = `uploads/bike/${req.files.visaImg[0].filename}`;
+
+  //     req.body.driverImg = `uploads/bike/${req.files.driverImg[0].filename}`;
+  //     /** */
+  //     //   req.body.location = {
+  //     //     type: "Point",
+  //     //     coordinates: [req.body.long, req.body.lat],
+  //     //   };
+  //     /** */
+  //     // Hash password using bcrypt
+  //     const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
+  //     const hash = await bcrypt.hashSync(req.body.password, salt);
+  //     req.body.password = hash;
+  //   }
+
+  //   const createDriver = await BikeDriverModel.create(req.body);
+
+  //   if (!createDriver) {
+  //     const err = new customError(
+  //       global.CONFIGS.api.DriverNotAdded,
+  //       global.CONFIGS.responseCode.notFound
+  //     );
+  //     return next(err);
+  //   }
+  //   const createVehicle = await BikeModel.create(req.body);
+  //   if (!createVehicle) {
+  //     const err = new customError(
+  //       global.CONFIGS.api.vehicleNotAdded,
+  //       global.CONFIGS.responseCode.notFound
+  //     );
+  //     return next(err);
+  //   }
+
+  //   // Create DriverAddressModel and DriverBankDetailsModel with driverId from createDriver
+  //   const createAddress = await DriverAddressModel.create({
+  //     emergencyContact: {
+  //       namr: req.body.ecName,
+  //       relation: req.body.ecRelation,
+  //       mobile: req.body.ecMobile,
+  //     },
+  //     homeCountryAddress: {
+  //       houseNo: req.body.hcHouseNo,
+  //       buildingName: req.body.hcBuildingName,
+  //       street: req.body.hcStreet,
+  //       landmark: req.body.hcLandmark,
+  //       city: req.body.hcCity,
+  //       state: req.body.hcState,
+  //       pinCode: req.body.hcPinCode,
+  //     },
+  //     localAddress: {
+  //       houseNo: req.body.lHouseNo,
+  //       buildingName: req.body.lBuildingName,
+  //       street: req.body.lStreet,
+  //       landmark: req.body.lLandmark,
+  //     },
+  //     driverId: createDriver._id, // Use _id from createDriver
+  //   });
+
+  //   if (!createAddress) {
+  //     const err = new customError(
+  //       global.CONFIGS.api.AddressNotAdded,
+  //       global.CONFIGS.responseCode.notFound
+  //     );
+  //     return next(err);
+  //   }
+  //   const createDoc = await DriverDocModel.create({
+  //     passportImg: req.body.passportImg,
+  //     emiratesIdImg: req.body.emiratesIdImg,
+  //     licenseImg: req.body.licenseImg,
+  //     visaImg: req.body.visaImg,
+  //     driverImg: req.body.driverImg,
+  //     driverId: createDriver._id,
+  //   });
+  //   if (!createDoc) {
+  //     const err = new customError(
+  //       global.CONFIGS.api.DocNotAdded,
+  //       global.CONFIGS.responseCode.notFound
+  //     );
+  //     return next(err);
+  //   }
+
+  //   const createBankDetails = await DriverBankDetailsModel.create({
+  //     driverId: createDriver._id, // Use _id from createDriver
+  //     IBAN: req.body.IBAN,
+  //     accountHolderName: req.body.accountHolderName,
+  //     accountNumber: req.body.accountNumber,
+  //     branchName: req.body.branchName,
+  //     bankName: req.body.bankName,
+  //   });
+
+  //   if (!createBankDetails) {
+  //     const err = new customError(
+  //       global.CONFIGS.api.BankDetailsNotAdded,
+  //       global.CONFIGS.responseCode.notFound
+  //     );
+  //     return next(err);
+  //   }
+  //   if (createVehicle && createAddress && createBankDetails && createDoc) {
+  //     const updateDriver = await BikeDriverModel.updateOne(
+  //       { _id: createDriver._id },
+  //       {
+  //         addressId: createAddress._id,
+  //         bankDetailsId: createBankDetails._id,
+  //         bikeDetailsId: createVehicle._id,
+  //         docId: createDoc._id,
+  //       }
+  //     );
+  //     return res.status(global.CONFIGS.responseCode.success).json({
+  //       success: true,
+  //       message: global.CONFIGS.api.DriverDetailsAdded,
+  //       updateDriver: updateDriver,
+  //     });
+  //   }
+  // },
+  // /** */
   updateVehicle: async (req, res, next) => {
     try {
       /**Update BikeDriver */

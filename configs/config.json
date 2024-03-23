@@ -147,7 +147,9 @@
     "BankDetailsNotAdded": "Failed to create BankDetails of driver.",
     "DocNotAdded": "Failed to create Doc of driver.",
     "vehicleNotAdded": "Failed to create Vehicle for driver.",
-    "RequiredFilesMissing": "required all fields."
+    "RequiredFilesMissing": "required all fields.",
+    "VehicleImageRequired": "Plesae enter vehicle Image.",
+    "ImageRequired": "Plesae enter all Image."
 
   },
   "responseCode": {

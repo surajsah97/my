@@ -29,7 +29,7 @@ var cpUpload = upload1.fields([
 
 router.route('/')
     .get(errorfun(TruckDetails.productListAdmin))
-    .post(cpUpload, errorfun(TruckDetails.addVehicle))
+    .post(cpUpload, errorfun(TruckDetails.addTruck))
 
 router.route('/:id')
     .put(cpUpload, errorfun(TruckDetails.updateProduct))
