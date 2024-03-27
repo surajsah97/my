@@ -147,8 +147,8 @@ module.exports = {
     }
   
   let bikeDetails = {};
-    bikeDetails.truckBrandId = req.body.truckBrandId;
-    bikeDetails.truckModelId = req.body.truckModelId;
+    bikeDetails.brandId = req.body.truckBrandId;
+    bikeDetails.modelId = req.body.truckModelId;
     bikeDetails.ownerName = req.body.ownerName;
     bikeDetails.vehicleNumber = req.body.vehicleNumber;
     bikeDetails.registrationZone = req.body.registrationZone;
@@ -161,9 +161,9 @@ module.exports = {
     bikeDetails.insuranceValidity = req.body.insuranceValidity;
     bikeDetails.fitnessValidity = req.body.fitnessValidity;
     bikeDetails.mulkiyaValidity = req.body.mulkiyaValidity;
+    bikeDetails.activeStatus = req.body.activeStatus;
     bikeDetails.mulkiyaDocImg = mulkiyaDocImg;
     bikeDetails.vehicleImage = vehicleImage;
-
     const createDriver = await BikeDriverModel.create(bikeDetails);
 
     if (!createDriver) {
@@ -185,7 +185,7 @@ module.exports = {
     // Create DriverAddressModel and DriverBankDetailsModel with driverId from createDriver
     const createAddress = await DriverAddressModel.create({
       emergencyContact: {
-        namr: req.body.ecName,
+        name: req.body.ecName,
         relation: req.body.ecRelation,
         mobile: req.body.ecMobile,
       },

@@ -6,7 +6,7 @@ var customError = require("../middleware/customerror");
 
 module.exports = {  
   addTruck: async (req, res, next) => {
-    var find_vehicle = await TruckModel.findOne({
+    const find_vehicle = await TruckModel.findOne({
       chasisNumber: req.body.chasisNumber,
     });
     if (find_vehicle) {
@@ -16,8 +16,8 @@ module.exports = {
       );
       return next(err);
     }
-    var mulkiyaDocImg = {};
-    var vehicleImage = {};
+    const mulkiyaDocImg = {};
+    const vehicleImage = {};
     if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
       mulkiyaDocImg.frontImg = `uploads/truck/${req.files.mulkiyaImgFront[0].filename}`;
       mulkiyaDocImg.backImg = `uploads/truck/${req.files.mulkiyaImgBack[0].filename}`;
@@ -36,7 +36,7 @@ module.exports = {
       req.body.vehicleImage = vehicleImage;
     }
 
-    let truckDetails = {};
+    const truckDetails = {};
     truckDetails.truckBrandId = req.body.truckBrandId;
     truckDetails.truckModelId = req.body.truckModelId;
     truckDetails.ownerName = req.body.ownerName;
@@ -53,8 +53,9 @@ module.exports = {
     truckDetails.mulkiyaValidity = req.body.mulkiyaValidity;
     truckDetails.mulkiyaDocImg = mulkiyaDocImg;
     truckDetails.vehicleImage = vehicleImage;
+    truckDetails.activeStatus = req.body.activeStatus;
 
-    var create_vehicle = await TruckModel.create(truckDetails);
+    const create_vehicle = await TruckModel.create(truckDetails);
     //   console.log(create_vehicle,"dgfdf = hvvhh =========")
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
@@ -63,15 +64,35 @@ module.exports = {
     });
   },
 
-  /** */
   updateVehicle: async (req, res, next) => {
-    var mulkiyaDocImg = {};
-    var vehicleImage = {};
+
+    let find_vehicle = await TruckModel.findById(req.params.id);
+        if (!find_vehicle) {
+        const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFound);
+        return next(err);
+        }
+    const existing_vehicle = await TruckModel.findOne({
+      $or:[
+
+      {chasisNumber: req.body.chasisNumber},
+      {vehicleNumber:req.body.vehicleNumber}
+      ],
+      _id: { $nin: [req.params.id] },
+    });
+    if (existing_vehicle) {
+      const err = new customError(
+        global.CONFIGS.api.Productalreadyadded,
+        global.CONFIGS.responseCode.alreadyExist
+      );
+      next(err);
+    }
+
+    const mulkiyaDocImg = {};
+    const vehicleImage = {};
     if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
       mulkiyaDocImg.frontImg = `uploads/truck/${req.files.mulkiyaImgFront[0].filename}`;
       mulkiyaDocImg.backImg = `uploads/truck/${req.files.mulkiyaImgBack[0].filename}`;
       req.body.mulkiyaDocImg = mulkiyaDocImg;
-      return res.send(req.body);
     }
     if (
       req.files.vehicleImgFront &&
@@ -84,37 +105,33 @@ module.exports = {
       vehicleImage.leftImage = `uploads/truck/${req.files.vehicleImgLeft[0].filename}`;
       vehicleImage.rightImage = `uploads/truck/${req.files.vehicleImgRight[0].filename}`;
       req.body.vehicleImage = vehicleImage;
-      return res.send(req.body);
     }
-    var find_vehicle = await TruckModel.findOne({
-      chasisNumber: req.body.chasisNumber,
-      _id: { $nin: [req.params.id] },
-    });
-    if (find_vehicle) {
-      const err = new customError(
-        global.CONFIGS.api.Productalreadyadded,
-        global.CONFIGS.responseCode.alreadyExist
-      );
-      next(err);
-    }
-    var update_vehicle = await TruckModel.updateOne(
+    
+    find_vehicle = await TruckModel.findByIdAndUpdate(
       { _id: req.params.id },
-      req.body
+      req.body,{new:true}
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.ProductUpdated,
+      data:find_vehicle
     });
   },
 
   deletevehicle: async (req, res, next) => {
-    var delete_vehicle = await TruckModel.deleteOne({ _id: req.params.id });
-    if (delete_vehicle) {
-      return res.status(global.CONFIGS.responseCode.success).json({
-        success: true,
-        message: global.CONFIGS.api.ProductDelete,
-      });
-    }
+    var delete_vehicle = await TruckModel.findByIdAndDelete({ _id: req.params.id });
+    
+    if(!delete_vehicle){
+            const err = new customError(
+          global.CONFIGS.api.ProductNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+        }
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.ProductDelete,
+        })
   },
 
   vehicleListFront: async (req, res, next) => {
@@ -129,23 +146,23 @@ module.exports = {
       {
         $lookup: {
           from: "truckbrand",
-          localField: "brandId",
+          localField: "truckBrandId",
           foreignField: "_id",
-          as: "truckbrand",
+          as: "truckBrand",
         },
       },
-      { $unwind: "$truckbrand" },
-      { $unset: "brandId" },
+      { $unwind: "$truckBrand" },
+      { $unset: "truckBrandId" },
       {
         $lookup: {
           from: "truckmodel",
-          localField: "modelId",
+          localField: "truckModelId",
           foreignField: "_id",
-          as: "truckmodel",
+          as: "truckModel",
         },
       },
-      { $unwind: "$truckmodel" },
-      { $unset: "modelId" },
+      { $unwind: "$truckModel" },
+      { $unset: "truckModelId" },
       {
         $project: {
           _id: "$_id",
@@ -164,8 +181,8 @@ module.exports = {
           vehicleImage: "$vehicleImage",
           fuelType: "$fuelType",
           activeStatus: "$activeStatus",
-          truckBrand: "$truckbrand.truckBrand",
-          truckModel: "$truckmodel.truckModel",
+          truckBrand: "$truckBrand.truckBrand",
+          truckModel: "$truckModel.truckModel",
         },
       },
       {
@@ -180,12 +197,14 @@ module.exports = {
         global.CONFIGS.api.ProductNotfound,
         global.CONFIGS.responseCode.notFound
       );
-      next(err);
+     return next(err);
     }
+    const total = parseInt(truckData[0].metadata[0].total);
     var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getProductSuccess,
+      totalData:total,
       totalPage: totalPage,
       allOrder: truckData[0].data,
     });
@@ -195,47 +214,47 @@ module.exports = {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
-    var truckData = await TruckModel.aggregate([
+    let truckData = await TruckModel.aggregate([
       {
         $lookup: {
           from: "truckbrand",
-          localField: "brandId",
+          localField: "truckBrandId",
           foreignField: "_id",
           as: "truckbrand",
         },
       },
       { $unwind: "$truckbrand" },
-      { $unset: "brandId" },
+      { $unset: "truckBrandId" },
       {
         $lookup: {
           from: "truckmodel",
-          localField: "modelId",
+          localField: "truckModelId",
           foreignField: "_id",
           as: "truckmodel",
         },
       },
       { $unwind: "$truckmodel" },
-      { $unset: "modelId" },
+      { $unset: "truckModelId" },
       {
         $project: {
           _id: "$_id",
           ownerName: "$ownerName",
+          truckBrand: "$truckbrand.truckBrand",
+          truckModel: "$truckmodel.truckModel",
+          chasisNumber: "$chasisNumber",
           vehicleNumber: "$vehicleNumber",
           registrationZone: "$registrationZone",
           registrationDate: "$registrationDate",
           vehicleColor: "$vehicleColor",
           vehicleYear: "$vehicleYear",
           vehicleAge: "$vehicleAge",
-          chasisNumber: "$chasisNumber",
+          fuelType: "$fuelType",
           insuranceValidity: "$insuranceValidity",
           fitnessValidity: "$fitnessValidity",
           mulkiyaValidity: "$mulkiyaValidity",
           mulkiyaDocImg: "$mulkiyaDocImg",
           vehicleImage: "$vehicleImage",
-          fuelType: "$fuelType",
           activeStatus: "$activeStatus",
-          truckBrand: "$truckbrand.truckBrand",
-          truckModel: "$truckmodel.truckModel",
         },
       },
       {
@@ -250,12 +269,14 @@ module.exports = {
         global.CONFIGS.api.ProductNotfound,
         global.CONFIGS.responseCode.notFound
       );
-      next(err);
+      return next(err);
     }
+    const total = parseInt(truckData[0].metadata[0].total);
     var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getProductSuccess,
+      totalData:total,
       totalPage: totalPage,
       allOrder: truckData[0].data,
     });

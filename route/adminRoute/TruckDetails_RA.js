@@ -28,11 +28,15 @@ var cpUpload = upload1.fields([
 ])
 
 router.route('/')
-    .get(errorfun(TruckDetails.productListAdmin))
+    .get(errorfun(TruckDetails.vehicleListAdmin))
+    // .get(Auth.adminValidateToken,errorfun(TruckDetails.vehicleListAdmin))
     .post(cpUpload, errorfun(TruckDetails.addTruck))
+    // .post(cpUpload,Auth.adminValidateToken, errorfun(TruckDetails.addTruck))
 
 router.route('/:id')
-    .put(cpUpload, errorfun(TruckDetails.updateProduct))
-    .delete(errorfun(TruckDetails.deleteProduct))
+    .put(cpUpload, errorfun(TruckDetails.updateVehicle))
+    // .put(cpUpload,Auth.adminValidateToken, errorfun(TruckDetails.updateVehicle))
+    .delete(errorfun(TruckDetails.deletevehicle))
+    // .delete(Auth.adminValidateToken,errorfun(TruckDetails.deletevehicle))
 
 module.exports = router;

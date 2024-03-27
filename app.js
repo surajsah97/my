@@ -154,7 +154,10 @@ app.use(
   "/v" + process.env.VERSION + "/admin/truckdetail/",
   require("./route/adminRoute/TruckDetails_RA")
 );
-
+app.use(
+  "/v" + process.env.VERSION + "/front/truckdetail/",
+  require("./route/frontRoute/TruckDetails_RF")
+);
 app.use(
   "/v" + process.env.VERSION + "/admin/bikebrand/",
   require("./route/adminRoute/BikeBrand_RA")
@@ -188,11 +191,11 @@ app.use(
 );
 
 app.use(
-  "/v" + process.env.VERSION + "/admin/driver/",
-  require("./route/adminRoute/Driver_RA")
+  "/v" + process.env.VERSION + "/admin/truckdriver/",
+  require("./route/adminRoute/TruckDriverDetails_RA")
 );
 app.use(
-  "/v" + process.env.VERSION + "/front/driver/",
+  "/v" + process.env.VERSION + "/front/truckdriver/",
   require("./route/frontRoute/Driver_RF")
 );
 

@@ -1,7 +1,7 @@
 var constants = require('./modelConstants');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var DriverBankDetailsSchema = new Schema(
+var TruckDriverBankDetailsSchema = new Schema(
     {
         bankName: {
             type: String,
@@ -30,7 +30,7 @@ var DriverBankDetailsSchema = new Schema(
         },
         driverId: {
             type: Schema.Types.ObjectId,
-            ref: constants.BikeDriverModel,
+            ref: constants.TruckDriverModel,
             required: true
         },
         activeStatus: {
@@ -40,11 +40,11 @@ var DriverBankDetailsSchema = new Schema(
         }
     },
     {
-        collection: constants.DriverBankDetailsModel,
+        collection: constants.TruckDriverBankDetailsModel,
         versionKey: false,
         // autoIndex: false,
         timestamps: true
     }
 );
-let address = mongoose.model(constants.DriverBankDetailsModel, DriverBankDetailsSchema);
+let address = mongoose.model(constants.TruckDriverBankDetailsModel, TruckDriverBankDetailsSchema);
 module.exports = address;

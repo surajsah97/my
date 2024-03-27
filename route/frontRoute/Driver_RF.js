@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const Driver = require("../../controller/Driver_C")
+const Driver = require("../../controller/TruckDriverDetails_C")
 const Auth = require("../../middleware/auth");
 const firebase = require('../../service/firebase/firebaseFunctions');
 

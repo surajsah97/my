@@ -262,8 +262,14 @@ subscriptionCheckoutListFront: async (req, res, next) => {
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
           },
-          startDate: 1,
-          endDate: 1,
+          // startDate: 1,
+          startDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+          },
+          endDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+          },
+          
         },
       },
       {

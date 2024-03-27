@@ -1,7 +1,7 @@
 var constants = require("./modelConstants");
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-var DriverDocSchema = new Schema(
+var truckDriverDocSchema = new Schema(
   {
     passportImg: {
       type: {
@@ -49,7 +49,7 @@ var DriverDocSchema = new Schema(
     },
     driverId: {
       type: Schema.Types.ObjectId,
-      ref: constants.BikeDriverModel,
+      ref: constants.TruckDriverModel,
       required: true,
     },
     activeStatus: {
@@ -59,11 +59,11 @@ var DriverDocSchema = new Schema(
     },
   },
   {
-    collection: constants.DriverDocModel,
+    collection: constants.TruckDriverDocModel,
     versionKey: false,
     // autoIndex: false,
     timestamps: true,
   }
 );
-let address = mongoose.model(constants.DriverDocModel, DriverDocSchema);
+let address = mongoose.model(constants.TruckDriverDocModel, truckDriverDocSchema);
 module.exports = address;
