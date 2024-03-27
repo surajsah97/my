@@ -7,6 +7,7 @@ const UserModel = mongoose.model(constants.UserModel);
 const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
 const ObjectId = mongoose.Types.ObjectId;
 const ProductModel = mongoose.model(constants.ProductModel);
+const VatModel = mongoose.model(constants.VatModel);
 var customError = require("../middleware/customerror");
 const UserSubscriptionModel = mongoose.model(constants.UserSubscriptionModel);
 
@@ -120,7 +121,7 @@ module.exports = {
       productPrice * product[0].qty * subDuration.planDuration;
     console.log(totalSubPrice, "....totalSubPrice");
 
-    const vat = 5;
+    const vat = await VatModel.findOne({ vatPercentage: req.body.vatPercentage });
     const taxAmount = totalSubPrice * (vat / 100);
     const totalTaxablePrice = totalSubPrice + taxAmount;
 
@@ -261,8 +262,14 @@ subscriptionCheckoutListFront: async (req, res, next) => {
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
           },
-          startDate: 1,
-          endDate: 1,
+          // startDate: 1,
+          startDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+          },
+          endDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+          },
+          
         },
       },
       {

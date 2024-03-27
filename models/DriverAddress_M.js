@@ -68,7 +68,7 @@ var DriverAddressSchema = new Schema(
         },
         emergencyContact: {
             type: {
-                namr: {
+                name: {
                     type: String,
                     required: true,
                     trim: true
@@ -88,7 +88,7 @@ var DriverAddressSchema = new Schema(
         },
         driverId: {
             type: Schema.Types.ObjectId,
-            ref: constants.DriverModel,
+            ref: constants.BikeDriverModel,
             required: true
         },
         activeStatus: {

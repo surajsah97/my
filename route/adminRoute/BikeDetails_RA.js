@@ -39,8 +39,8 @@ var cpUpload = upload1.fields([
 router.route('/')
     // .get(errorfun(BikeDetails.vehicleListAdmin))
     .get(Auth.adminValidateToken,errorfun(BikeDetails.vehicleListAdmin))
-    // .post(cpUpload, errorfun(BikeDetails.addVehicle))
-    .post(Auth.adminValidateToken,cpUpload, errorfun(BikeDetails.addVehicle))
+    .post(cpUpload, errorfun(BikeDetails.addVehicle))
+    // .post(Auth.adminValidateToken,cpUpload, errorfun(BikeDetails.addVehicle))
 
 router.route('/:id')
     // .put(cpUpload, errorfun(BikeDetails.updateVehicle))

@@ -3,12 +3,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var truckSchema = new Schema(
     {
-        brandId: {
+        truckBrandId: {
             type: Schema.Types.ObjectId,
             ref: constants.TruckBrandModel,
             required: [true, "Please enter brandId."]
         },
-        modelId: {
+        truckModelId: {
             type: Schema.Types.ObjectId,
             ref: constants.TruckModelModel,
             required: [true, "Please enter modelId."]
@@ -46,7 +46,7 @@ var truckSchema = new Schema(
             required: [true, "Please enter vehicle age."]
         },
         chasisNumber: {
-            type: Date,
+            type: String,
             required: [true, "Please enter chasis number."]
         },
         insuranceValidity: {
@@ -62,19 +62,19 @@ var truckSchema = new Schema(
             required: [true, "Please enter vehicle mulkiya validity."]
         },
         mulkiyaDocImg: {
-            type: [{
+            type: {
                 frontImg: {
                     type: String,
-                    required: [true, "Please enter mulkiy front Image."]
+                    required: [true, "Please enter mulkiya front Image."]
                 },
                 backImg: {
                     type: String,
-                    required: [true, "Please enter mulkiy back Image."]
+                    required: [true, "Please enter mulkiya back Image."]
                 }
-            }]
+            }
         },
         vehicleImage: {
-            type: [{
+            type: {
                 frontImage: {
                     type: String,
                     required: [true, "Please enter vehicle front Image."]
@@ -91,7 +91,7 @@ var truckSchema = new Schema(
                     type: String,
                     required: [true, "Please enter vehicle right Image."]
                 }
-            }]
+            }
         },
         activeStatus: {
             type: String,
@@ -103,8 +103,8 @@ var truckSchema = new Schema(
         collection: constants.TruckModel,
         versionKey: false,
         timestamps: true,
-        toObject: { virtuals: true, getters: true },
-        toJSON: { virtuals: true, getters: true }
+        // toObject: { virtuals: true, getters: true },
+        // toJSON: { virtuals: true, getters: true }
     }
 );
 

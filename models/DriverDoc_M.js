@@ -49,7 +49,7 @@ var DriverDocSchema = new Schema(
     },
     driverId: {
       type: Schema.Types.ObjectId,
-      ref: constants.DriverModel,
+      ref: constants.BikeDriverModel,
       required: true,
     },
     activeStatus: {

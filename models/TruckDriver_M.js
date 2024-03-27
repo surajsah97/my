@@ -1,7 +1,7 @@
 var constants = require('./modelConstants');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var driverSchema = new Schema(
+var truckDriverSchema = new Schema(
     {
         name: {
             type: String,
@@ -11,23 +11,27 @@ var driverSchema = new Schema(
             type: String,
             // required: [true, "Please enter email."]
         },
+        password: {
+            type: String,
+            required: [true, "Please enter Password."]
+        },
         mobile: {
             type: Number,
             required: [true, "Please enter mobile."]
-        },
-        nationality: {
-            type: String,
-            required: [true, "Please enter nationality."]
         },
         altMobile: {
             type: Number,
             // required: [true, "Please enter mobile."]
         },
+        nationality: {
+            type: String,
+            required: [true, "Please enter nationality."]
+        },
         passportNumber: {
             type: String,
             required: [true,"Please enter passport number."]
         },
-        passwordassportValidity: {
+        passportValidity: {
             type: Date,
             required: [true, "Please enter passport validity."]
         },
@@ -55,10 +59,6 @@ var driverSchema = new Schema(
             type: Date,
             required: [true, "Please enter Insurance Validity."]
         },
-        password: {
-            type: String,
-            required: [true, "Please enter Password."]
-        },
         licenseNumber: {
             type: String,
             required: [true, "Please enter License Number."]
@@ -75,20 +75,20 @@ var driverSchema = new Schema(
             type: Date,
             required: [true, "Please enter License Validity."]
         },
-        docId: {
-            type: Schema.Types.ObjectId,
-            ref: constants.DriverDocModel,
-            // required: [true, "Please enter Insurance Validity."]
-        },
         addressId: {
             type: Schema.Types.ObjectId,
-            ref: constants.DriverAddressModel,
-            // required: [true, "Please enter Insurance Validity."]
+            ref: constants.TruckDriverAddressModel,
+            // required: [true, "Please enter addressId."]
         },
         bankDetailsId: {
             type: Schema.Types.ObjectId,
-            ref: constants.DriverBankDetailsModel,
-            // required: [true, "Please enter Insurance Validity."]
+            ref: constants.TruckDriverBankDetailsModel,
+            // required: [true, "Please enter bankDetailsId."]
+        },
+        docId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.TruckDriverDocModel,
+            // required: [true, "Please enter docId."]
         },
         isVerified: {
             type: Boolean,
@@ -96,13 +96,28 @@ var driverSchema = new Schema(
         },
         driverType: {
             type: String,
-            enum: [ 'Bike', 'Truck'],
-            required: true
-            // default: '1'
-        }, location: {
-            type: { type: String },
-            coordinates: [],
+            enum: ['Truck'],
+            default: 'Truck'
         },
+        // location: {
+        //     type: {
+        //         type: String, 
+        //         enum: ['Point'], 
+        //         required: true
+        //     },
+        //     coordinates: {
+        //         type: [Number],
+        //         required: true
+        //     }
+        // },
+        // lat: {
+        //     type: Number,
+        //     required:true
+        // },
+        // long: {
+        //     type: Number,
+        //     required: true
+        // },
         activeStatus: {
             type: String,
             enum: ['0', '1', '2'],
@@ -110,7 +125,7 @@ var driverSchema = new Schema(
         }
     },
     {
-        collection: constants.DriverModel,
+        collection: constants.TruckDriverModel,
         versionKey: false,
         timestamps: true,
         toObject: { virtuals: true, getters: true },
@@ -118,8 +133,8 @@ var driverSchema = new Schema(
     }
 );
 
-driverSchema.index({ location: "2dsphere" });
-driverSchema.index({ 'createdAt': -1 });
+truckDriverSchema.index({ location: "2dsphere" });
+truckDriverSchema.index({ 'createdAt': -1 });
 
 
-mongoose.model(constants.DriverModel, driverSchema);
+mongoose.model(constants.TruckDriverModel, truckDriverSchema);

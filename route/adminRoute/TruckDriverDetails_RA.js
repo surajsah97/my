@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router();
 const path = require("path")
-const Driver = require("../../controller/Driver_C")
+const TruckDriver = require("../../controller/TruckDriverDetails_C")
 const Auth = require("../../middleware/auth");
 const multer = require("multer");
 
@@ -10,7 +10,7 @@ const errorfun=require("../../middleware/catchAsyncErrors")
 
 const localStorage = multer.diskStorage({
     destination: (req, res, next) => {
-        next(null, path.join(__dirname, '../../public/uploads/driver'))
+        next(null, path.join(__dirname, '../../public/uploads/truckdriver'))
     },
     filename: (req, file, next) => {
         next(null, Date.now() + "-" + file.originalname)
@@ -31,12 +31,16 @@ var cpUpload = upload1.fields([
 
 
 router.route('/')
-    .get(errorfun(Driver.getDriverAdmin))
-    .post(cpUpload, errorfun(Driver.addDriver))
+    .get(errorfun(TruckDriver.getTruckDriverListAdmin))
+    // .get(Auth.adminValidateToken,errorfun(TruckDriver.getTruckDriverListAdmin))
+    .post(cpUpload, errorfun(TruckDriver.addTruckDriver))
+    // .post(cpUpload,Auth.adminValidateToken, errorfun(TruckDriver.addTruckDriver))
 
 router.route('/:id')
 //     .put(cpUpload, errorfun(BikeDetails.updateVehicle))
-    .delete(errorfun(Driver.driverDelete))
+//     .put(cpUpload,Auth.adminValidateToken, errorfun(BikeDetails.updateVehicle))
+    .delete(errorfun(TruckDriver.truckDriverDelete))
+    // .delete(Auth.adminValidateToken,errorfun(TruckDriver.truckDriverDelete))
 
 
 
