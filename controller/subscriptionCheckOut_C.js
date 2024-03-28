@@ -247,17 +247,20 @@ subscriptionCheckoutListFront: async (req, res, next) => {
             productImage: "$product.productDetails.productImage",
           },
           totalPrice: 1,
+          // "totalPrice": "$totalPrice",
           planDuration: "$subscriptionPlanDetails.planDuration",
           leftDuration: 1,
           dailyInterval: 1,
-          // "totalPrice": "$totalPrice",
           vatAmount: 1,
           totalTaxablePrice: 1,
           paymentStatus: 1,
           calendar: {
             _id: "$calendar._id",
             day: "$calendar.day",
-            dates: "$calendar.dates",
+            // dates: "$calendar.dates",
+            dates: {
+            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
+          },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",

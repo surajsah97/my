@@ -19,6 +19,12 @@ var truckDriverSchema = new Schema(
             type: Number,
             required: [true, "Please enter mobile."]
         },
+        Otp: {
+            type: Number,
+        },
+        OtpsendDate: {
+            type: Date,
+        },
         altMobile: {
             type: Number,
             // required: [true, "Please enter mobile."]

@@ -74,8 +74,7 @@ module.exports = {
         };
         const secret = process.env.SECRETKEY;
         const token = await jwt.sign(payload, secret, options);
-
-        console.log(token)
+        // console.log(token);
         res.cookie('adminToken', token, { path: "/", maxAge: 2592000000, httpOnly: true, SameSite: 'none', secure: true })
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
@@ -87,9 +86,8 @@ module.exports = {
                 "mobile": find_user.mobile,
                 "userType": find_user.userType,
                 "activeStatus": find_user.activeStatus,
-                // "token": token
+                "token": token
             },
         })
     },
-
 }

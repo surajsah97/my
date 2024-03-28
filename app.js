@@ -196,7 +196,7 @@ app.use(
 );
 app.use(
   "/v" + process.env.VERSION + "/front/truckdriver/",
-  require("./route/frontRoute/Driver_RF")
+  require("./route/frontRoute/TruckDriverDetails_RF")
 );
 
 app.use(
