@@ -745,7 +745,6 @@ module.exports = {
   /** */
   deletevehicle: async (req, res, next) => {
       const { id } = req.params;
-
       let find_Driver = await BikeDriverModel.findOne({ _id: id });
       if (!find_Driver) {
         const err = new customError(
@@ -868,7 +867,6 @@ module.exports = {
         success: true,
         message: global.CONFIGS.api.DriverDetailsDeleted,
       });
-    
   },
 
   /** */

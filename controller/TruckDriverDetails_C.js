@@ -8,49 +8,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const common = require("../service/commonFunction");
-var customError = require('../middleware/customerror');
-const Joi = require('joi');
-
-const validationSchema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().required(),
-    mobile: Joi.number().required(),
-    altMobile: Joi.number().required(),
-    password: Joi.string().required(),
-    nationality: Joi.string().required(),
-    passportNumber: Joi.string().required(),
-    passportValidity: Joi.string().required(),
-    visaNumber: Joi.number().required(),
-    visaValidity: Joi.string().required(),
-    emiratesId: Joi.string().required(),
-    emiratesIdValidity: Joi.string().required(),
-    InsuranceComp: Joi.string().required(),
-    insuranceValidity: Joi.string().required(),
-    licenseNumber: Joi.string().required(),
-    licenseCity: Joi.string().required(),
-    licenseType: Joi.string().required(),
-    licenseValidity: Joi.string().required(),
-    lHouseNo: Joi.string().required(),
-    lBuildingName: Joi.string().required(),
-    lStreet: Joi.string().required(),
-    lLandmark: Joi.string().required(),
-    hcHouseNo: Joi.string().required(),
-    hcBuildingName: Joi.string().required(),
-    hcStreet: Joi.string().required(),
-    hcLandmark: Joi.string().required(),
-    hcCity: Joi.string().required(),
-    hcState: Joi.string().required(),
-    hcPinCode: Joi.string().required(),
-    ecName: Joi.string().required(),
-    ecRelation: Joi.string().required(),
-    ecMobile: Joi.number().required(),
-    bankName: Joi.string().required(),
-    branchName: Joi.string().required(),
-    accountNumber: Joi.string().required(),
-    accountHolderName: Joi.string().required(),
-    IBAN: Joi.string().required(),
-    
-});
+const customError = require('../middleware/customerror');
+const validationSchema=require("../validation/truckDriverValidation")
 
 
 module.exports = {
@@ -195,51 +154,49 @@ module.exports = {
         
     },
 
-    login: async (req, res, next) => {
-        var find_user = await TruckDriverModel.findOne({ mobile: req.body.mobile });
-        if (!find_user) {
+    loginTruckDriver: async (req, res, next) => {
+        var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
+        if (!find_driver) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
 
-        const match = await bcrypt.compare(req.body.password, find_user.password);
+        const match = await bcrypt.compare(req.body.password, find_driver.password);
         if (!match) {
             const err = new customError(global.CONFIGS.api.loginFail, global.CONFIGS.responseCode.Unauthorized);
             return next(err);
         }
-        const payload = { mobile: find_user.mobile, _id: find_user._id };
+        const payload = { mobile: find_driver.mobile, _id: find_driver._id };
         const options = {
             expiresIn: global.CONFIGS.token.apiTokenExpiry,
             issuer: "Dudhu",
         };
         const secret = process.env.SECRETKEY;
         const token = await jwt.sign(payload, secret, options);
-
-        console.log(token)
+        // console.log(token);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.loginSuccess,
             data: {
-                "driverId": find_user._id,
-                "name": find_user.name,
-                "email": find_user.email,
-                "mobile": find_user.mobile,
-                "driverType": find_user.driverType,
-                "activeStatus": find_user.activeStatus,
+                "driverId": find_driver._id,
+                "name": find_driver.name,
+                "email": find_driver.email,
+                "mobile": find_driver.mobile,
+                "driverType": find_driver.driverType,
+                "activeStatus": find_driver.activeStatus,
                 "token": token
             },
         })
     },
 
     reSendOtp: async (req, res, next) => {
-        var find_user = await TruckDriverModel.findOne({ mobile: req.body.mobile });
-        if (!find_user) {
+        var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
+        if (!find_driver) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
-
         }
         var otp = common.randomNumber();
-        var update_user = await TruckDriverModel.updateOne({ _id: find_user._id }, {
+        var update_driver = await TruckDriverModel.updateOne({ _id: find_driver._id }, {
             Otp: otp,
             OtpsendDate: new Date(),
         });
@@ -253,13 +210,13 @@ module.exports = {
     },
 
     forgetPass: async (req, res, next) => {
-        var find_user = await TruckDriverModel.findOne({ mobile: req.body.mobile });
-        if (!find_user) {
+        var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
+        if (!find_driver) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var otp = common.randomNumber();
-        var update_user = await TruckDriverModel.updateOne({ _id: find_user._id }, {
+        var update_driver = await TruckDriverModel.updateOne({ _id: find_driver._id }, {
             Otp: otp,
             OtpsendDate: new Date(),
         });
@@ -273,16 +230,16 @@ module.exports = {
     },
 
     resetPass: async (req, res, next) => {
-        var find_user = await TruckDriverModel.findOne({ mobile: req.body.mobile });
-        if (!find_user) {
+        var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
+        if (!find_driver) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
-        if (find_user.Otp != req.body.Otp) {
+        if (find_driver.Otp != req.body.Otp) {
             const err = new customError(global.CONFIGS.api.verifyOtpFail, global.CONFIGS.responseCode.Unauthorized);
             return next(err);
         }
-        var timediff = common.datediff(find_user.OtpsendDate);
+        var timediff = common.datediff(find_driver.OtpsendDate);
         console.log("timediff= ", timediff);
         if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
             const err = new customError(global.CONFIGS.api.verifyOtpexp, global.CONFIGS.responseCode.Unauthorized);
@@ -291,144 +248,152 @@ module.exports = {
 
         const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
         const hash = await bcrypt.hashSync(req.body.password, salt);
-        var update_user = await TruckDriverModel.updateOne({ _id: find_user._id }, { password: hash });
+        var update_driver = await TruckDriverModel.findByIdAndUpdate({ _id: find_driver._id }, { password: hash },{new:true});
 
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.changePasswordSuccess,
+            data:update_driver
         })
     },
 
     changePass: async (req, res, next) => {
-        var find_user = await TruckDriverModel.findOne({ mobile: req.body.mobile });
-        if (!find_user) {
+        var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
+        if (!find_driver) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
-        const match = await bcrypt.compare(req.body.oldPassword, find_user.password);
+        const match = await bcrypt.compare(req.body.oldPassword, find_driver.password);
         if (!match) {
             const err = new customError(global.CONFIGS.api.matchPasswordFail, global.CONFIGS.responseCode.Unauthorized);
             return next(err);
         }
         const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
         const hash = await bcrypt.hashSync(req.body.newPassword, salt);
-        var update_user = await TruckDriverModel.updateOne({ _id: find_user._id }, { password: hash });
+        var update_driver = await TruckDriverModel.findByIdAndUpdate({ _id: find_driver._id }, { password: hash },{new:true});
 
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.changePasswordSuccess,
+            data:update_driver
         })
     },
 
-    getDriverProfile: async (req, res, next) => { 
-        // console.log(req.body);
-        var find_user = await TruckDriverModel.aggregate([
+    getTruckDriverProfile: async (req, res, next) => { 
+        var find_driver = await TruckDriverModel.aggregate([
             {
                 $match: { activeStatus: "1", _id: new ObjectId(req.query.driverId) }
             },
             {
                 $lookup:
                 {
-                    from: "driverbankdetails",
+                    from: "truckdriverbankdetails",
                     localField: "bankDetailsId",
                     foreignField: "_id",
-                    as: "driverbankdetails"
+                    as: "truckdriverbankdetails"
                 }
             },
-            { $unwind: '$driverbankdetails' },
+            { $unwind: '$truckdriverbankdetails' },
             { $unset: 'bankDetailsId' },
             {
                 $lookup:
                 {
-                    from: "driveraddress",
+                    from: "truckdriveraddress",
                     localField: "addressId",
                     foreignField: "_id",
-                    as: "driveraddress"
+                    as: "truckdriveraddress"
                 }
             },
-            { $unwind: '$driveraddress' },
+            { $unwind: '$truckdriveraddress' },
             { $unset: 'addressId' },
             {
                 $lookup:
                 {
-                    from: "driverdoc",
+                    from: "truckdriverdoc",
                     localField: "docId",
                     foreignField: "_id",
-                    as: "driverdoc"
+                    as: "truckdriverdoc"
                 }
             },
-            { $unwind: '$driverdoc' },
+            { $unwind: '$truckdriverdoc' },
             { $unset: 'docId' },
             {
                 $sort: {
                     _id: -1
                 }
             },
-            // {
-            //     '$facet': {
-            //         metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-            //         data: [{ $skip: skip }, { $limit: limit }] // add projection here wish you re-shape the docs
-            //     }
-            // }
+            
 
         ]);
-        // return res.send(find_user)
-        if (find_user.length == 0) {
+        
+        if (find_driver.length == 0) {
             const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
-        // var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
+       
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getUserDetailsSuccess,
-            // totalPage: totalPage,
-            data: find_user
+            data: find_driver
         })
 
 
     },
+
+    logoutTruckDriver :async (req, res, next) => {
+    res.cookie("token", null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+    });
+
+    res.status(200).json({
+    success: true,
+    message: "Logged Out Successfully",
+    });
+    },
+
 
     getTruckDriverListAdmin: async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 20; // docs in single page
         const pageNo = parseInt(req.query.pageNo) || 1; //  page number
         const skip = (pageNo - 1) * limit;
 
-        var find_user = await TruckDriverModel.aggregate([
+        var find_driver = await TruckDriverModel.aggregate([
             {
-                $match: { activeStatus: "1", driverType : req.query.driverType }
+                $match: { activeStatus: "1", driverType : "Truck"}
             },
             {
                 $lookup:
                 {
-                    from: "driverbankdetails",
+                    from: "truckdriverbankdetails",
                     localField: "bankDetailsId",
                     foreignField: "_id",
-                    as: "driverbankdetails"
+                    as: "truckdriverbankdetails"
                 }
             },
-            { $unwind: '$driverbankdetails' },
+            { $unwind: '$truckdriverbankdetails' },
             { $unset: 'bankDetailsId' },
             {
                 $lookup:
                 {
-                    from: "driveraddress",
+                    from: "truckdriveraddress",
                     localField: "addressId",
                     foreignField: "_id",
-                    as: "driveraddress"
+                    as: "truckdriveraddress"
                 }
             },
-            { $unwind: '$driveraddress' },
+            { $unwind: '$truckdriveraddress' },
             { $unset: 'addressId' },
             {
                 $lookup:
                 {
-                    from: "driverdoc",
+                    from: "truckdriverdoc",
                     localField: "docId",
                     foreignField: "_id",
-                    as: "driverdoc"
+                    as: "truckdriverdoc"
                 }
             },
-            { $unwind: '$driverdoc' },
+            { $unwind: '$truckdriverdoc' },
             { $unset: 'docId' },
             {
                 $sort: {
@@ -438,35 +403,137 @@ module.exports = {
             {
                 '$facet': {
                     metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-                    data: [{ $skip: skip }, { $limit: limit }] // add projection here wish you re-shape the docs
+                    data: [{ $skip: skip }, { $limit: limit }] 
                 }
             }
 
         ]);
-        // return res.send(find_user)
-        if (find_user[0].data.length == 0) {
+        
+        if (find_driver[0].data.length == 0) {
             const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
-        var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
+        var totalPage = Math.ceil(parseInt(find_driver[0].metadata[0].total) / limit);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.getUserDetailsSuccess,
             totalPage: totalPage,
-            data: find_user[0].data
+            data: find_driver[0].data
         })
-
     },
 
+    /**old */
+    // truckDriverDeleted: async (req, res, next) => {
+    //     var delete_doc = await TruckDriverAddressModel.deleteOne({ driverId: req.params.id });
+    //     var delete_bank_details = await TruckDriverBankDetailsModel.deleteOne({ driverId: req.params.id });
+    //     var delete_address = await TruckDriverDocModel.deleteOne({ driverId: req.params.id });
+    //     var delete_driver = await TruckDriverModel.deleteOne({ _id: req.params.id });
+    //     return res.status(global.CONFIGS.responseCode.success).json({
+    //         success: true,
+    //         message: global.CONFIGS.api.categoryDelete,
+    //     })
+    // },
+    /** */
     truckDriverDelete: async (req, res, next) => {
-        var delete_doc = await TruckDriverAddressModel.deleteOne({ driverId: req.params.id });
-        var delete_bank_details = await TruckDriverBankDetailsModel.deleteOne({ driverId: req.params.id });
-        var delete_address = await TruckDriverDocModel.deleteOne({ driverId: req.params.id });
-        var delete_driver = await TruckDriverModel.deleteOne({ _id: req.params.id });
-        return res.status(global.CONFIGS.responseCode.success).json({
-            success: true,
-            message: global.CONFIGS.api.categoryDelete,
-        })
-    },
+      const { id } = req.params;
+      let find_Driver = await TruckDriverModel.findOne({ _id: id });
+      if (!find_Driver) {
+        const err = new customError(
+          global.CONFIGS.api.DriverNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_Driver, "......find_Driver");
 
+      let find_BankDetails = await TruckDriverBankDetailsModel.findOne({
+        _id: find_Driver.bankDetailsId,
+      });
+      if (!find_BankDetails) {
+        const err = new customError(
+          global.CONFIGS.api.driverBankDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_BankDetails, "......find_BankDetails");
+
+      let find_address = await TruckDriverAddressModel.findOne({
+        _id: find_Driver.addressId,
+      });
+      if (!find_address) {
+        const err = new customError(
+          global.CONFIGS.api.driverAddressNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_address, "......find_address");
+
+      
+
+      let find_driverdoc = await TruckDriverDocModel.findOne({
+        _id: find_Driver.docId,
+      });
+      if (!find_driverdoc) {
+        const err = new customError(
+          global.CONFIGS.api.DriverDocNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_driverdoc, "......find_driverdoc");
+
+      /* Delete BikeDriver*/
+      const deletedDriver = await TruckDriverModel.findByIdAndRemove(id);
+
+      if (!deletedDriver) {
+        const err = new customError(
+          global.CONFIGS.api.DriverNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+
+      /* Delete Bank Details*/
+      const deletedBankDetails = await TruckDriverBankDetailsModel.findByIdAndRemove(
+        deletedDriver.bankDetailsId
+      );
+
+      if (!deletedBankDetails) {
+        const err = new customError(
+          global.CONFIGS.api.driverBankDetailsNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+
+      /* Delete Driver Documents*/
+      const deletedDriverDoc = await TruckDriverDocModel.findByIdAndRemove(
+        deletedDriver.docId
+      );
+      if (!deletedDriverDoc) {
+        const err = new customError(
+          global.CONFIGS.api.DriverDocNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      /* Delete Driver Address*/
+      const deletedDriverAddress = await TruckDriverAddressModel.findByIdAndRemove(
+        deletedDriver.addressId
+      );
+      if (!deletedDriverAddress) {
+        const err = new customError(
+          global.CONFIGS.api.driverAddressNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+
+      return res.status(global.CONFIGS.responseCode.success).json({
+        success: true,
+        message: global.CONFIGS.api.DriverDetailsDeleted,
+      });
+  },
 }

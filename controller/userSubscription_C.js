@@ -341,6 +341,9 @@ module.exports = {
           calendar: {
             _id: "$product.productDetails._id",
             day: "$calendar.day",
+          dates: {
+            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
+          },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
@@ -493,7 +496,10 @@ module.exports = {
           calendar: {
            _id: "$calendar._id",
             day: "$calendar.day",
-            dates: "$calendar.dates",
+            // dates: "$calendar.dates",
+          dates: {
+            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
+          },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
