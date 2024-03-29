@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router();
 const path = require("path")
-const BikeDetails = require("../../controller/bikeDetails_C")
+const bikeDRiverDetails = require("../../controller/bikeDriverDetails_C")
 const Auth = require("../../middleware/auth");
 const multer = require("multer");
 
 const errorfun=require("../../middleware/catchAsyncErrors");
-const bikeDetails_C = require('../../controller/bikeDetails_C');
+
 
 
 const localStorage = multer.diskStorage({
@@ -14,7 +14,8 @@ const localStorage = multer.diskStorage({
         next(null, path.join(__dirname, '../../public/uploads/bike'))
     },
     filename: (req, file, next) => {
-        next(null, Date.now() +"-" +file.originalname )
+        next(null, file.originalname )
+        // next(null, Date.now() +"-" +file.originalname )
     }
 });
 var upload1 = multer({ storage: localStorage });
@@ -37,20 +38,18 @@ var cpUpload = upload1.fields([
 ])
 
 router.route('/')
-    // .get(errorfun(BikeDetails.vehicleListAdmin))
-    .get(Auth.adminValidateToken,errorfun(BikeDetails.vehicleListAdmin))
-    .post(cpUpload, errorfun(BikeDetails.addVehicle))
-    // .post(Auth.adminValidateToken,cpUpload, errorfun(BikeDetails.addVehicle))
+    
+    .get(Auth.adminValidateToken,errorfun(bikeDRiverDetails.vehicleListAdmin))
+    .post(Auth.adminValidateToken,cpUpload, errorfun(bikeDRiverDetails.addVehicle))
 
 router.route('/:id')
-    // .put(cpUpload, errorfun(BikeDetails.updateVehicle))
-    .put(Auth.adminValidateToken,cpUpload, errorfun(BikeDetails.updateVehicle))
-    // .delete(errorfun(BikeDetails.deletevehicle))
-    .delete(Auth.adminValidateToken,errorfun(BikeDetails.deletevehicle))
-    // .get(errorfun(BikeDetails.getVehicleSingleAdmin))
-    .get(Auth.adminValidateToken,errorfun(BikeDetails.getVehicleSingleAdmin))
+    .put(Auth.adminValidateToken,cpUpload, errorfun(bikeDRiverDetails.updateVehicle))
+    .delete(Auth.adminValidateToken,errorfun(bikeDRiverDetails.deletevehicle));
+    
 
-
-
+router.get(
+  "/getVehicleSingleAdmin",Auth.adminValidateToken,
+  errorfun(bikeDRiverDetails.getVehicleSingleAdmin)
+);
 
 module.exports = router;

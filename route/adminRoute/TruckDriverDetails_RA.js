@@ -31,9 +31,7 @@ var cpUpload = upload1.fields([
 
 
 router.route('/')
-    // .get(errorfun(TruckDriver.getTruckDriverListAdmin))
     .get(Auth.adminValidateToken,errorfun(TruckDriver.getTruckDriverListAdmin))
-    // .post(cpUpload, errorfun(TruckDriver.addTruckDriver))
     .post(cpUpload,Auth.adminValidateToken, errorfun(TruckDriver.addTruckDriver))
 
 router.route('/:id')

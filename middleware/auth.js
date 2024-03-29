@@ -3,6 +3,7 @@ var mongoose = require("mongoose");
 var constants = require("../models/modelConstants");
 var UserModel = mongoose.model(constants.UserModel);
 const TruckDriverModel = mongoose.model(constants.TruckDriverModel);
+const BikeDriverModel = mongoose.model(constants.BikeDriverModel);
 var customError = require('./customerror');
 var axios = require("axios")
 
@@ -37,6 +38,21 @@ const validateTokenTruckDriver = errorfun(async function (req, res, next) {
         next(err);
     }
     if (find_TruckDriver) {
+        next();
+    }
+});
+
+const validateTokenBikeDriver = errorfun(async function (req, res, next) {
+    // console.log("req.headers = ",req.headers)
+    var accessToken = req.headers['access-token'];
+    var decode = await jwt.verify(accessToken, process.env.SECRETKEY);
+        
+    var find_BikeDriver = await BikeDriverModel.findOne({ _id: decode._id });
+    if (!find_BikeDriver) {
+        const err = new customError(global.CONFIGS.api.tokenError, global.CONFIGS.responseCode.Unauthorized);
+        next(err);
+    }
+    if (find_BikeDriver) {
         next();
     }
 });
@@ -90,5 +106,6 @@ module.exports = {
     apiValidateToken,
     adminValidateToken, errorfun,
     reCAPTCHA,
-    validateTokenTruckDriver
+    validateTokenTruckDriver,
+    validateTokenBikeDriver
 }

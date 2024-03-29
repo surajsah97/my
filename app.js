@@ -181,13 +181,13 @@ app.use(
 );
 
 app.use(
-  "/v" + process.env.VERSION + "/admin/bike/",
-  require("./route/adminRoute/BikeDetails_RA")
+  "/v" + process.env.VERSION + "/admin/bikedriver/",
+  require("./route/adminRoute/BikeDriverDetails_RA")
 );
 
 app.use(
-  "/v" + process.env.VERSION + "/front/bike/",
-  require("./route/frontRoute/BikeDetails_RF")
+  "/v" + process.env.VERSION + "/front/bikedriver/",
+  require("./route/frontRoute/BikeDriverDetails_RF")
 );
 
 app.use(
