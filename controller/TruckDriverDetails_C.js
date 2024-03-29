@@ -9,13 +9,26 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const common = require("../service/commonFunction");
 const customError = require('../middleware/customerror');
-const validationSchema=require("../validation/truckDriverValidation")
+const validationSchema=require("../validation/truckDriverValidation");
 
 
 module.exports = {
 
     addTruckDriver: async (req, res, next) => {
-         const validationResult = validationSchema.validate(req.body);
+        const find_Driver = await TruckDriverModel.findOne({
+            $or: [
+                { mobile: req.body.mobile },
+                { licenseNumber: req.body.licenseNumber },
+                { visaNumber: req.body.visaNumber },
+                { emiratesId: req.body.emiratesId }
+            ]
+        });
+        console.log(find_Driver)
+        if (find_Driver) {
+            const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
+            return next(err);
+        }
+        const validationResult = validationSchema.validate(req.body);
         if (validationResult.error) {
             const err = new customError(validationResult.error.message, global.CONFIGS.responseCode.validationError);
             return next(err);
@@ -36,21 +49,6 @@ module.exports = {
                 const err = new customError(`File upload for field '${field}' is missing.`, global.CONFIGS.responseCode.validationError);
                 return next(err);
             }
-        }
-
-
-        const find_Driver = await TruckDriverModel.findOne({
-            $or: [
-                { mobile: req.body.mobile },
-                { licenseNumber: req.body.licenseNumber },
-                { visaNumber: req.body.visaNumber },
-                { emiratesId: req.body.emiratesId }
-            ]
-        });
-        console.log(find_Driver)
-        if (find_Driver) {
-            const err = new customError(global.CONFIGS.api.Productalreadyadded, global.CONFIGS.responseCode.alreadyExist);
-            return next(err);
         }
         // console.log(req.files)
         const passportImg = {};
@@ -97,6 +95,7 @@ module.exports = {
         truckDRiverDetails.InsuranceComp = req.body.InsuranceComp;
         truckDRiverDetails.insuranceValidity = req.body.insuranceValidity;
         truckDRiverDetails.licenseNumber = req.body.licenseNumber;
+
         truckDRiverDetails.licenseCity = req.body.licenseCity;
         truckDRiverDetails.licenseType = req.body.licenseType;
         truckDRiverDetails.licenseValidity = req.body.licenseValidity;
@@ -339,19 +338,79 @@ module.exports = {
 
 
     },
+    getTruckDriverBYIDBYADMIN: async (req, res, next) => { 
+        var find_driver = await TruckDriverModel.aggregate([
+            {
+                $match: { _id: new ObjectId(req.query.driverId) }
+            },
+            {
+                $lookup:
+                {
+                    from: "truckdriverbankdetails",
+                    localField: "bankDetailsId",
+                    foreignField: "_id",
+                    as: "truckdriverbankdetails"
+                }
+            },
+            { $unwind: '$truckdriverbankdetails' },
+            { $unset: 'bankDetailsId' },
+            {
+                $lookup:
+                {
+                    from: "truckdriveraddress",
+                    localField: "addressId",
+                    foreignField: "_id",
+                    as: "truckdriveraddress"
+                }
+            },
+            { $unwind: '$truckdriveraddress' },
+            { $unset: 'addressId' },
+            {
+                $lookup:
+                {
+                    from: "truckdriverdoc",
+                    localField: "docId",
+                    foreignField: "_id",
+                    as: "truckdriverdoc"
+                }
+            },
+            { $unwind: '$truckdriverdoc' },
+            { $unset: 'docId' },
+            {
+                $sort: {
+                    _id: -1
+                }
+            },
+            
 
+        ]);
+        
+        if (find_driver.length == 0) {
+            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
+            return next(err);
+        }
+       
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.getUserDetailsSuccess,
+            data: find_driver
+        })
+
+
+    },
+
+    /**Working process */
     logoutTruckDriver :async (req, res, next) => {
     res.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,
     });
-
     res.status(200).json({
     success: true,
     message: "Logged Out Successfully",
     });
     },
-
+    /** */
 
     getTruckDriverListAdmin: async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 20; // docs in single page
@@ -436,53 +495,6 @@ module.exports = {
     /** */
     truckDriverDelete: async (req, res, next) => {
       const { id } = req.params;
-      let find_Driver = await TruckDriverModel.findOne({ _id: id });
-      if (!find_Driver) {
-        const err = new customError(
-          global.CONFIGS.api.DriverNotfound,
-          global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-      }
-      console.log(find_Driver, "......find_Driver");
-
-      let find_BankDetails = await TruckDriverBankDetailsModel.findOne({
-        _id: find_Driver.bankDetailsId,
-      });
-      if (!find_BankDetails) {
-        const err = new customError(
-          global.CONFIGS.api.driverBankDetailsNotfound,
-          global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-      }
-      console.log(find_BankDetails, "......find_BankDetails");
-
-      let find_address = await TruckDriverAddressModel.findOne({
-        _id: find_Driver.addressId,
-      });
-      if (!find_address) {
-        const err = new customError(
-          global.CONFIGS.api.driverAddressNotfound,
-          global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-      }
-      console.log(find_address, "......find_address");
-
-      
-
-      let find_driverdoc = await TruckDriverDocModel.findOne({
-        _id: find_Driver.docId,
-      });
-      if (!find_driverdoc) {
-        const err = new customError(
-          global.CONFIGS.api.DriverDocNotfound,
-          global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-      }
-      console.log(find_driverdoc, "......find_driverdoc");
 
       /* Delete BikeDriver*/
       const deletedDriver = await TruckDriverModel.findByIdAndRemove(id);
@@ -494,7 +506,7 @@ module.exports = {
         );
         return next(err);
       }
-
+      console.log(deletedDriver,"deletedriver.....,,,,")
       /* Delete Bank Details*/
       const deletedBankDetails = await TruckDriverBankDetailsModel.findByIdAndRemove(
         deletedDriver.bankDetailsId

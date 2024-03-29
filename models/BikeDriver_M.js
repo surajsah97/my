@@ -11,23 +11,33 @@ var bikeDriverSchema = new Schema(
       type: String,
       // required: [true, "Please enter email."]
     },
+    password: {
+      type: String,
+      required: [true, "Please enter Password."],
+    },
     mobile: {
       type: Number,
       required: [true, "Please enter mobile."],
-    },
-    nationality: {
-      type: String,
-      required: [true, "Please enter nationality."],
     },
     altMobile: {
       type: Number,
       // required: [true, "Please enter mobile."]
     },
+    Otp: {
+      type: Number,
+    },
+    OtpsendDate: {
+      type: Date,
+    },
+    nationality: {
+      type: String,
+      required: [true, "Please enter nationality."],
+    },
     passportNumber: {
       type: String,
       required: [true, "Please enter passport number."],
     },
-    passwordassportValidity: {
+    passportValidity: {
       type: Date,
       required: [true, "Please enter passport validity."],
     },
@@ -54,10 +64,6 @@ var bikeDriverSchema = new Schema(
     insuranceValidity: {
       type: Date,
       required: [true, "Please enter Insurance Validity."],
-    },
-    password: {
-      type: String,
-      required: [true, "Please enter Password."],
     },
     licenseNumber: {
       type: String,
