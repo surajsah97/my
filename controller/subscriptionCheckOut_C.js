@@ -121,8 +121,11 @@ module.exports = {
       productPrice * product[0].qty * subDuration.planDuration;
     console.log(totalSubPrice, "....totalSubPrice");
 
-    const vat = await VatModel.findOne({ vatPercentage: req.body.vatPercentage });
-    const taxAmount = totalSubPrice * (vat / 100);
+    const vat = await VatModel.find();
+    console.log(vat,"....vatttt")
+    const vatPercentage=vat.map((item)=>item.vatPercentage)
+    console.log(vatPercentage,"......vatttttpercentage")
+    const taxAmount = totalSubPrice * (vatPercentage / 100);
     const totalTaxablePrice = totalSubPrice + taxAmount;
 
     const addSubscriptionCheckout = {
