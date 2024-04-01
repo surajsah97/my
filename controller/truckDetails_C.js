@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
-const TruckModel = mongoose.model(constants.TruckModel);
+const TruckModel = mongoose.model(constants.TruckDetailModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 
@@ -11,7 +11,7 @@ module.exports = {
     });
     if (find_vehicle) {
       const err = new customError(
-        global.CONFIGS.api.Productalreadyadded,
+        global.CONFIGS.api.truckDetailsalreadyadded,
         global.CONFIGS.responseCode.alreadyExist
       );
       return next(err);
@@ -68,7 +68,7 @@ module.exports = {
 
     let find_vehicle = await TruckModel.findById(req.params.id);
         if (!find_vehicle) {
-        const err = new customError(global.CONFIGS.api.ProductNotfound, global.CONFIGS.responseCode.notFound);
+        const err = new customError(global.CONFIGS.api.truckDetailsNotfound, global.CONFIGS.responseCode.notFound);
         return next(err);
         }
     const existing_vehicle = await TruckModel.findOne({
@@ -81,7 +81,7 @@ module.exports = {
     });
     if (existing_vehicle) {
       const err = new customError(
-        global.CONFIGS.api.Productalreadyadded,
+        global.CONFIGS.api.truckDetailsalreadyadded,
         global.CONFIGS.responseCode.alreadyExist
       );
       next(err);
@@ -113,7 +113,7 @@ module.exports = {
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.ProductUpdated,
+      message: global.CONFIGS.api.truckDetailsUpdated,
       data:find_vehicle
     });
   },
@@ -123,7 +123,7 @@ module.exports = {
     
     if(!delete_vehicle){
             const err = new customError(
-          global.CONFIGS.api.ProductNotfound,
+          global.CONFIGS.api.truckDetailsNotfound,
           global.CONFIGS.responseCode.notFound
         );
         return next(err);
@@ -194,7 +194,7 @@ module.exports = {
     ]);
     if (truckData[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.api.truckDetailsNotfound,
         global.CONFIGS.responseCode.notFound
       );
      return next(err);
@@ -203,7 +203,7 @@ module.exports = {
     var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.getProductSuccess,
+      message: global.CONFIGS.api.truckDetailsListFront,
       totalData:total,
       totalPage: totalPage,
       allOrder: truckData[0].data,
@@ -266,7 +266,7 @@ module.exports = {
     ]);
     if (truckData[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.api.truckDetailsNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -275,7 +275,7 @@ module.exports = {
     var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.getProductSuccess,
+      message: global.CONFIGS.api.truckDetailsListAdmin,
       totalData:total,
       totalPage: totalPage,
       allOrder: truckData[0].data,

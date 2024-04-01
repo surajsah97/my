@@ -81,7 +81,7 @@ module.exports = {
   },
 
   getOrderByUser: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const limit = parseInt(req.query.limit) || 3; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
 

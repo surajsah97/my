@@ -156,7 +156,7 @@ module.exports = {
     loginTruckDriver: async (req, res, next) => {
         var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
         if (!find_driver) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.truckDriverNotfound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
 
@@ -175,7 +175,7 @@ module.exports = {
         // console.log(token);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.loginSuccess,
+            message: global.CONFIGS.api.truckdriverloginSuccess,
             data: {
                 "driverId": find_driver._id,
                 "name": find_driver.name,
@@ -191,7 +191,7 @@ module.exports = {
     reSendOtp: async (req, res, next) => {
         var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
         if (!find_driver) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.truckDriverNotfound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var otp = common.randomNumber();
@@ -211,7 +211,7 @@ module.exports = {
     forgetPass: async (req, res, next) => {
         var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
         if (!find_driver) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.truckDriverNotfound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var otp = common.randomNumber();
@@ -231,7 +231,7 @@ module.exports = {
     resetPass: async (req, res, next) => {
         var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
         if (!find_driver) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.truckDriverNotfound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         if (find_driver.Otp != req.body.Otp) {
@@ -259,7 +259,7 @@ module.exports = {
     changePass: async (req, res, next) => {
         var find_driver = await TruckDriverModel.findOne({ mobile: req.body.mobile });
         if (!find_driver) {
-            const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.truckDriverNotfound, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         const match = await bcrypt.compare(req.body.oldPassword, find_driver.password);
@@ -326,13 +326,13 @@ module.exports = {
         ]);
         
         if (find_driver.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.getTruckDriverDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
        
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.getUserDetailsSuccess,
+            message: global.CONFIGS.api.getTruckDriverDetailsSuccess,
             data: find_driver
         })
 
@@ -386,13 +386,13 @@ module.exports = {
         ]);
         
         if (find_driver.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.getTruckDriverDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
        
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.getUserDetailsSuccess,
+            message: global.CONFIGS.api.getTruckDriverDetailsSuccess,
             data: find_driver
         })
 
@@ -469,13 +469,13 @@ module.exports = {
         ]);
         
         if (find_driver[0].data.length == 0) {
-            const err = new customError(global.CONFIGS.api.getUserDetailsFail, global.CONFIGS.responseCode.notFound);
+            const err = new customError(global.CONFIGS.api.getTruckDriverDetailsFail, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         var totalPage = Math.ceil(parseInt(find_driver[0].metadata[0].total) / limit);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.getUserDetailsSuccess,
+            message: global.CONFIGS.api.truckDriverListAdmin,
             totalPage: totalPage,
             data: find_driver[0].data
         })
