@@ -15,8 +15,6 @@ const SubscriptionCheckOutModel = mongoose.model(
 module.exports = {
  addSub: async (req, res, next) => {
     try {
-      
-
       const subscriptioncheckOutdata = await SubscriptionCheckOutModel.findOne({
         _id: req.body.subscriptionCheckoutId,
         activeStatus: "Active",
@@ -66,7 +64,7 @@ module.exports = {
         }
       }
       let addSubscription = {};
-      const vat = 5;
+      
       addSubscription.vatAmount = Math.round(
         subscriptioncheckOutdata.vatAmount
       );

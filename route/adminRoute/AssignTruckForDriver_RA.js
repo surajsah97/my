@@ -6,14 +6,15 @@ const Auth = require("../../middleware/auth");
 
 const errorfun=require("../../middleware/catchAsyncErrors");
 
+router.route('/:id')
+    .get(Auth.adminValidateToken,errorfun(AssignTruckForDriver.getAssignBYIdAdmin))
+    .delete(Auth.adminValidateToken,errorfun(AssignTruckForDriver.assignDeleteById))
+    .put(Auth.adminValidateToken,errorfun(AssignTruckForDriver.assignUpdateById))
+
 
 router.route('/')
     .post(Auth.adminValidateToken, errorfun(AssignTruckForDriver.asignTruck))
     .get(Auth.adminValidateToken,errorfun(AssignTruckForDriver.getAllListAssignBYAdmin))
 
-router.route('/:id')
-//     .put(cpUpload,Auth.adminValidateToken, errorfun(BikeDetails.updateVehicle))
-    .get(errorfun(Auth.adminValidateToken,AssignTruckForDriver.getAssignBYIdAdmin))
-    // .delete(Auth.adminValidateToken,errorfun(TruckDriver.truckDriverDelete))
 
 module.exports = router;

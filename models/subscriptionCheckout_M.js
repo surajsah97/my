@@ -41,9 +41,13 @@ var checkoutSchema = new Schema(
       type: Number,
       required: [true, "Please enter price."],
     },
+    // vatAmount: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: constants.VatModel,
+    // },
     vatAmount: {
       type: Number,
-      // required: [true, "Please enter price."],
+      // required: [true, "Please enter vat."],
     },
     totalTaxablePrice: {
       type: Number,
