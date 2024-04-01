@@ -10,7 +10,7 @@ var customError = require('../middleware/customerror');
 module.exports = {
 
     adminSingup: async (req, res, next) => {
-        console.log(req.body);
+        // console.log(req.body);
         var find_user = await UserModel.findOne({ $or: [{ email: req.body.email }, { mobile: req.body.mobile }] });
         if (find_user) {
             const err = new customError(global.CONFIGS.api.registerFail, global.CONFIGS.responseCode.alreadyExist);
@@ -52,7 +52,7 @@ module.exports = {
         //     })
         // }
         var find_user = await UserModel.findOne({ email: req.body.email });
-        console.log(find_user)
+        // console.log(find_user);
         if (!find_user) {
             const err = new customError(global.CONFIGS.api.userNotFound, global.CONFIGS.responseCode.notFound);
             return next(err);

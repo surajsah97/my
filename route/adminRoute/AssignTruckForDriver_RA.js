@@ -11,10 +11,9 @@ router.route('/')
     .post(Auth.adminValidateToken, errorfun(AssignTruckForDriver.asignTruck))
     .get(Auth.adminValidateToken,errorfun(AssignTruckForDriver.getAllListAssignBYAdmin))
 
-// router.route('/:id')
-// //     .put(cpUpload, errorfun(BikeDetails.updateVehicle))
-// //     .put(cpUpload,Auth.adminValidateToken, errorfun(BikeDetails.updateVehicle))
-//     .delete(errorfun(TruckDriver.truckDriverDelete))
-//     // .delete(Auth.adminValidateToken,errorfun(TruckDriver.truckDriverDelete))
+router.route('/:id')
+//     .put(cpUpload,Auth.adminValidateToken, errorfun(BikeDetails.updateVehicle))
+    .get(errorfun(Auth.adminValidateToken,AssignTruckForDriver.getAssignBYIdAdmin))
+    // .delete(Auth.adminValidateToken,errorfun(TruckDriver.truckDriverDelete))
 
 module.exports = router;
