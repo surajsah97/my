@@ -168,7 +168,15 @@
     "truckDetailsListFront": "Truck Details list Successfully.",
     "truckDetailsListAdmin": "Truck Details list for Admin Successfully.",
     "truckDetailsInactive": "Truck Details inactive or not found.",
-    "truckDetailsDelete": "Truck Details deleted Successfully."
+    "truckDetailsDelete": "Truck Details deleted Successfully.",
+    "AssignTruckForDriveradded": "AssignTruckForDriver added Successfully.",
+    "AssignTruckForDriveralreadyadded": "You have already added AssignTruckForDriver. Please try another AssignTruckForDriver.",
+    "AssignTruckForDriverNotfound": "AssignTruckForDriver notFound Successfully.",
+    "AssignTruckForDriverUpdated": "AssignTruckForDriver updated Successfully.",
+    "AssignTruckForDriverByIdAdmin": "AssignTruckForDriver  BYID Successfully.",
+    "AssignTruckForDriverListAdmin": "AssignTruckForDriver list for Admin Successfully.",
+    "AssignTruckForDriverInactive": "AssignTruckForDriver inactive or not found.",
+    "AssignTruckForDriverDelete": "AssignTruckForDriver deleted Successfully."
 
   },
   "responseCode": {

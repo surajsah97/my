@@ -59,7 +59,7 @@ const validateTokenBikeDriver = errorfun(async function (req, res, next) {
 
 
 const adminValidateToken = errorfun(async function (req, res, next) {
-    console.log(req.cookies,"........cookies");
+    // console.log(req.cookies,"........cookies");
     var accessToken = req.cookies.adminToken;
     var decode = await jwt.verify(accessToken, process.env.SECRETKEY);
 
