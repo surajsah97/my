@@ -100,7 +100,7 @@ var truckSchema = new Schema(
         }
     },
     {
-        collection: constants.TruckModel,
+        collection: constants.TruckDetailModel,
         versionKey: false,
         timestamps: true,
         // toObject: { virtuals: true, getters: true },
@@ -110,4 +110,4 @@ var truckSchema = new Schema(
 
 truckSchema.index({ 'createdAt': -1 });
 
-mongoose.model(constants.TruckModel, truckSchema);
+mongoose.model(constants.TruckDetailModel, truckSchema);

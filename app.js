@@ -198,6 +198,10 @@ app.use(
   "/v" + process.env.VERSION + "/front/truckdriver/",
   require("./route/frontRoute/TruckDriverDetails_RF")
 );
+app.use(
+  "/v" + process.env.VERSION + "/admin/assigntruckfordriver/",
+  require("./route/adminRoute/AssignTruckForDriver_RA")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/front/useraddress/",
