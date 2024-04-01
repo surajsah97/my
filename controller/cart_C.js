@@ -130,20 +130,23 @@ module.exports = {
           );
           return next(err);
         }
+        var myArray = find_cart.product;
         var objIndex = myArray.findIndex(
           (obj) => obj.productId == req.body.productId
         );
+        console.log(objIndex," = objIndex")
         myArray[objIndex].qty = myArray[objIndex].qty + req.body.qty;
         if (myArray[objIndex].qty === 0) {
-          var totalProduct = myArray.splice(objIndex, 1);
+          myArray.splice(objIndex, 1)
+          var totalProduct = myArray;
           var price = find_prod.productPrice * req.body.qty;
           var finalPrice = price + find_cart.price;
-          var myArray = find_cart.product;
+          
         } else if (myArray[objIndex].qty > 0) {
           var totalProduct = myArray;
           var price = find_prod.productPrice * req.body.qty;
           var finalPrice = price + find_cart.price;
-          var myArray = find_cart.product;
+          // var myArray = find_cart.product;
 
         }
         
