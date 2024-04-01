@@ -130,14 +130,23 @@ module.exports = {
           );
           return next(err);
         }
-        var price = find_prod.productPrice * req.body.qty;
-        var finalPrice = price + find_cart.price;
-        var myArray = find_cart.product;
         var objIndex = myArray.findIndex(
           (obj) => obj.productId == req.body.productId
         );
         myArray[objIndex].qty = myArray[objIndex].qty + req.body.qty;
-        var totalProduct = myArray;
+        if (myArray[objIndex].qty === 0) {
+          var totalProduct = myArray.splice(objIndex, 1);
+          var price = find_prod.productPrice * req.body.qty;
+          var finalPrice = price + find_cart.price;
+          var myArray = find_cart.product;
+        } else if (myArray[objIndex].qty > 0) {
+          var totalProduct = myArray;
+          var price = find_prod.productPrice * req.body.qty;
+          var finalPrice = price + find_cart.price;
+          var myArray = find_cart.product;
+
+        }
+        
         // return res.send(totalProduct)
         var update_cart = await CartModel.updateOne(
           { _id: find_cart._id },
