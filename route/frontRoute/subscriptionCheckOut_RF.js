@@ -9,6 +9,10 @@ router.route('/')
     .post( errorfun(subscriptionCheckOut.checkoutSubscription))
     // .post(Auth.apiValidateToken, errorfun(subscriptionCheckOut.checkoutSubscription));
     .get( errorfun(subscriptionCheckOut.subscriptionCheckoutListFront))
-    // .post(Auth.apiValidateToken, errorfun(subscriptionCheckOut.subscriptionCheckoutListFront));
+    // .get(Auth.apiValidateToken, errorfun(subscriptionCheckOut.subscriptionCheckoutListFront));
+router.route('/subscriptionCheckoutId')
+    
+    .get( errorfun(subscriptionCheckOut.subscriptionCheckoutByIdFront))
+    // .get(Auth.apiValidateToken, errorfun(subscriptionCheckOut.subscriptionCheckoutByIdFront));
 
 module.exports = router;
