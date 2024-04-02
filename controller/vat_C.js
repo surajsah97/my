@@ -6,19 +6,25 @@ var customError = require('../middleware/customerror');
 module.exports={
      addVat: async (req, res, next) => {
         var existing_vat = await VatModel.find();
-        // console.log(existing_vat);
         if (existing_vat.length !== 0) {
-            const update_vat = await VatModel.updateOne({ vatPercentage: req.body.vatPercentage });
+            if(req.body.activeStatus!=undefined){
+            let validactiveStatus = ["0","1"];
+            if (!validactiveStatus.includes(req.body.activeStatus)) {
+            const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
+            return next(err);
+            }
+        }
+            const update_vat = await VatModel.updateOne({ vatPercentage: req.body.vatPercentage,activeStatus:req.body.activeStatus });
              return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.brandadded,
-            data: update_vat
+            message: global.CONFIGS.api.VatUpdated,
+            // data: update_vat
         })
         }else{
         var create_vat = await VatModel.create(req.body);
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.brandadded,
+            message: global.CONFIGS.api.Vatadded,
             data: create_vat
         })
         }
@@ -28,8 +34,8 @@ module.exports={
         var find_vat = await VatModel.find();
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.getBrandSuccess,
-            data: find_vat
+            message: global.CONFIGS.api.getVatByAdmin,
+            data: find_vat[0]
         })
     },
 
@@ -37,13 +43,13 @@ module.exports={
         var find_vat = await VatModel.find({ activeStatus: "1" }).sort({ vatPercentage: 1 });
         if(find_vat.length==0){
             const err = new customError(
-            global.CONFIGS.api.brandInactive,
+            global.CONFIGS.api.VatNotfound,
             global.CONFIGS.responseCode.notFound);
             return next(err);
         }
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.getBrandSuccess,
+            message: global.CONFIGS.api.getVatByUser,
             data: find_vat[0]
         })
     },
@@ -52,14 +58,15 @@ module.exports={
         const delete_vat = await VatModel.findByIdAndDelete({ _id: req.params.id });
         if(!delete_vat){
             const err = new customError(
-          global.CONFIGS.api.brandInactive,
+          global.CONFIGS.api.VatNotfound,
           global.CONFIGS.responseCode.notFound
         );
         return next(err);
         }
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.brandDelete,
+            message: global.CONFIGS.api.VatDelete,
         })
     },
+
 }

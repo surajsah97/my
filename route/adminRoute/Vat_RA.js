@@ -14,8 +14,6 @@ router
 
 router
   .route("/:id")
-  .put( errorfun(Vat.updateVat))
-//   .put(Auth.adminValidateToken, errorfun(Vat.updateVat))
   .delete( errorfun(Vat.vatDelete))
 //   .delete(Auth.adminValidateToken, errorfun(Vat.vatDelete));
 
