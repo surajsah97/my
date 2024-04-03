@@ -101,6 +101,13 @@
     "locationUpdated": "Location updated Successfully.",
     "locationDelete": "Location deleted Successfully.",
     "getLocationSuccess": "Get location list Successfully.",
+    "zoneNameadded": "zoneName added Successfully.",
+    "zoneNamealreadyadded": "zoneName already added. Please try another zoneName.",
+    "zoneNameNotFound": "zoneName not found Successfully.",
+    "zoneNameUpdated": "zoneName updated Successfully.",
+    "zoneNameDelete": "zoneName deleted Successfully.",
+    "zoneNameInactive": "zoneName inactive or not found Successfully.",
+    "getzoneNameSuccess": "Get zoneName list Successfully.",
     "brandadded": "Brand added Successfully.",
     "brandalreadyadded": "Brand already added. Please try another name.",
     "brandUpdated": "Brand updated Successfully.",
@@ -183,8 +190,15 @@
     "AssignTruckForDriverByIdAdmin": "AssignTruckForDriver  BYID Successfully.",
     "AssignTruckForDriverListAdmin": "AssignTruckForDriver list for Admin Successfully.",
     "AssignTruckForDriverInactive": "AssignTruckForDriver inactive or not found.",
-    "AssignTruckForDriverDelete": "AssignTruckForDriver deleted Successfully."
-
+    "AssignTruckForDriverDelete": "AssignTruckForDriver deleted Successfully.",
+    "AssignZoneForAssignTruckadded": "AssignTruckForDriver added Successfully.",
+    "AssignZoneForAssignTruckalreadyadded": "You have already added AssignZoneForAssignTruck. Please try another AssignZoneForAssignTruck.",
+    "AssignZoneForAssignTruckNotfound": "AssignZoneForAssignTruck notFound Successfully.",
+    "AssignZoneForAssignTruckUpdated": "AssignZoneForAssignTruck updated Successfully.",
+    "AssignZoneForAssignTruckByIdAdmin": "AssignZoneForAssignTruck  BYID Successfully.",
+    "AssignZoneForAssignTruckListAdmin": "AssignZoneForAssignTruck list for Admin Successfully.",
+    "AssignZoneForAssignTruckInactive": "AssignZoneForAssignTruck inactive or not found.",
+    "AssignZoneForAssignTruckDelete": "AssignZoneForAssignTruck deleted Successfully."
   },
   "responseCode": {
     "success": 200,

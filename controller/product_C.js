@@ -206,7 +206,7 @@ module.exports = {
       message: global.CONFIGS.api.getProductSuccess,
       totalData: total,
       totalPage: totalPage,
-      allOrder: productData[0].data,
+      allProduct: productData[0].data,
     });
   },
 };

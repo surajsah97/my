@@ -28,3 +28,5 @@ require("./productOrder_M");
 require("./Vat_M");
 require("./cart_M");
 require("./AssignTruckforDriver_M");
+require("./deliveryZone_M");
+require("./AssignZoneForAssignTruck_M");

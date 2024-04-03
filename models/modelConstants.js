@@ -19,6 +19,7 @@ module.exports = {
   TruckDriverBankDetailsModel: "truckdriverbankdetails",
   TruckDriverModel: "truckdriverdetails",
   AssignTruckForDriverModel: "assigntruckfordriverdetails",
+  AssignZoneForAssignTruckModel: "assignzoneforassigntruckdetails",
   BikeDriverModel: "bikedriverdetails",
   DriverBankDetailsModel: "driverbankdetails",
   DriverAddressModel: "driveraddress",
@@ -28,5 +29,6 @@ module.exports = {
   DeliveryLocationModel: "deliverylocation",
   ProductOrderModel: "productorder",
   VatModel: "vat",
-  CartModel : "cart"
+  CartModel : "cart",
+  DeliveryZoneModel : "deliveryzone"
 };
