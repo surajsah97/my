@@ -198,7 +198,9 @@
     "AssignZoneForAssignTruckByIdAdmin": "AssignZoneForAssignTruck  BYID Successfully.",
     "AssignZoneForAssignTruckListAdmin": "AssignZoneForAssignTruck list for Admin Successfully.",
     "AssignZoneForAssignTruckInactive": "AssignZoneForAssignTruck inactive or not found.",
-    "AssignZoneForAssignTruckDelete": "AssignZoneForAssignTruck deleted Successfully."
+    "AssignZoneForAssignTruckDelete": "AssignZoneForAssignTruck deleted Successfully.",
+    "EnterEndDateGreaterThanStartDate": "Please Enter EndDate is GreaterThan StartDate Successfully.",
+    "EnterStartDateGreaterThanEndDate": "Please Enter StartDate is GreaterThan previousEndDate Successfully."
   },
   "responseCode": {
     "success": 200,

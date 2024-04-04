@@ -36,35 +36,36 @@ var assignZoneForAssignTruckSchema = new Schema(
             type: Number,
             default: 0,
           },
-          startDateAndTime: {
-            type: Date,
-            required: [true, "Please enter startDateAndTime."],
-          },
-          endDateAndTime: {
-            type: Date,
-            required: [true, "Please enter startDateAndTime."],
-          },
-          timeDifferenceMinutes:{
-            type: Number,
-            required: [true, "Please enter timeDifferenceMinutes."],
-          },
+
+    /**old start*/
+        //   startDateAndTime: {
+        //     type: Date,
+        //     required: [true, "Please enter startDateAndTime."],
+        //   },
+        //   endDateAndTime: {
+        //     type: Date,
+        //     required: [true, "Please enter startDateAndTime."],
+        //   },
+        //   timeDifferenceMinutes:{
+        //     type: Number,
+        //     required: [true, "Please enter timeDifferenceMinutes."],
+        //   },
+    /**old end*/
         },
       ],
     },
-    /**old start*/
-    // startDateAndTime: {
-    //   type: Date,
-    //   required: [true, "Please enter startDateAndTime."],
-    // },
-    // endDateAndTime: {
-    //   type: Date,
-    //   required: [true, "Please enter startDateAndTime."],
-    // },
+    startDateAndTime: {
+      type: Date,
+      required: [true, "Please enter startDateAndTime."],
+    },
+    endDateAndTime: {
+      type: Date,
+      required: [true, "Please enter startDateAndTime."],
+    },
     // timeDifferenceMinutes:{
     // type: Number,
     // required: [true, "Please enter timeDifferenceMinutes."],
     // },
-    /**old end*/
     activeStatus: {
       type: String,
       enum: ["Active", "Completed"],

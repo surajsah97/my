@@ -117,10 +117,6 @@ module.exports = {
     }
   },
 
-
-
-  
- 
   /** */
   // addSubOld: async (req, res, next) => {
   //   try {
@@ -345,6 +341,8 @@ module.exports = {
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
+            productUOM: "$product.productDetails.productUOM",
+            tagLine: "$product.productDetails.tagLine",
           },
           // startDate: 1,
           // endDate: 1,
@@ -501,6 +499,8 @@ module.exports = {
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
+            productUOM: "$calendar.calendarProductDetails.productUOM",
+            tagLine: "$calendar.calendarProductDetails.tagLine",
           },
           // startDate: 1,
           // endDate: 1,
