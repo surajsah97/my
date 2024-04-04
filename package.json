@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "SET NODE_ENV=dev&node ./bin/www",
-    "start_nodemon": "SET NODE_ENV=dev&nodemon ./bin/www"
+    "start_nodemon": "SET NODE_ENV=dev&nodemon ./bin/www",
+    "ubuntu": "export NODE_ENV=dev && nodemon ./bin/www"
   },
   "keywords": [],
   "author": "",

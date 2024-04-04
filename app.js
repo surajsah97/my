@@ -215,6 +215,19 @@ app.use(
   "/v" + process.env.VERSION + "/front/deliveryaddress/",
   require("./route/frontRoute/deliveryLocation_RF")
 );
+app.use(
+  "/v" + process.env.VERSION + "/admin/deliveryzone/",
+  require("./route/adminRoute/deliveryZone_RA")
+);
+app.use(
+  "/v" + process.env.VERSION + "/truckdriver/deliveryzone/",
+  require("./route/frontRoute/deliveryZone_RF")
+);
+
+app.use(
+  "/v" + process.env.VERSION + "/admin/assignzoneforassigntruck/",
+  require("./route/adminRoute/AssignZoneForAssignTruck_RA")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/front/cart/",
