@@ -43,28 +43,31 @@ module.exports = {
       return next(err);
     }
     
-    const existing_assignTruck = await AssignZoneForAssignTruckModel.findOne({
+    const existing_assignTruck = await AssignZoneForAssignTruckModel.find({
       assignTruckId: req.body.assignTruckId,
-      activeStatus: "Active",sort:({
-      _id: 1,
-    })
+      activeStatus: "Active",
+    //   sort:({_id: 1,})
     });
-    if (existing_assignTruck) {
-    console.log(existing_assignTruck,".......existing_assignTruck");
-    console.log(existing_assignTruck.endDateAndTime,".......existing_assignTruck.endDateAndTime");
-    console.log(existing_assignTruck.startDateAndTime,".......existing_assignTruck.startDateAndTime");
+    for(var i=0; i<existing_assignTruck.length; i++){
+        console.log(existing_assignTruck,".......existing_assignTruck");
+        console.log(i, " = hsdhdgdhghdgdhfbdhf")
+        console.log(existing_assignTruck[i].endDateAndTime,".......existing_assignTruck.endDateAndTime");
+        console.log(existing_assignTruck[i].startDateAndTime,".......existing_assignTruck.startDateAndTime");
     
-    let timeDifferenceMillisTwo = existing_assignTruck.endDateAndTime - startDateAndTime;
-    let timeDifferenceMinutesTwo = Math.floor(timeDifferenceMillisTwo / (1000 * 60));
-    console.log(timeDifferenceMinutesTwo, ".....timeDifferenceMinutesTwo");
+        let timeDifferenceMillisTwo = existing_assignTruck[i].endDateAndTime - startDateAndTime;
+        let timeDifferenceMinutesTwo = Math.floor(timeDifferenceMillisTwo / (1000 * 60));
+        console.log(timeDifferenceMinutesTwo, ".....timeDifferenceMinutesTwo");
     
-    if(timeDifferenceMinutesTwo>=0){
-      const err = new customError(
-        global.CONFIGS.api.EnterStartDateGreaterThanEndDate,
-        global.CONFIGS.responseCode.exception
-      );
-      return next(err);
+        if(timeDifferenceMinutesTwo>=0){
+            const err = new customError(
+            global.CONFIGS.api.EnterStartDateGreaterThanEndDate,
+            global.CONFIGS.responseCode.exception
+        );
+        return next(err);
     }
+    }
+    if (existing_assignTruck) {
+    
     }
 
     const deliveryZones = req.body.deliveryZone.map(
