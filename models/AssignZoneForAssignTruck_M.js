@@ -8,21 +8,21 @@ var assignZoneForAssignTruckSchema = new Schema(
       ref: constants.AssignTruckForDriverModel,
       required: true,
     },
-    totalStock:{
-     type:Number,
-     default:0
+    totalStock: {
+      type: Number,
+      default: 0,
     },
-    deliverdStock:{
-     type:Number,
-     default:0
+    deliverdStock: {
+      type: Number,
+      default: 0,
     },
-    returnedStock:{
-     type:Number,
-     default:0
+    returnedStock: {
+      type: Number,
+      default: 0,
     },
-    damagedStock:{
-    type:Number,
-     default:0
+    damagedStock: {
+      type: Number,
+      default: 0,
     },
     deliveryZone: {
       type: [
@@ -32,22 +32,39 @@ var assignZoneForAssignTruckSchema = new Schema(
             ref: constants.DeliveryZoneModel,
             required: [true, "Please enter deliveryZoneId."],
           },
-          stock:{
-            type:Number,
-            default:0
-          }
+          stock: {
+            type: Number,
+            default: 0,
+          },
+          startDateAndTime: {
+            type: Date,
+            required: [true, "Please enter startDateAndTime."],
+          },
+          endDateAndTime: {
+            type: Date,
+            required: [true, "Please enter startDateAndTime."],
+          },
+          timeDifferenceMinutes:{
+            type: Number,
+            required: [true, "Please enter timeDifferenceMinutes."],
+          },
         },
       ],
     },
-    startDateAndTime: {
-      type: Date,
-      required: [true, "Please enter startDateAndTime."],
-    },
-    endDateAndTime: {
-      type: Date,
-      required: [true, "Please enter startDateAndTime."],
-    },
-
+    /**old start*/
+    // startDateAndTime: {
+    //   type: Date,
+    //   required: [true, "Please enter startDateAndTime."],
+    // },
+    // endDateAndTime: {
+    //   type: Date,
+    //   required: [true, "Please enter startDateAndTime."],
+    // },
+    // timeDifferenceMinutes:{
+    // type: Number,
+    // required: [true, "Please enter timeDifferenceMinutes."],
+    // },
+    /**old end*/
     activeStatus: {
       type: String,
       enum: ["Active", "Completed"],
