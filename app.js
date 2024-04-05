@@ -228,6 +228,10 @@ app.use(
   "/v" + process.env.VERSION + "/admin/assignzoneforassigntruck/",
   require("./route/adminRoute/AssignZoneForAssignTruck_RA")
 );
+app.use(
+  "/v" + process.env.VERSION + "/assigntruck/assignzoneforassigntruck/",
+  require("./route/truckDriverRoute/AssignZoneForAssignTruck_TD")
+);
 
 app.use(
   "/v" + process.env.VERSION + "/front/cart/",

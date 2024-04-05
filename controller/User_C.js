@@ -421,12 +421,24 @@ module.exports = {
       );
       return next(err);
     }
+    const total = parseInt(find_user[0].metadata[0].total);
     var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getUserDetailsSuccess,
+      totalUser: total,
       totalPage: totalPage,
       data: find_user[0].data,
+    });
+  },
+  getUserCountAdmin: async (req, res, next) => {
+    var find_GuestType = await UserModel.countDocuments({userType:"Guest"})
+    var find_userType = await UserModel.countDocuments({userType:"User"})
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.getUserDetailsSuccess,
+      totalUser:find_userType,
+      totalGuest:find_GuestType
     });
   },
 
