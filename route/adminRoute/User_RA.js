@@ -7,6 +7,8 @@ const errorfun=require("../../middleware/catchAsyncErrors")
 
 router.route('/')
     .get(errorfun(User.getUserAdmin))
+router.route('/usercount')
+    .get(errorfun(User.getUserCountAdmin))
 
 
 
