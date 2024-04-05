@@ -395,11 +395,14 @@ module.exports = {
   getUserAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const userType=req.query.userType;
     const skip = (pageNo - 1) * limit;
 
     var find_user = await UserModel.aggregate([
       {
-        $match: { $or: [{ activeStatus: "1" }] },
+        $match: {
+          activeStatus: "1",userType: userType
+        },
       },
       {
         $sort: {
@@ -431,6 +434,7 @@ module.exports = {
       data: find_user[0].data,
     });
   },
+
   getUserCountAdmin: async (req, res, next) => {
     var find_GuestType = await UserModel.countDocuments({userType:"Guest"})
     var find_userType = await UserModel.countDocuments({userType:"User"})

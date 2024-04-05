@@ -238,7 +238,13 @@ module.exports = {
             DriverType: "$assigntruckfordriverdetails.truckdriverdetails.driverType",
             activeStatus: "$assigntruckfordriverdetails.truckdriverdetails.activeStatus",
             addressId: "$assigntruckfordriverdetails.truckdriverdetails.addressId",
-            truckDriverBankDetails:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
+            //////truckDriverBankDetails:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
+            truckDriverBankDetails:{
+            bankName:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.bankName",
+            branchName:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.branchName",
+            accountNumber:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.accountNumber",
+            accountHolderName:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.accountHolderName",
+            },
             docId: "$assigntruckfordriverdetails.truckdriverdetails.docId",
           },
           

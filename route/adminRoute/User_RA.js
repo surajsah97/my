@@ -10,6 +10,4 @@ router.route('/')
 router.route('/usercount')
     .get(errorfun(User.getUserCountAdmin))
 
-
-
 module.exports = router;
