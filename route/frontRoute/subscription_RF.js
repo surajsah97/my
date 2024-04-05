@@ -7,10 +7,11 @@ router.post("/addSubscription", errorfun(userSubscription.addSub))
 // router.post("/addSubscription", Auth.apiValidateToken,errorfun(userSubscription.addSub))
 router.get("/", errorfun(userSubscription.subscriptionListFront))
 // router.get("/", Auth.apiValidateToken,errorfun(userSubscription.subscriptionListFront))
+router.get("/subscriptionId", errorfun(userSubscription.singleSubscriptionByIdFront))
+// router.get("/", Auth.apiValidateToken,errorfun(userSubscription.singleSubscriptionByIdFront))
 router.post("/updateSubscription", errorfun(userSubscription.updateSub));
 // router.post("/updateSubscription", Auth.apiValidateToken,errorfun(userSubscription.updateSub))
 router.delete("/deleteSubscription/:id", errorfun(userSubscription.deletesub));
 // router.delete("/deleteSubscription", Auth.apiValidateToken,errorfun(userSubscription.deletesub))
-
 
 module.exports = router;

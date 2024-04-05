@@ -197,6 +197,7 @@
     "AssignZoneForAssignTruckUpdated": "AssignZoneForAssignTruck updated Successfully.",
     "AssignZoneForAssignTruckByIdAdmin": "AssignZoneForAssignTruck  BYID Successfully.",
     "AssignZoneForAssignTruckListAdmin": "AssignZoneForAssignTruck list for Admin Successfully.",
+    "AssignZoneForAssignTruckListByAssignTruck": "AssignZoneForAssignTruckListByAssignTruck list for Admin Successfully.",
     "AssignZoneForAssignTruckInactive": "AssignZoneForAssignTruck inactive or not found.",
     "AssignZoneForAssignTruckDelete": "AssignZoneForAssignTruck deleted Successfully.",
     "EnterEndDateGreaterThanStartDate": "Please Enter EndDate is GreaterThan StartDate Successfully.",
