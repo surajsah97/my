@@ -325,6 +325,8 @@ module.exports = {
             productPrice: "$product.productDetails.productPrice",
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
+            productUOM: "$product.productDetails.productUOM",
+            tagLine: "$product.productDetails.tagLine",
           },
           totalPrice: 1,
           planDuration: "$subscriptionPlanDetails.planDuration",
@@ -395,6 +397,9 @@ module.exports = {
   },
   
   subscriptionListFront: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 10; 
+    const pageNo = parseInt(req.query.pageNo) || 1; 
+    const skip = (pageNo - 1) * limit;
     const find_subscription = await UserSubscriptionModel.aggregate([
       {
         $match: {
@@ -480,6 +485,8 @@ module.exports = {
             productPrice: "$product.productDetails.productPrice",
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
+            productUOM: "$product.productDetails.productUOM",
+            tagLine: "$product.productDetails.tagLine",
           },
           totalPrice: 1,
           planDuration: "$subscriptionPlanDetails.planDuration",
@@ -538,6 +545,12 @@ module.exports = {
           _id: 1,
         },
       },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
     ]);
     if (find_subscription.length == 0) {
       const err = new customError(
@@ -546,11 +559,14 @@ module.exports = {
       );
       return next(err);
     }
-
+    const total = parseInt(find_subscription[0].metadata[0].total);
+    var totalPage = Math.ceil(parseInt(find_subscription[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
+      totalSubscription: total,
+      totalPage: totalPage,
       message: global.CONFIGS.api.subscriptionListFront,
-      data: find_subscription,
+      data: find_subscription[0].data,
     });
   },
 };

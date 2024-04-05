@@ -6,8 +6,8 @@ const Auth = require("../../middleware/auth");
 const errorfun=require("../../middleware/catchAsyncErrors")
 
 router.route('/')
-    .get(errorfun(User.getUserAdmin))
+    .get(errorfun(User.getAllUserListByAdmin))
 router.route('/usercount')
-    .get(errorfun(User.getUserCountAdmin))
+    .get(errorfun(User.getUserCountByAdmin))
 
 module.exports = router;

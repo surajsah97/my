@@ -392,17 +392,56 @@ module.exports = {
     });
   },
 
-  getUserAdmin: async (req, res, next) => {
+  getAllUserListByAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
-    const userType=req.query.userType;
+    // const userType=req.query.userType;
     const skip = (pageNo - 1) * limit;
+
+    var query = {};
+    if (req.query.searchText != undefined) {
+      query = {
+        $or: [
+          { name: { $regex: new RegExp(req.query.searchText), $options: "i" } },
+          {
+            email: { $regex: new RegExp(req.query.searchText), $options: "i" },
+          },
+          { mobile: { $eq: parseInt(req.query.searchText) } },
+          // {
+            // mobile: {
+            //   $regex: new RegExp(req.query.searchText),
+            //   $options: "i",
+            // },
+            // $where:"/^123.*/.test(this.mobileNumber)"
+          // },
+          {
+            isVerified: {
+              $regex: new RegExp(req.query.searchText),
+              $options: "i",
+            },
+          },
+          {
+            trialActive: {
+              $regex: new RegExp(req.query.searchText),
+              $options: "i",
+            },
+          },
+          {
+            trialQuantity: {
+              $regex: new RegExp(req.query.searchText),
+              $options: "i",
+            },
+          },
+        ],
+      };
+    }
+
+    query.activeStatus= "1";
+    query.userType= req.query.userType;
 
     var find_user = await UserModel.aggregate([
       {
-        $match: {
-          activeStatus: "1",userType: userType
-        },
+        $match: query,
       },
       {
         $sort: {
@@ -434,8 +473,53 @@ module.exports = {
       data: find_user[0].data,
     });
   },
+  /** */
+  // getAllUserListByAdmin: async (req, res, next) => {
+  //   const limit = parseInt(req.query.limit) || 20; // docs in single page
+  //   const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+  //   const userType=req.query.userType;
+  //   const skip = (pageNo - 1) * limit;
 
-  getUserCountAdmin: async (req, res, next) => {
+  //   var find_user = await UserModel.aggregate([
+  //     {
+  //       $match: {
+  //         activeStatus: "1",userType: userType
+  //       },
+  //     },
+  //     {
+  //       $sort: {
+  //         _id: -1,
+  //       },
+  //     },
+  //     {
+  //       $facet: {
+  //         metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+  //         data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+  //       },
+  //     },
+  //   ]);
+  //   // return res.send(find_user)
+  //   if (find_user[0].data.length == 0) {
+  //     const err = new customError(
+  //       global.CONFIGS.api.getUserDetailsFail,
+  //       global.CONFIGS.responseCode.notFound
+  //     );
+  //     return next(err);
+  //   }
+  //   const total = parseInt(find_user[0].metadata[0].total);
+  //   var totalPage = Math.ceil(parseInt(find_user[0].metadata[0].total) / limit);
+  //   return res.status(global.CONFIGS.responseCode.success).json({
+  //     success: true,
+  //     message: global.CONFIGS.api.getUserDetailsSuccess,
+  //     totalUser: total,
+  //     totalPage: totalPage,
+  //     data: find_user[0].data,
+  //   });
+  // },
+
+  
+  /** */
+  getUserCountByAdmin: async (req, res, next) => {
     var find_GuestType = await UserModel.countDocuments({userType:"Guest"})
     var find_userType = await UserModel.countDocuments({userType:"User"})
     return res.status(global.CONFIGS.responseCode.success).json({
