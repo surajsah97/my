@@ -232,6 +232,16 @@ app.use(
   "/v" + process.env.VERSION + "/assigntruck/assignzoneforassigntruck/",
   require("./route/truckDriverRoute/AssignZoneForAssignTruck_TD")
 );
+app.use(
+  "/v" + process.env.VERSION + "/admin/assignuseraddressforbikedriver/",
+  require("./route/adminRoute/addAssignUserAddressForBikeDriver_RA")
+);
+app.use(
+  "/v" + process.env.VERSION + "/truckdriver/assigntruckfordriver/",
+  require("./route/truckDriverRoute/AssignTruckForDriver_TD")
+);
+
+
 
 app.use(
   "/v" + process.env.VERSION + "/front/cart/",

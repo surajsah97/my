@@ -30,3 +30,4 @@ require("./cart_M");
 require("./AssignTruckforDriver_M");
 require("./deliveryZone_M");
 require("./AssignZoneForAssignTruck_M");
+require("./AssignUserAddressForBikeDriver_M");
