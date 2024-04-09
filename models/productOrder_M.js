@@ -83,7 +83,7 @@ var productOrderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Completed", "Cancelled"],
+      enum: ["Pending", "Delivered", "Cancelled"],
       default: "Pending",
     },
     totalTaxablePrice: {
