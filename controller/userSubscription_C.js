@@ -3,8 +3,8 @@ const constants = require("../models/modelConstants");
 const UserSubscriptionModel = mongoose.model(constants.UserSubscriptionModel);
 const common = require("../service/commonFunction");
 const ObjectId = mongoose.Types.ObjectId;
-const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
-const ProductModel = mongoose.model(constants.ProductModel);
+// const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
+// const ProductModel = mongoose.model(constants.ProductModel);
 var customError = require("../middleware/customerror");
 const UserModel = mongoose.model(constants.UserModel);
 const UserAddressModel = mongoose.model(constants.UserAddressModel);
@@ -90,7 +90,11 @@ module.exports = {
       if (subscription) {
         var update_checkout = await SubscriptionCheckOutModel.findOneAndUpdate(
           { _id: req.body.subscriptionCheckoutId },
-          { activeStatus: "Expired" }
+          { userType: "Expired" }
+        ).sort({ _id: -1 });
+        var update_user = await UserModel.findOneAndUpdate(
+          { _id: subscriptioncheckOutdata.userId },
+          { activeStatus: "User" }
         ).sort({ _id: -1 });
         let userdata = {
           name: userDetail.name,
@@ -495,6 +499,7 @@ module.exports = {
             name: "$usersDetails.name",
             email: "$usersDetails.email",
             mobile: "$usersDetails.mobile",
+            userType: "$usersDetails.userType",
           },
           product: {
             _id: "$product.productDetails._id",
@@ -752,3 +757,10 @@ module.exports = {
     });
   },
 };
+// 65efeec79f21f09f34c5e4c6
+
+//6613e22e255f04bd4a1e7324  14175
+
+//66138d975505767c3a267ba2 3465
+
+//660fc9c908129a9d4b7286ac 4253

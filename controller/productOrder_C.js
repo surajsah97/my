@@ -662,11 +662,44 @@ module.exports = {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
+    const searchText = req.query.searchText;
+    var query = {};
+    //  categoryName: "$product.productDetails.category.category",
+            // subategoryName: "$product.productDetails.subcategory.subCategory",
+    if (searchText !== undefined) {
+        query = {
+            $or: [
+                { orderId: { $regex: new RegExp(searchText), $options: "i" } },
+                { transactionId: { $regex: new RegExp(searchText), $options: "i" } },
+                { "usersDetails.name": { $regex: new RegExp(searchText),$options: "i" } },
+                { "usersDetails.email": { $regex: new RegExp(searchText),$options: "i" } },
+                { "product.productDetails.productName": { $regex: new RegExp(searchText),$options: "i" } },
+                { "product.productDetails.subcategory.subCategory": { $regex: new RegExp(searchText),$options: "i" } },
+                { "useraddress.buildingName": { $regex: new RegExp(searchText),$options: "i" } },
+                { "useraddress.city": { $regex: new RegExp(searchText),$options: "i" } },
+                { "useraddress.landmark": { $regex: new RegExp(searchText),$options: "i" } },
+                {
+                    $expr: {
+                        $regexMatch: {
+                            input: { $toString: "$usersDetails.mobile" },
+                            regex: searchText,
+                           
+                        }
+                    }
+                },
+                
+                {
+                    status: {
+                        $regex: new RegExp(searchText),
+                        $options: "i",
+                    },
+                },
+            ],
+        };
+    }
+
 
     var findAllOrderList = await ProductOrderModel.aggregate([
-      //  {
-      //   $match: { activeStatus: "1",  },
-      // },
       {
         $lookup: {
           from: "useraddress",
@@ -782,6 +815,9 @@ module.exports = {
           includeArrayIndex: "string",
           preserveNullAndEmptyArrays: true,
         },
+      },
+      {
+        $match: query,
       },
 
       {
