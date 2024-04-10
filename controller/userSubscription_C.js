@@ -90,11 +90,11 @@ module.exports = {
       if (subscription) {
         var update_checkout = await SubscriptionCheckOutModel.findOneAndUpdate(
           { _id: req.body.subscriptionCheckoutId },
-          { userType: "Expired" }
+          { activeStatus: "Expired" }
         ).sort({ _id: -1 });
         var update_user = await UserModel.findOneAndUpdate(
           { _id: subscriptioncheckOutdata.userId },
-          { activeStatus: "User" }
+          { userType: "User" }
         ).sort({ _id: -1 });
         let userdata = {
           name: userDetail.name,
