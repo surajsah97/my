@@ -491,6 +491,7 @@ module.exports = {
           _id: 1,
           //   _id: "$_id",
           usersDetails: {
+            userId: "$usersDetails._id",
             name: "$usersDetails.name",
             email: "$usersDetails.email",
             mobile: "$usersDetails.mobile",
@@ -554,8 +555,6 @@ module.exports = {
           endDate: { $first: "$endDate" },
         },
       },
-      { $unset: "userId" },
-      { $unset: "subDurationId" },
       {
         $sort: {
           _id: 1,
