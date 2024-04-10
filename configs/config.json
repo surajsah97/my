@@ -45,6 +45,7 @@
     "getUserProfileSuccess": "Get User Profiles Successfully.",
     "userDelete": "User deleted Successfully.",
     "getDetailsFail": "Get Detail Details Failed.",
+    "deliveryAddressNotFound": "Delivery Address Not Found, please Enter delivery Address.",
     "addAddressSucess": "Address added Successfully.",
     "getAddressDetailsSuccess": "Address Details Successfully.",
     "getAddressDetailsFail": "Address Details Failed.",

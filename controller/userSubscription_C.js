@@ -42,6 +42,14 @@ module.exports = {
         { _id: -1 }
         ).sort({ _id: -1 });
 
+      if (!userAddress) {
+        const err = new customError(
+          global.CONFIGS.api.deliveryAddressNotFound,
+          global.CONFIGS.responseCode.notFound
+        );  
+        return next(err);
+      }
+
       var find_subscription = await UserSubscriptionModel.findOne({
         userId: subscriptioncheckOutdata.userId,
         "product.productId": subscriptioncheckOutdata.product[0].productId,
@@ -756,11 +764,55 @@ module.exports = {
       data: find_subscription[0].data,
     });
   },
+
+
+ updateSubscriptionByUser: async (req, res, next) => {
+        let find_subscription = await UserSubscriptionModel.findById(req.params.id);
+        console.log(find_subscription,"....find_subscription")
+        if (!find_subscription) {
+        const err = new customError(global.CONFIGS.api.subscriptionNotfound, global.CONFIGS.responseCode.notFound);
+        return next(err);
+        }
+        
+        if(req.body.activeStatus!=undefined){
+            let validactiveStatus = ["Active", "Inactive", "Expired"];
+            if (!validactiveStatus.includes(req.body.activeStatus)) {
+            const err = new customError("invalid activeStatus Allowed values are: Active, Inactive, Expired", global.CONFIGS.responseCode.invalidInput);
+            return next(err);
+            }
+            if(validactiveStatus==="Inactive"){
+              var update_subscription = await UserSubscriptionModel.findByIdAndUpdate( req.params.id, 
+              {
+                activeStatus:req.body.activeStatus,
+                "pauseresumeDate.pauseDate":next_date,
+              },{new:true});
+            }
+            if(validactiveStatus==="Active"){
+              for(var i=0; i>find_subscription.pauseresumeDate.length; i++){
+                if(find_subscription.pauseresumeDate[i].pauseDate!= undefined && find_subscription.pauseresumeDate[i].resumeDate== undefined){
+                  var updateSub = await UserSubscriptionModel.updateOne({ _id: req.params._id }, { activeStatus: req.body.activeStatus, "pauseresumeDate.$[xxx].resumeDate": date },
+                  {
+                            arrayFilters: [
+                                { "xxx._id": find_subscription.pauseresumeDate[i]._id }
+                            ]
+                        });
+                }
+              }
+              var update_subscription = await UserSubscriptionModel.findByIdAndUpdate( req.params.id, 
+              {
+                activeStatus:req.body.activeStatus,
+                "pauseresumeDate.pauseDate":next_date,
+              },{new:true});
+            }
+        }
+
+        find_subscription = await UserSubscriptionModel.findByIdAndUpdate( req.params.id , req.body,{new:true});
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.modelUpdated,
+            data:find_subscription
+        })
+    },
+
+
 };
-// 65efeec79f21f09f34c5e4c6
-
-//6613e22e255f04bd4a1e7324  14175
-
-//66138d975505767c3a267ba2 3465
-
-//660fc9c908129a9d4b7286ac 4253

@@ -9,8 +9,8 @@ router.get("/", errorfun(userSubscription.subscriptionListFront))
 // router.get("/", Auth.apiValidateToken,errorfun(userSubscription.subscriptionListFront))
 router.get("/subscriptionId", errorfun(userSubscription.singleSubscriptionByIdFront))
 // router.get("/", Auth.apiValidateToken,errorfun(userSubscription.singleSubscriptionByIdFront))
-router.post("/updateSubscription", errorfun(userSubscription.updateSub));
-// router.post("/updateSubscription", Auth.apiValidateToken,errorfun(userSubscription.updateSub))
+router.put("/updateSubscription/:id", errorfun(userSubscription.updateSubscriptionByUser));
+// router.put("/updateSubscription/:id", Auth.apiValidateToken,errorfun(userSubscription.updateSubscriptionByUser))
 router.delete("/deleteSubscription/:id", errorfun(userSubscription.deletesub));
 // router.delete("/deleteSubscription", Auth.apiValidateToken,errorfun(userSubscription.deletesub))
 

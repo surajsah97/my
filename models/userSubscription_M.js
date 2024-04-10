@@ -15,6 +15,18 @@ var productSchema = new Schema(
       // required: true,
       default:0
     },
+    pauseresumeDate:{
+       type: [
+        {
+          pauseDate: {
+            type: Date,
+          },
+          resumeDate: {
+            type: Date,
+          },
+        },
+      ],
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: constants.UserModel,
