@@ -8,21 +8,35 @@ var assignZoneForAssignTruckSchema = new Schema(
       ref: constants.AssignTruckForDriverModel,
       required: true,
     },
-    totalStock: {
+    totalTruckCapacity: {
       type: Number,
-      default: 0,
+      required: [true, "Please enter totalTruckCapacity."],
     },
-    deliverdStock: {
+    totalReserveCapacity: {
       type: Number,
-      default: 0,
+      required: [true, "Please enter totalReserveCapacity."],
     },
-    returnedStock: {
+    
+    deliveredReserveBottle: {
       type: Number,
-      default: 0,
+      required: [true, "Please enter deliveredReserveBottle."],
     },
-    damagedStock: {
+    returnedReserveBottle: {
       type: Number,
-      default: 0,
+      required: [true, "Please enter returnedReserveBottle."],
+    },
+    damagedBottle: {
+      type: Number,
+      // default:0
+      required: [true, "Please enter damagedBottle."],
+    },
+    leakageBottle: {
+      type: Number,
+      required: [true, "Please enter leakageBottle."],
+    },
+    brokenBottle: {
+      type: Number,
+      required: [true, "Please enter brokenBottle."],
     },
     deliveryZone: {
       type: [
@@ -32,7 +46,7 @@ var assignZoneForAssignTruckSchema = new Schema(
             ref: constants.DeliveryZoneModel,
             required: [true, "Please enter deliveryZoneId."],
           },
-          stock: {
+          zoneStock: {
             type: Number,
             default: 0,
           },

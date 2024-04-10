@@ -397,43 +397,54 @@ module.exports = {
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     // const userType=req.query.userType;
     const skip = (pageNo - 1) * limit;
+        const searchText = req.query.searchText;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
+
 
     var query = {};
-    if (req.query.searchText != undefined) {
-      query = {
-        $or: [
-          { name: { $regex: new RegExp(req.query.searchText), $options: "i" } },
-          {
-            email: { $regex: new RegExp(req.query.searchText), $options: "i" },
-          },
-          { mobile: { $eq: parseInt(req.query.searchText) } },
-          // {
-            // mobile: {
-            //   $regex: new RegExp(req.query.searchText),
-            //   $options: "i",
-            // },
-            // $where:"/^123.*/.test(this.mobileNumber)"
-          // },
-          {
-            isVerified: {
-              $regex: new RegExp(req.query.searchText),
-              $options: "i",
-            },
-          },
-          {
-            trialActive: {
-              $regex: new RegExp(req.query.searchText),
-              $options: "i",
-            },
-          },
-          {
-            trialQuantity: {
-              $regex: new RegExp(req.query.searchText),
-              $options: "i",
-            },
-          },
-        ],
+    if (searchText !== undefined) {
+        query = {
+            $or: [
+                { name: { $regex: new RegExp(searchText), $options: "i" } },
+                { email: { $regex: new RegExp(searchText), $options: "i" } },
+                // { mobile: { $eq: parseInt(searchText) } },
+                {
+                    $expr: {
+                        $regexMatch: {
+                            input: { $toString: "$mobile" },
+                            regex: searchText,
+                           
+                        }
+                    }
+                },
+                { isVerified: searchText === 'true' ? true : searchText === 'false' ? false : "" },
+                { trialActive: searchText === 'true' ? true : searchText === 'false' ? false : "" },
+                {
+                    trialQuantity: {
+                        $regex: new RegExp(searchText),
+                        $options: "i",
+                    },
+                },
+            ],
+        };
+    }
+
+    // $match: { $expr: { $regexMatch: { input: {$toString: "$facevalue"}, regex: ".5" } } }
+    if (startDate != undefined && endDate != undefined) {
+      // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
       };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      // console.log({ $gt: new Date(startDate) })
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      // console.log({  $lt: new Date(endDate) })
+      query.createdAt = { $lte: new Date(endDate) };
     }
 
     query.activeStatus= "1";

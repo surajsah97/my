@@ -43,6 +43,20 @@ module.exports = {
       return next(err);
     }
 
+
+    let totalReserveCapacity=req.body.totalReserveCapacity;
+    console.log(totalReserveCapacity,"......totalReserveCapacity");
+    let damagedBottle=req.body.damagedBottle;
+    console.log(damagedBottle,"......damagedBottle");
+    let leakageBottle=req.body.leakageBottle;
+    console.log(leakageBottle,"......leakageBottle");
+    let brokenBottle=req.body.brokenBottle;
+    console.log(brokenBottle,"......brokenBottle");
+    let deliveredReserveBottle=damagedBottle+leakageBottle+brokenBottle;
+    console.log(deliveredReserveBottle,"......deliveredReserveBottle");
+    let returnedReserveBottle=totalReserveCapacity-deliveredReserveBottle;
+    console.log(returnedReserveBottle,"......returnedReserveBottle");
+
     const existing_assignTruck = await AssignZoneForAssignTruckModel.find({
       assignTruckId: req.body.assignTruckId,
       activeStatus: "Active",
@@ -75,9 +89,7 @@ module.exports = {
         return next(err);
       }
     }
-    if (existing_assignTruck) {
-    }
-
+    
     const deliveryZones = req.body.deliveryZone.map(
       (item) => item.deliveryZoneId
     );
@@ -105,7 +117,14 @@ module.exports = {
       deliveryZone: req.body.deliveryZone,
       startDateAndTime: req.body.startDateAndTime,
       endDateAndTime: req.body.endDateAndTime,
-      //   timeDifferenceMinutes,
+      totalTruckCapacity
+      :req.body.totalTruckCapacity,
+      totalReserveCapacity: req.body.totalReserveCapacity,
+      damagedBottle,
+      leakageBottle,
+      brokenBottle,
+      deliveredReserveBottle: deliveredReserveBottle,
+      returnedReserveBottle: returnedReserveBottle,
     };
     // return;
     const create_assignZone = await AssignZoneForAssignTruckModel.create(
@@ -430,7 +449,7 @@ module.exports = {
     ]);
     if (assignTruckData[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.AssignTruckForDriverNotfound,
+        global.CONFIGS.api.AssignZoneForAssignTruckNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -441,7 +460,7 @@ module.exports = {
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.AssignTruckForDriverListAdmin,
+      message: global.CONFIGS.api.AssignZoneForAssignTruckListAdmin,
       totalData: total,
       totalPage: totalPage,
       data: assignTruckData[0].data,
@@ -754,7 +773,7 @@ module.exports = {
     ]);
     if (assignTruckData[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.AssignTruckForDriverNotfound,
+        global.CONFIGS.api.AssignZoneForAssignTruckInactive,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -765,7 +784,7 @@ module.exports = {
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.AssignTruckForDriverListAdmin,
+      message: global.CONFIGS.api.AssignZoneForAssignTruckByIdAdmin,
       totalData: total,
       totalPage: totalPage,
       data: assignTruckData[0].data,
@@ -1081,7 +1100,7 @@ module.exports = {
     ]);
     if (assignTruckData[0].data.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.AssignTruckForDriverNotfound,
+        global.CONFIGS.api.AssignZoneForAssignTruckInactive,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -1092,7 +1111,7 @@ module.exports = {
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.AssignTruckForDriverListAdmin,
+      message: global.CONFIGS.api.AssignZoneForAssignTruckListByAssignTruck,
       totalData: total,
       totalPage: totalPage,
       data: assignTruckData[0].data,

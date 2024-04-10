@@ -20,6 +20,7 @@ module.exports = {
   TruckDriverModel: "truckdriverdetails",
   AssignTruckForDriverModel: "assigntruckfordriverdetails",
   AssignZoneForAssignTruckModel: "assignzoneforassigntruckdetails",
+  AssignUserAddressForBikeDriverModel: "assignuseraddressforbikedriverdetails",
   BikeDriverModel: "bikedriverdetails",
   DriverBankDetailsModel: "driverbankdetails",
   DriverAddressModel: "driveraddress",

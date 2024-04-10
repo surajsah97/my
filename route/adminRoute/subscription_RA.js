@@ -5,7 +5,7 @@ const userSubscription = require("../../controller/userSubscription_C");
 const errorfun=require("../../middleware/catchAsyncErrors");
 
 router
-  .route("/").get(errorfun(userSubscription.subscriptionListByAdmin))
-//   .route("/").get(errorfun(Auth.adminValidateToken,userSubscription.subscriptionListByAdmin));
+  .route("/").get(Auth.adminValidateToken,errorfun(userSubscription.subscriptionListByAdmin))
+
 
 module.exports = router;

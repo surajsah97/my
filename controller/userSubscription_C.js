@@ -273,6 +273,9 @@ module.exports = {
   },
 
   subscriptionListByAdmin: async (req, res, next) => {
+     const limit = parseInt(req.query.limit) || 10; 
+     const pageNo = parseInt(req.query.pageNo) || 1; 
+     const skip = (pageNo - 1) * limit;
      const find_subscription = await UserSubscriptionModel.aggregate([
       {
         $lookup: {
@@ -331,6 +334,7 @@ module.exports = {
           totalPrice: 1,
           planDuration: "$subscriptionPlanDetails.planDuration",
           // "totalPrice": "$totalPrice",
+          leftDuration: 1,
           vatAmount: 1,
           totalTaxablePrice: 1,
           paymentStatus: 1,
@@ -365,6 +369,7 @@ module.exports = {
             $first: "$product",
           },
           subscriptionDuration: { $first: "$planDuration" },
+          leftDuration: { $first: "$leftDuration" },
           totalPrice: { $first: "$totalPrice" },
           vatAmount: { $first: "$vatAmount" },
           totalTaxablePrice: { $first: "$totalTaxablePrice" },
@@ -380,6 +385,12 @@ module.exports = {
           _id: 1,
         },
       },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
     ]);
     if (find_subscription.length == 0) {
       const err = new customError(
@@ -389,10 +400,15 @@ module.exports = {
       return next(err);
     }
 
+
+    const total = parseInt(find_subscription[0].metadata[0].total);
+    var totalPage = Math.ceil(parseInt(find_subscription[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.subscriptionListAdmin,
-      data: find_subscription,
+      totalSubscription: total,
+      totalPage: totalPage,
+      data: find_subscription[0].data,
     });
   },
   
@@ -565,6 +581,173 @@ module.exports = {
       success: true,
       totalSubscription: total,
       totalPage: totalPage,
+      message: global.CONFIGS.api.subscriptionListFront,
+      data: find_subscription[0].data,
+    });
+  },
+
+  singleSubscriptionByIdFront: async (req, res, next) => {
+    const find_subscription = await UserSubscriptionModel.aggregate([
+      {
+        $match: {
+          activeStatus: "Active",
+          userId: new ObjectId(req.query.userId),
+          _id:new ObjectId(req.query.subscriptionId)
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "usersDetails",
+        },
+      },
+      {
+        $unwind: "$usersDetails",
+      },
+      {
+        $lookup: {
+          from: "subscriptionplan",
+          localField: "subDurationId",
+          foreignField: "_id",
+          as: "subscriptionPlanDetails",
+        },
+      },
+      {
+        $unwind: "$subscriptionPlanDetails",
+      },
+      {
+        $unwind: "$product",
+      },
+      {
+        $unwind: {
+          path: "$calendar",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "product",
+          localField: "product.productId",
+          foreignField: "_id",
+          as: "product.productDetails",
+        },
+      },
+      { $unwind: "$product.productDetails" },
+      // {
+      //   $unwind: {
+      //     path: "$product.productDetails",
+      //     includeArrayIndex: "string",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      {
+        $lookup: {
+          from: "product",
+          localField: "calendar.productId",
+          foreignField: "_id",
+          as: "calendar.calendarProductDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$calendar.calendarProductDetails",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          //   _id: "$_id",
+          usersDetails: {
+            name: "$usersDetails.name",
+            email: "$usersDetails.email",
+            mobile: "$usersDetails.mobile",
+          },
+          product: {
+            _id: "$product.productDetails._id",
+            qty: "$product.qty",
+            productPrice: "$product.productDetails.productPrice",
+            productName: "$product.productDetails.productName",
+            productImage: "$product.productDetails.productImage",
+            productUOM: "$product.productDetails.productUOM",
+            tagLine: "$product.productDetails.tagLine",
+          },
+          totalPrice: 1,
+          planDuration: "$subscriptionPlanDetails.planDuration",
+          // "totalPrice": "$totalPrice",
+          leftDuration: 1,
+          dailyInterval: 1,
+          vatAmount: 1,
+          totalTaxablePrice: 1,
+          paymentStatus: 1,
+          calendar: {
+           _id: "$calendar._id",
+            day: "$calendar.day",
+            // dates: "$calendar.dates",
+          dates: {
+            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
+          },
+            deliveryStatus: "$calendar.deliveryStatus",
+            productName: "$calendar.calendarProductDetails.productName",
+            productImage: "$calendar.calendarProductDetails.productImage",
+            productUOM: "$calendar.calendarProductDetails.productUOM",
+            tagLine: "$calendar.calendarProductDetails.tagLine",
+          },
+          // startDate: 1,
+          // endDate: 1,
+          startDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+          },
+          endDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          userDetails: { $first: "$usersDetails" },
+          product: {
+            $first: "$product",
+          },
+          dailyChart: { $push: "$calendar" },
+          subscriptionDuration: { $first: "$planDuration" },
+          totalPrice: { $first: "$totalPrice" },
+          leftDuration: { $first: "$leftDuration" },
+          dailyInterval: { $first: "$dailyInterval" },
+          vatAmount: { $first: "$vatAmount" },
+          totalTaxablePrice: { $first: "$totalTaxablePrice" },
+          paymentStatus: { $first: "$paymentStatus" },
+          startDate: { $first: "$startDate" },
+          endDate: { $first: "$endDate" },
+        },
+      },
+      { $unset: "userId" },
+      { $unset: "subDurationId" },
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+      {
+        $facet: {
+        data: [], 
+        },
+      },
+    ]);
+    if (find_subscription[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.subscriptionInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
       message: global.CONFIGS.api.subscriptionListFront,
       data: find_subscription[0].data,
     });
