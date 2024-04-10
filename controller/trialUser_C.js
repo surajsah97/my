@@ -56,17 +56,6 @@ module.exports = {
     });
   },
 
-  trialuserListall: async (req, res, next) => {
-    var find_trialusers = await TrialUserModel.find();
-    var totaltrialusers = find_trialusers.length;
-    return res.status(global.CONFIGS.responseCode.success).json({
-      success: true,
-      message: global.CONFIGS.api.alltrialuserslistAdmin,
-      totaltrialusers,
-      data: find_trialusers,
-    });
-  },
-
   trialusersListAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number

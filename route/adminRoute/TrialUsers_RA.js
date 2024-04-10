@@ -9,9 +9,4 @@ router
   // .get( errorfun(TrialUsers.trialusersListAdmin));
   .get(Auth.adminValidateToken, errorfun(TrialUsers.trialusersListAdmin));
  
-router
-  .route("/alluser")
-  .get(Auth.adminValidateToken, errorfun(TrialUsers.trialuserListall));
- 
-
 module.exports = router;
