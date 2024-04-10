@@ -214,8 +214,14 @@ module.exports = {
           transactionId: 1,
           paymentstatus: 1,
           vatAmount: 1,
-          createdAt: 1,
-          updatedAt: 1,
+          // createdAt: 1,
+          // updatedAt: 1,
+          createdAt: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+          },
+          updatedAt: {
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" }
+          },
           orderMonth: {
             $dateToString: { format: "%B", date: "$createdAt" },
           },
@@ -229,6 +235,7 @@ module.exports = {
             trialActive: "$usersDetails.trialActive",
           },
           useraddress: {
+            useraddressId:"$useraddress._id",
             houseNo: "$useraddress.houseNo",
             buildingName: "$useraddress.buildingName",
             city: "$useraddress.city",
@@ -237,8 +244,14 @@ module.exports = {
           },
           product: {
             _id: "$product.productDetails._id",
-            orderDate: "$createdAt",
-            deliveredDate: "$updatedAt",
+            // orderDate: "$createdAt",
+            // deliveredDate: "$updatedAt",
+            orderDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+            },
+            deliveredDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" }
+            },
             orderMonth: {
             $dateToString: { format: "%B", date: "$createdAt" },
             },
@@ -260,8 +273,14 @@ module.exports = {
 
           freeProduct: {
             _id: "$freeProduct.freeProductDetails._id",
-            orderDate: "$createdAt",
-            deliveredDate: "$updatedAt",
+            // orderDate: "$createdAt",
+            // deliveredDate: "$updatedAt",
+            orderDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+            },
+            deliveredDate: {
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" }
+            },
             orderMonth: {
             $dateToString: { format: "%B", date: "$createdAt" },
             },
