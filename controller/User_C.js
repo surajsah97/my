@@ -408,9 +408,16 @@ module.exports = {
             $or: [
                 { name: { $regex: new RegExp(searchText), $options: "i" } },
                 { email: { $regex: new RegExp(searchText), $options: "i" } },
-                { mobile: { $gte: parseInt(searchText) } },
-                // { mobile: parseInt(searchText) },
-               
+                // { mobile: { $eq: parseInt(searchText) } },
+                {
+                    $expr: {
+                        $regexMatch: {
+                            input: { $toString: "$mobile" },
+                            regex: searchText,
+                           
+                        }
+                    }
+                },
                 { isVerified: searchText === 'true' ? true : searchText === 'false' ? false : "" },
                 { trialActive: searchText === 'true' ? true : searchText === 'false' ? false : "" },
                 {
@@ -422,6 +429,8 @@ module.exports = {
             ],
         };
     }
+
+    // $match: { $expr: { $regexMatch: { input: {$toString: "$facevalue"}, regex: ".5" } } }
     if (startDate != undefined && endDate != undefined) {
       // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
       query.createdAt = {
