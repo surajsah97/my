@@ -16,7 +16,7 @@ var bikeBrandSchema = new Schema(
     },
     {
         collection: constants.BikeBrandModel,
-        versionKey: false,
+         
         timestamps: true
     }
 );

@@ -5,7 +5,10 @@ var customError = require('../middleware/customerror');
 
 module.exports = {
     addBrand: async (req, res, next) => {
-        var find_brand = await BikeBrandModel.findOne({ bikeBrand: req.body.bikeBrand });
+        const brandName = req.body.bikeBrand.trim();
+        const find_brand = await BikeBrandModel.findOne({ bikeBrand: { $regex: new RegExp('^' + brandName + '$', 'i') } });
+ 
+        console.log(find_brand,"........");
         if (find_brand) {
             const err = new customError(global.CONFIGS.api.brandalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             return next(err);

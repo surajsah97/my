@@ -15,18 +15,6 @@ var productSchema = new Schema(
       // required: true,
       default:0
     },
-    pauseresumeDate:{
-       type: [
-        {
-          pauseDate: {
-            type: Date,
-          },
-          resumeDate: {
-            type: Date,
-          },
-        },
-      ],
-    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: constants.UserModel,
@@ -71,6 +59,20 @@ var productSchema = new Schema(
       type: String,
       enum: ["Active", "Inactive", "Expired"],
       default: "Active",
+    },
+    pauseresumeDate:{
+       type: [
+        {
+          pauseDate: {
+            type: Date,
+            // default: Date.now,
+          },
+          resumeDate: {
+            type: Date,
+            // default:Date.now
+          },
+        },
+      ],
     },
     totalPrice: {
       type: Number,
