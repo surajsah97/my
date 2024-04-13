@@ -60,6 +60,20 @@ var productSchema = new Schema(
       enum: ["Active", "Inactive", "Expired"],
       default: "Active",
     },
+    pauseresumeDate:{
+       type: [
+        {
+          pauseDate: {
+            type: Date,
+            // default: Date.now,
+          },
+          resumeDate: {
+            type: Date,
+            // default:Date.now
+          },
+        },
+      ],
+    },
     totalPrice: {
       type: Number,
       required: [true, "Please enter price."],

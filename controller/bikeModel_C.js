@@ -9,12 +9,15 @@ const ObjectId = mongoose.Types.ObjectId;
 module.exports = {
 
     addmodel: async (req, res, next) => {
+
         var find_brand = await BikeBrandModel.findOne({ _id: req.body.bikeBrandId, activeStatus: "1" });
         if (!find_brand) {
             const err = new customError(global.CONFIGS.api.brandInactive, global.CONFIGS.responseCode.notFound);
             return next(err);
         }
-        var find_model = await BikeModelModel.findOne({ bikeModel: req.body.bikeModel });
+        const modelName = req.body.bikeModel.trim();
+        var find_model = await BikeModelModel.findOne({ bikeModel: { $regex: new RegExp('^' + modelName + '$', 'i') } });
+        console.log(find_model,".........find_model");
         if (find_model) {
             const err = new customError(global.CONFIGS.api.modelalreadyadded, global.CONFIGS.responseCode.alreadyExist);
             return next(err);

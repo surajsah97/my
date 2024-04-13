@@ -903,14 +903,20 @@ module.exports = {
         $project: {
           // _id: 1,
           _id: "$_id",
-          totalStock: "$totalStock",
-          deliverdStock: "$deliverdStock",
-          returnedStock: "$returnedStock",
-          damagedStock: "$damagedStock",
+          // assignTruckId: "$assignTruckId",
+          totalTruckCapacity: "$totalTruckCapacity",
+          totalReserveCapacity: "$totalReserveCapacity",
+          deliveredReserveBottle: "$deliveredReserveBottle",
+          returnedReserveBottle: "$returnedReserveBottle",
+          damagedBottle: "$damagedBottle",
+          leakageBottle: "$leakageBottle",
+          brokenBottle: "$brokenBottle",
           // deliveryZoneDetails:"$deliveryZone.deliveryZoneId",
           deliveryZoneDetails: {
             _id: "$deliveryZone.deliveryZoneId._id",
             zoneName: "$deliveryZone.deliveryZoneId.zoneName",
+            zoneStock: "$deliveryZone.zoneStock",
+
             country: "$deliveryZone.deliveryZoneId.country",
             activeStatus: "$deliveryZone.deliveryZoneId.activeStatus",
             createdAt: "$deliveryZone.deliveryZoneId.createdAt",
@@ -1075,10 +1081,14 @@ module.exports = {
       {
         $group: {
           _id: "$_id",
-          totalStock: { $first: "$totalStock" },
-          deliverdStock: { $first: "$deliverdStock" },
-          returnedStock: { $first: "$returnedStock" },
-          damagedStock: { $first: "$damagedStock" },
+          // assignTruckId: {$first:"$assignTruckId"},
+          totalTruckCapacity: { $first: "$totalTruckCapacity" },
+          totalReserveCapacity: { $first: "$totalReserveCapacity" },
+          deliveredReserveBottle: { $first: "$deliveredReserveBottle" },
+          returnedReserveBottle: { $first: "$returnedReserveBottle" },
+          damagedBottle: { $first: "$damagedBottle" },
+          leakageBottle: { $first: "$leakageBottle" },
+          brokenBottle: { $first: "$brokenBottle" },
           zoneDetails: {
             $addToSet: "$deliveryZoneDetails",
           },

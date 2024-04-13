@@ -3,7 +3,7 @@ const constants = require("../models/modelConstants");
 const UserSubscriptionModel = mongoose.model(constants.UserSubscriptionModel);
 const common = require("../service/commonFunction");
 const ObjectId = mongoose.Types.ObjectId;
-// const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
+const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
 // const ProductModel = mongoose.model(constants.ProductModel);
 var customError = require("../middleware/customerror");
 const UserModel = mongoose.model(constants.UserModel);
@@ -13,7 +13,7 @@ const SubscriptionCheckOutModel = mongoose.model(
 );
 
 module.exports = {
- addSub: async (req, res, next) => {
+  addSub: async (req, res, next) => {
     try {
       const subscriptioncheckOutdata = await SubscriptionCheckOutModel.findOne({
         _id: req.body.subscriptionCheckoutId,
@@ -29,18 +29,28 @@ module.exports = {
         );
         return next(err);
       }
-      const userDetail = await UserModel.findOne({ _id: subscriptioncheckOutdata.userId });
+      const userDetail = await UserModel.findOne({
+        _id: subscriptioncheckOutdata.userId,
+      });
       if (!userDetail) {
         const err = new customError(
           global.CONFIGS.api.userNotFound,
           global.CONFIGS.responseCode.notFound
-        );  
+        );
         return next(err);
       }
       const userAddress = await UserAddressModel.findOne(
         { userId: subscriptioncheckOutdata.userId },
         { _id: -1 }
-        ).sort({ _id: -1 });
+      ).sort({ _id: -1 });
+
+      if (!userAddress) {
+        const err = new customError(
+          global.CONFIGS.api.deliveryAddressNotFound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
 
       var find_subscription = await UserSubscriptionModel.findOne({
         userId: subscriptioncheckOutdata.userId,
@@ -64,7 +74,7 @@ module.exports = {
         }
       }
       let addSubscription = {};
-      
+
       addSubscription.vatAmount = Math.round(
         subscriptioncheckOutdata.vatAmount
       );
@@ -277,10 +287,10 @@ module.exports = {
   },
 
   subscriptionListByAdmin: async (req, res, next) => {
-     const limit = parseInt(req.query.limit) || 10; 
-     const pageNo = parseInt(req.query.pageNo) || 1; 
-     const skip = (pageNo - 1) * limit;
-     const find_subscription = await UserSubscriptionModel.aggregate([
+    const limit = parseInt(req.query.limit) || 10;
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const skip = (pageNo - 1) * limit;
+    const find_subscription = await UserSubscriptionModel.aggregate([
       {
         $lookup: {
           from: "users",
@@ -345,9 +355,9 @@ module.exports = {
           calendar: {
             _id: "$product.productDetails._id",
             day: "$calendar.day",
-          dates: {
-            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
-          },
+            dates: {
+              $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" },
+            },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
@@ -357,10 +367,10 @@ module.exports = {
           // startDate: 1,
           // endDate: 1,
           startDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" },
           },
           endDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" },
           },
         },
       },
@@ -404,9 +414,10 @@ module.exports = {
       return next(err);
     }
 
-
     const total = parseInt(find_subscription[0].metadata[0].total);
-    var totalPage = Math.ceil(parseInt(find_subscription[0].metadata[0].total) / limit);
+    var totalPage = Math.ceil(
+      parseInt(find_subscription[0].metadata[0].total) / limit
+    );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.subscriptionListAdmin,
@@ -415,10 +426,10 @@ module.exports = {
       data: find_subscription[0].data,
     });
   },
-  
+
   subscriptionListFront: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 10; 
-    const pageNo = parseInt(req.query.pageNo) || 1; 
+    const limit = parseInt(req.query.limit) || 10;
+    const pageNo = parseInt(req.query.pageNo) || 1;
     const skip = (pageNo - 1) * limit;
     const find_subscription = await UserSubscriptionModel.aggregate([
       {
@@ -519,12 +530,12 @@ module.exports = {
           totalTaxablePrice: 1,
           paymentStatus: 1,
           calendar: {
-           _id: "$calendar._id",
+            _id: "$calendar._id",
             day: "$calendar.day",
             // dates: "$calendar.dates",
-          dates: {
-            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
-          },
+            dates: {
+              $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" },
+            },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
@@ -534,10 +545,10 @@ module.exports = {
           // startDate: 1,
           // endDate: 1,
           startDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" },
           },
           endDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" },
           },
         },
       },
@@ -580,7 +591,9 @@ module.exports = {
       return next(err);
     }
     const total = parseInt(find_subscription[0].metadata[0].total);
-    var totalPage = Math.ceil(parseInt(find_subscription[0].metadata[0].total) / limit);
+    var totalPage = Math.ceil(
+      parseInt(find_subscription[0].metadata[0].total) / limit
+    );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       totalSubscription: total,
@@ -596,7 +609,7 @@ module.exports = {
         $match: {
           activeStatus: "Active",
           userId: new ObjectId(req.query.userId),
-          _id:new ObjectId(req.query.subscriptionId)
+          _id: new ObjectId(req.query.subscriptionId),
         },
       },
       {
@@ -689,12 +702,12 @@ module.exports = {
           totalTaxablePrice: 1,
           paymentStatus: 1,
           calendar: {
-           _id: "$calendar._id",
+            _id: "$calendar._id",
             day: "$calendar.day",
             // dates: "$calendar.dates",
-          dates: {
-            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
-          },
+            dates: {
+              $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" },
+            },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
@@ -704,10 +717,10 @@ module.exports = {
           // startDate: 1,
           // endDate: 1,
           startDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" },
           },
           endDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" },
           },
         },
       },
@@ -739,7 +752,7 @@ module.exports = {
       },
       {
         $facet: {
-        data: [], 
+          data: [],
         },
       },
     ]);
@@ -756,11 +769,159 @@ module.exports = {
       data: find_subscription[0].data,
     });
   },
+
+  updateSubscriptionByUser: async (req, res, next) => {
+    let find_subscription = await UserSubscriptionModel.findById(req.params.id);
+    console.log(find_subscription, "....find_subscription");
+    if (!find_subscription) {
+      const err = new customError(
+        global.CONFIGS.api.subscriptionNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+    if (req.body.activeStatus != undefined) {
+      let validactiveStatus = ["Active", "Inactive", "Expired"];
+      if (!validactiveStatus.includes(req.body.activeStatus)) {
+        const err = new customError(
+          "invalid activeStatus Allowed values are: Active, Inactive, Expired",
+          global.CONFIGS.responseCode.invalidInput
+        );
+        return next(err);
+      }
+      const next_date = new Date();
+      next_date.setDate(next_date.getDate() + 1);
+
+      // return
+      if (req.body.activeStatus === "Inactive") {
+        console.log(next_date, "...next_date");
+        var old_array = find_subscription.pauseresumeDate;
+        var newObject = { pauseDate: new Date() };
+        old_array.push(newObject);
+        var update_subscription = await UserSubscriptionModel.updateOne(
+          { _id: req.params.id },
+          {
+            activeStatus: req.body.activeStatus,
+            pauseresumeDate: old_array,
+          },
+          { new: true }
+        );
+      }
+
+      console.log(
+        find_subscription.pauseresumeDate.length,
+        ",,......,,......,,"
+      );
+
+      if (req.body.activeStatus === "Active") {
+        /** */
+        // const subDuration = await subscriptionPlanModel
+        //   .findById({ _id: new ObjectId(find_subscription.subDurationId) })
+        //   .select("planDuration");
+        // console.log(subDuration.planDuration, "............subduration");
+
+        // if (!subDuration) {
+        //   const err = new customError(
+        //     global.CONFIGS.api.subscriptionPlanNotfound,
+        //     global.CONFIGS.responseCode.notFound
+        //   );
+        //   return next(err);
+        // }
+        // // let differencesInDays;
+        // let differencesInDays = find_subscription.pauseresumeDate.map(entry => {
+        //   const pauseDate = new Date(entry.pauseDate);
+        //   const resumeDate = new Date(entry.resumeDate);
+        //   const differenceInMilliseconds = resumeDate - pauseDate;
+        //   return differenceInMilliseconds / (1000 * 3600 * 24);
+        // });
+
+        // console.log("Differences in days for each entry:", differencesInDays);
+
+        // const resumeDate = find_subscription.pauseresumeDate.map((entry) => {
+        //   let resumeDate = new Date(entry.resumeDate);
+        //   return resumeDate.setDate(resumeDate.getDate());
+        // });
+        // const pauseDate = find_subscription.pauseresumeDate.map((entry) => {
+        //   let pauseDate = new Date(entry.pauseDate);
+        //   return pauseDate.setDate(pauseDate.getDate());
+        // });
+        // console.log(pauseDate[0],"........qqqq");
+        // let currentDate = new Date(pauseDate[0]);
+        // currentDate.setDate(currentDate.getDate() );
+        // console.log(currentDate,"......currentDate");
+        // // differencesInDays = subDuration.planDuration
+        // let calendar = find_subscription.calendar;
+        // console.log(calendar, "......calendar");
+        // const filteredCalendar = calendar.filter(item => item.deliveryStatus === true);
+        // console.log(filteredCalendar, ".......filteredCalendar");
+        // console.log(filteredCalendar.length, ".......filteredCalendar.length");
+        // console.log(calendar.length, ".......calendar.length");
+        // // return;
+        // const productId = calendar.map(item => item.productId);
+        // console.log(productId, ".......productId");
+        // let lengthOfDifferencesInDays=Math.floor(differencesInDays[0]);
+        // console.log(lengthOfDifferencesInDays,".......lengthOfDifferencesInDays")
+        // for (let i = 0; i <lengthOfDifferencesInDays ; i++) {
+        //   let currentDate = new Date(pauseDate[0]);
+        //   currentDate.setDate(currentDate.getDate());
+        //   let obj = {};
+        //   obj.productId = new ObjectId(productId[0]);
+        //   obj.day = lengthOfDifferencesInDays + i + 1;
+        //   obj.dates = currentDate+i;
+        //   // obj.dates = currentDate.toISOString().slice(0, 10);
+        //   obj.deliveryStatus = false;
+        //   calendar.push(obj);
+        //   var updateSub = await UserSubscriptionModel.updateOne(
+        //     {
+        //       calendar: calendar,
+        //     })
+        // }
+
+/** */
+        for (var i = 0; i < find_subscription.pauseresumeDate.length; i++) {
+          console.log("hgdghjd loop == ");
+          if (
+            find_subscription.pauseresumeDate[i].pauseDate != undefined &&
+            find_subscription.pauseresumeDate[i].resumeDate == undefined
+          ) {
+            console.log(
+              "jdbjfbjfb if ==== ",
+              find_subscription.pauseresumeDate[i]._id
+            );
+            var updateSub = await UserSubscriptionModel.updateOne(
+              {
+                "pauseresumeDate._id": new ObjectId(
+                  find_subscription.pauseresumeDate[i]._id
+                ),
+              },
+              {
+                activeStatus: req.body.activeStatus,
+                "pauseresumeDate.$[xxx].resumeDate": new Date(),
+              },
+              {
+                arrayFilters: [
+                  {
+                    "xxx._id": new ObjectId(
+                      find_subscription.pauseresumeDate[i]._id
+                    ),
+                  },
+                ],
+              },
+            );
+            
+
+            
+          }
+        }
+      }
+    }
+
+    find_subscription = await UserSubscriptionModel.findById(req.params.id);
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.subscriptionUpdated,
+      data: find_subscription,
+    });
+  },
 };
-// 65efeec79f21f09f34c5e4c6
-
-//6613e22e255f04bd4a1e7324  14175
-
-//66138d975505767c3a267ba2 3465
-
-//660fc9c908129a9d4b7286ac 4253
