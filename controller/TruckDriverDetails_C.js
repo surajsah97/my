@@ -353,18 +353,16 @@ module.exports = {
       );
       return next(err);
     }
-    if (find_driver.Otp != req.body.Otp) {
+    if (req.body.verifyOtp === false || req.body.verifyOtp === undefined) {
       const err = new customError(
         global.CONFIGS.api.verifyOtpFail,
         global.CONFIGS.responseCode.Unauthorized
       );
       return next(err);
     }
-    var timediff = common.datediff(find_driver.OtpsendDate);
-    console.log("timediff= ", timediff);
-    if (timediff > global.CONFIGS.OtpTimeLimit.limit) {
+   if (req.body.password !== req.body.confPass) {
       const err = new customError(
-        global.CONFIGS.api.verifyOtpexp,
+        global.CONFIGS.api.matchPasswordFail,
         global.CONFIGS.responseCode.Unauthorized
       );
       return next(err);
