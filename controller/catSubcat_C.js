@@ -69,6 +69,18 @@ module.exports = {
       data: find_cat,
     });
   },
+  singleCategoryByIdAdmin: async (req, res, next) => {
+    var find_cat = await CategoryModel.findById(req.params.id);
+     if (!find_cat) {
+        const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
+        return next(err);
+        }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.singleCategoryAdmin,
+      data: find_cat,
+    });
+  },
 
   categoryListFront: async (req, res, next) => {
     var find_cat = await CategoryModel.find({ activeStatus: "1" });

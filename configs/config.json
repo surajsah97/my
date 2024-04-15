@@ -62,6 +62,7 @@
     "categoryadded": "Category added Successfully.",
     "categoryalreadyadded": "Category already added. Please try another name.",
     "allcategorylistAdmin": "Get categoryList by_Admin Successfully.",
+    "singleCategoryAdmin": "Get Singlecategory by_Admin Successfully.",
     "allcategorylistUser": "Get categoryList by_User Successfully.",
     "categoryUpdated": "Category updated Successfully.",
     "categoryInactive": "Category inactive or not found.",
