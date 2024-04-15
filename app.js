@@ -229,7 +229,7 @@ app.use(
   require("./route/adminRoute/AssignZoneForAssignTruck_RA")
 );
 app.use(
-  "/v" + process.env.VERSION + "/assigntruck/assignzoneforassigntruck/",
+  "/v" + process.env.VERSION + "/front/assigntruck/assignzoneforassigntruck/",
   require("./route/truckDriverRoute/AssignZoneForAssignTruck_TD")
 );
 app.use(
@@ -237,7 +237,7 @@ app.use(
   require("./route/adminRoute/addAssignUserAddressForBikeDriver_RA")
 );
 app.use(
-  "/v" + process.env.VERSION + "/truckdriver/assigntruckfordriver/",
+  "/v" + process.env.VERSION + "/front/truckdriver/assigntruckfordriver/",
   require("./route/truckDriverRoute/AssignTruckForDriver_TD")
 );
 
