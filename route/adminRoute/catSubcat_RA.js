@@ -33,6 +33,7 @@ router.route('/category/')
 router.route('/category/:id')
     // .put(cpUpload,  errorfun(cat.updateCategory))
     .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateCategory))
+    .get( Auth.adminValidateToken, errorfun(cat.singleCategoryByIdAdmin))
     .delete(Auth.adminValidateToken, errorfun(cat.categoryDelete))
 
 // subCategory router //
