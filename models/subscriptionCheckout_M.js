@@ -70,6 +70,7 @@ var checkoutSchema = new Schema(
       type:Number,
       required: [true, "Please enter leftDuration."],
     },
+    
     calendar:{
       type: [
         {

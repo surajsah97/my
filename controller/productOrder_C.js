@@ -255,6 +255,7 @@ module.exports = {
             orderMonth: {
             $dateToString: { format: "%B", date: "$createdAt" },
             },
+            deliverystatus:"$status",
             qty: "$product.qty",
             productPrice: "$product.productDetails.productPrice",
             individualTotalPrice: {
@@ -284,6 +285,7 @@ module.exports = {
             orderMonth: {
             $dateToString: { format: "%B", date: "$createdAt" },
             },
+            deliverystatus:"$status",
             qty: "$freeProduct.qty",
             productPrice: "$freeProduct.freeProductDetails.productPrice",
             freeProductName: "$freeProduct.freeProductDetails.productName",
