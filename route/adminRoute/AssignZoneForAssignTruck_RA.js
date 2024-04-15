@@ -7,8 +7,11 @@ const Auth = require("../../middleware/auth");
 const errorfun=require("../../middleware/catchAsyncErrors");
 
 router.route('/')
-    .post(Auth.adminValidateToken, errorfun(AssignZoneForAssignTruck.addAssignZone))
-    .get(Auth.adminValidateToken,errorfun(AssignZoneForAssignTruck.getAllListAssignZone))
+    .post(Auth.adminValidateToken, errorfun(AssignZoneForAssignTruck.addAssignZoneAdmin))
+    .get(Auth.adminValidateToken,errorfun(AssignZoneForAssignTruck.getAllListAssignZoneAdmin))
+
+    router.route('/assingtruckid/:id')
+    .get(Auth.adminValidateToken,errorfun(AssignZoneForAssignTruck.getAssignZoneByAssignTruckIdAdmin))
 
 router.route('/:id')
     .get(Auth.adminValidateToken,errorfun(AssignZoneForAssignTruck.getAssignZoneByIdAdmin))

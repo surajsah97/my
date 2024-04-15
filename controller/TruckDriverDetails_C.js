@@ -368,6 +368,14 @@ module.exports = {
       return next(err);
     }
 
+     if(req.body.verifyOtp!=undefined){
+            let validVerifyOtp = [true,false];
+            if (!validVerifyOtp.includes(req.body.verifyOtp)) {
+            const err = new customError("invalid verifyOtp Allowed values are:true OR false", global.CONFIGS.responseCode.invalidInput);
+            return next(err);
+            }
+        }
+
     const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
     const hash = await bcrypt.hashSync(req.body.password, salt);
     var update_driver = await TruckDriverModel.findByIdAndUpdate(

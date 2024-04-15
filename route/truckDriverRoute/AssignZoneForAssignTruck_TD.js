@@ -6,6 +6,7 @@ const Auth = require("../../middleware/auth");
 
 const errorfun=require("../../middleware/catchAsyncErrors");
 
-router.route('/:id')
-    .get(Auth.validateTokenTruckDriver,errorfun(AssignZoneForAssignTruck.getAssignZoneByAssignTruckId))
+
+router.route('/truckdriver/:id')
+    .get(Auth.validateTokenTruckDriver,errorfun(AssignZoneForAssignTruck.getAssignZoneByTruckDriverId))
 module.exports = router;

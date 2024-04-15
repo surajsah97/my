@@ -11,7 +11,7 @@ const customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
-  addAssignZone: async (req, res, next) => {
+  addAssignZoneAdmin: async (req, res, next) => {
     // console.log(req.body,"........")
     const find_assignTruck = await AssignTruckForDriverModel.findOne({
       _id: req.body.assignTruckId,
@@ -137,7 +137,7 @@ module.exports = {
     });
   },
 
-  getAllListAssignZone: async (req, res, next) => {
+  getAllListAssignZoneAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
@@ -791,17 +791,358 @@ module.exports = {
     });
   },
 
-  getAssignZoneByAssignTruckId: async (req, res, next) => {
+  getAssignZoneByAssignTruckIdAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
     let assignTruckData = await AssignZoneForAssignTruckModel.aggregate([
-      {
-        $match: {
-          activeStatus: "Active",
-          assignTruckId: new ObjectId(req.params.id),
+     {
+        $match: { activeStatus: "Active", assignTruckId: new ObjectId(req.params.id) },
+      },
+      
+     {
+        $lookup: {
+          from: "deliveryzone",
+          localField: "deliveryZone.deliveryZoneId",
+          foreignField: "_id",
+          as: "deliveryZone.deliveryZoneId",
         },
       },
+      {
+        $unwind: {
+          path: "$deliveryZone.deliveryZoneId",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "assigntruckfordriverdetails",
+          localField: "assignTruckId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails",
+        },
+      },
+      { $unwind: "$assigntruckfordriverdetails" },
+      { $unset: "assignTruckId" },
+      {
+        $lookup: {
+          from: "truckdetails",
+          localField: "assigntruckfordriverdetails.truckId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails.truckdetails",
+        },
+      },
+      { $unwind: "$assigntruckfordriverdetails.truckdetails" },
+      { $unset: "assigntruckfordriverdetails.truckId" },
+      {
+        $lookup: {
+          from: "truckbrand",
+          localField: "assigntruckfordriverdetails.truckdetails.truckBrandId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails.truckdetails.truckBrandId",
+        },
+      },
+      { $unwind: "$assigntruckfordriverdetails.truckdetails.truckBrandId" },
+
+      {
+        $lookup: {
+          from: "truckmodel",
+          localField: "assigntruckfordriverdetails.truckdetails.truckModelId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails.truckdetails.truckModelId",
+        },
+      },
+      { $unwind: "$assigntruckfordriverdetails.truckdetails.truckModelId" },
+      {
+        $lookup: {
+          from: "truckdriverdetails",
+          localField: "assigntruckfordriverdetails.truckDriverId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails.truckdriverdetails",
+        },
+      },
+      { $unwind: "$assigntruckfordriverdetails.truckdriverdetails" },
+      { $unset: "assigntruckfordriverdetails.truckDriverId" },
+      {
+        $lookup: {
+          from: "truckdriverbankdetails",
+          localField:
+            "assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
+        },
+      },
+      {
+        $unwind:
+          "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
+      },
+      {
+        $lookup: {
+          from: "truckdriveraddress",
+          localField:
+            "assigntruckfordriverdetails.truckdriverdetails.addressId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails.truckdriverdetails.addressId",
+        },
+      },
+      { $unwind: "$assigntruckfordriverdetails.truckdriverdetails.addressId" },
+      {
+        $lookup: {
+          from: "truckdriverdoc",
+          localField: "assigntruckfordriverdetails.truckdriverdetails.docId",
+          foreignField: "_id",
+          as: "assigntruckfordriverdetails.truckdriverdetails.docId",
+        },
+      },
+      { $unwind: "$assigntruckfordriverdetails.truckdriverdetails.docId" },
+      {
+        $project: {
+          // _id: 1,
+          _id: "$_id",
+          // assignTruckId: "$assignTruckId",
+          totalTruckCapacity: "$totalTruckCapacity",
+          totalReserveCapacity: "$totalReserveCapacity",
+          deliveredReserveBottle: "$deliveredReserveBottle",
+          returnedReserveBottle: "$returnedReserveBottle",
+          damagedBottle: "$damagedBottle",
+          leakageBottle: "$leakageBottle",
+          brokenBottle: "$brokenBottle",
+          // deliveryZoneDetails:"$deliveryZone.deliveryZoneId",
+          deliveryZoneDetails: {
+            _id: "$deliveryZone.deliveryZoneId._id",
+            zoneName: "$deliveryZone.deliveryZoneId.zoneName",
+            zoneStock: "$deliveryZone.zoneStock",
+
+            country: "$deliveryZone.deliveryZoneId.country",
+            activeStatus: "$deliveryZone.deliveryZoneId.activeStatus",
+            createdAt: "$deliveryZone.deliveryZoneId.createdAt",
+            updatedAt: "$deliveryZone.deliveryZoneId.updatedAt",
+          },
+          startDateAndTime: "$startDateAndTime",
+          endDateAndTime: "$endDateAndTime",
+          activeStatus: "$activeStatus",
+          createdAt: "$createdAt",
+          updatedAt: "$updatedAt",
+
+          // // //truckDetails:"$assigntruckfordriverdetails.truckdetails",
+          truckDetails: {
+            TruckId: "$assigntruckfordriverdetails.truckdetails._id",
+            ownerName: "$assigntruckfordriverdetails.truckdetails.ownerName",
+            truckBrandName:
+              "$assigntruckfordriverdetails.truckdetails.truckBrandId.truckBrand",
+            truckModelName:
+              "$assigntruckfordriverdetails.truckdetails.truckModelId.truckModel",
+            chasisNumber:
+              "$assigntruckfordriverdetails.truckdetails.chasisNumber",
+            vehicleNumber:
+              "$assigntruckfordriverdetails.truckdetails.vehicleNumber",
+            registrationZone:
+              "$assigntruckfordriverdetails.truckdetails.registrationZone",
+            registrationDate:
+              "$assigntruckfordriverdetails.truckdetails.registrationDate",
+            vehicleColor:
+              "$assigntruckfordriverdetails.truckdetails.vehicleColor",
+            vehicleYear:
+              "$assigntruckfordriverdetails.truckdetails/vehicleYear",
+            vehicleAge: "$assigntruckfordriverdetails.truckdetails.vehicleAge",
+            fuelType: "$assigntruckfordriverdetails.truckdetails.fuelType",
+            insuranceValidity:
+              "$assigntruckfordriverdetails.truckdetails.insuranceValidity",
+            fitnessValidity:
+              "$assigntruckfordriverdetails.truckdetails.fitnessValidity",
+            mulkiyaValidity:
+              "$assigntruckfordriverdetails.truckdetails.mulkiyaValidity",
+            mulkiyaDocFrontImg:
+              "$assigntruckfordriverdetails.truckdetails.mulkiyaDocImg.frontImg",
+            mulkiyaDocBackImg:
+              "$assigntruckfordriverdetails.truckdetails.mulkiyaDocImg.backImg",
+            vehicleFrontImage:
+              "$assigntruckfordriverdetails.truckdetails.vehicleImage.frontImage",
+            vehicleBackImage:
+              "$assigntruckfordriverdetails.truckdetails.vehicleImage.backImage",
+            vehicleLeftImage:
+              "$assigntruckfordriverdetails.truckdetails.vehicleImage.leftImage",
+            vehicleRightImage:
+              "$assigntruckfordriverdetails.truckdetails.vehicleImage.rightImage",
+            activeStatus:
+              "$assigntruckfordriverdetails.truckdetails.activeStatus",
+          },
+          // // // truckDriverDetails:"$assigntruckfordriverdetails.truckdriverdetails",
+
+          truckDriverDetails: {
+            TruckDriverID:
+              "$assigntruckfordriverdetails.truckdriverdetails._id",
+            Name: "$assigntruckfordriverdetails.truckdriverdetails.name",
+            Email: "$assigntruckfordriverdetails.truckdriverdetails.email",
+            Mobile: "$assigntruckfordriverdetails.truckdriverdetails.mobile",
+            AlterNateMobile:
+              "$assigntruckfordriverdetails.truckdriverdetails.altMobile",
+            Nationality:
+              "$assigntruckfordriverdetails.truckdriverdetails.nationality",
+            PassportNumber:
+              "$assigntruckfordriverdetails.truckdriverdetails.passportNumber",
+            PassportValidity:
+              "assigntruckfordriverdetails.$truckdriverdetails.passportValidity",
+            VisaNumber:
+              "$assigntruckfordriverdetails.truckdriverdetails.visaNumber",
+            VisaValidity:
+              "$assigntruckfordriverdetails.truckdriverdetails.visaValidity",
+            EmiratesId:
+              "$assigntruckfordriverdetails.truckdriverdetails.emiratesId",
+            EmiratesIdValidity:
+              "$assigntruckfordriverdetails.truckdriverdetails.emiratesIdValidity",
+            InsuranceComp:
+              "$assigntruckfordriverdetails.truckdriverdetails.InsuranceComp",
+            InsuranceValidity:
+              "$assigntruckfordriverdetails.truckdriverdetails.insuranceValidity",
+            LicenseNumber:
+              "$assigntruckfordriverdetails.truckdriverdetails.licenseNumber",
+            LicenseCity:
+              "$assigntruckfordriverdetails.truckdriverdetails.licenseCity",
+            LicenseType:
+              "$assigntruckfordriverdetails.truckdriverdetails.licenseType",
+            LicenseValidity:
+              "$assigntruckfordriverdetails.truckdriverdetails.licenseValidity",
+            IsVerified:
+              "$assigntruckfordriverdetails.truckdriverdetails.isVerified",
+            DriverType:
+              "$assigntruckfordriverdetails.truckdriverdetails.driverType",
+            activeStatus:
+              "$assigntruckfordriverdetails.truckdriverdetails.activeStatus",
+            // addressId: "$assigntruckfordriverdetails.truckdriverdetails.addressId",
+            truckDriverAddressDetails: {
+              localAddressHouseNo:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
+              localAddressBuildingName:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.buildingName",
+              localAddressStreet:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
+              localAddressLandmark:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.street",
+              homeCountryAddressHouseNo:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.houseNo",
+              homeCountryAddressBuildingName:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.buildingName",
+              homeCountryAddressStreet:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.street",
+              homeCountryAddressLandmark:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.landmark",
+              homeCountryAddressCity:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.city",
+              homeCountryAddressState:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.state",
+              homeCountryAddressPinCode:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.pinCode",
+              emergencyContactName:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.emergencyContact.name",
+              emergencyContactRelation:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.emergencyContact.relation",
+              emergencyContactMobile:
+                "$assigntruckfordriverdetails.truckdriverdetails.addressId.emergencyContact.mobile",
+            },
+            // // //truckDriverBankDetails:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
+            truckDriverBankDetails: {
+              bankName:
+                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.bankName",
+              accountNumber:
+                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.accountNumber",
+              accountHolderName:
+                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.accountHolderName",
+              branchName:
+                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.branchName",
+              IBAN: "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.IBAN",
+            },
+            // docId: "$assigntruckfordriverdetails.truckdriverdetails.docId",
+            truckDriverDocumentDetails: {
+              passportFrontImage:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.passportImg.frontImg",
+              passportBackImage:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.passportImg.backImg",
+              emiratesIdFrontImage:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.emiratesIdImg.frontImg",
+              emiratesIdBackImage:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.emiratesIdImg.backImg",
+              licenseFrontImage:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.licenseImg.frontImg",
+              licenseBackImage:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.licenseImg.backImg",
+              visaImg:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.visaImg",
+              driverImg:
+                "$assigntruckfordriverdetails.truckdriverdetails.docId.driverImg",
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          // assignTruckId: {$first:"$assignTruckId"},
+          totalTruckCapacity: { $first: "$totalTruckCapacity" },
+          totalReserveCapacity: { $first: "$totalReserveCapacity" },
+          deliveredReserveBottle: { $first: "$deliveredReserveBottle" },
+          returnedReserveBottle: { $first: "$returnedReserveBottle" },
+          damagedBottle: { $first: "$damagedBottle" },
+          leakageBottle: { $first: "$leakageBottle" },
+          brokenBottle: { $first: "$brokenBottle" },
+          zoneDetails: {
+            $addToSet: "$deliveryZoneDetails",
+          },
+          startDateAndTime: { $first: "$startDateAndTime" },
+          endDateAndTime: { $first: "$endDateAndTime" },
+          activeStatus: { $first: "$activeStatus" },
+          createdAt: { $first: "$createdAt" },
+          updatedAt: { $first: "$updatedAt" },
+          truckDetails: { $first: "$truckDetails" },
+          truckDriverDetails: { $first: "$truckDriverDetails" },
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
+    if (assignTruckData[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.AssignZoneForAssignTruckInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const total = parseInt(assignTruckData[0].metadata[0].total);
+    var totalPage = Math.ceil(
+      parseInt(assignTruckData[0].metadata[0].total) / limit
+    );
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.AssignZoneForAssignTruckListByAssignTruck,
+      totalData: total,
+      totalPage: totalPage,
+      data: assignTruckData[0].data,
+    });
+  },
+
+
+  getAssignZoneByTruckDriverId: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
+    const assignTruckDriver = await AssignTruckForDriverModel.findOne({
+        truckDriverId: new ObjectId(req.params.id),
+        activeStatus: "1",
+      }).sort({
+        _id: -1,
+      });
+      // console.log(assignTruckDriver,"......assignTruckDriver");
+    let assignTruckData = await AssignZoneForAssignTruckModel.aggregate([
+      {
+        $match: { activeStatus: "Active", assignTruckId: new ObjectId(assignTruckDriver._id) },
+      },
+      
      {
         $lookup: {
           from: "deliveryzone",
