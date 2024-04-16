@@ -71,6 +71,7 @@
     "Subcategoryalreadyadded": "subCategory already added. Please try another name.",
     "allSubcategorylistAdmin": "Get subcategoryList by_Admin Successfully.",
     "SubcategoryInactive": "Subcategory inactive or not found.",
+    "SubcategoryNotFound": "Subcategory  not found.",
     "allSubcategorylistUser": "Get subcategoryList by_User Successfully.",
     "SubcategoryUpdated": "subCategory updated Successfully.",
     "SubcategoryDelete": "subCategory deleted Successfully.",
