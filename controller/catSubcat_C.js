@@ -80,39 +80,43 @@ module.exports = {
     const limit = parseInt(req.query.limit) || 20; 
     const pageNo = parseInt(req.query.pageNo) || 1;
     const skip = (pageNo - 1) * limit;
-    var query = { };
+    var query = {};
+    const searchText = req.query.searchText;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
     if (req.query.activeStatus != undefined) {
       query.activeStatus = req.query.activeStatus;
     }
+     if (searchText !== undefined) {
+        query.$or= [
+                { category: { $regex: new RegExp(searchText), $options: "i" } },
+            ]
+    }
+    if (startDate != undefined && endDate != undefined) {
+      // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      // console.log({ $gt: new Date(startDate) })
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      // console.log({  $lt: new Date(endDate) })
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query)
     var find_cat = await CategoryModel.aggregate([
       {
         $match: query,
       },
       {
-        $lookup: {
-          from: "category",
-          localField: "categoryId",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
-      { $unwind: "$category" },
-      { $unset: "categoryId" },
-      {
-        $lookup: {
-          from: "subcategory",
-          localField: "subCategoryId",
-          foreignField: "_id",
-          as: "subcategory",
-        },
-      },
-      { $unwind: "$subcategory" },
-      { $unset: "subCategoryId" },
-      {
         $project: {
           _id: "$_id",
           categoryName: "$category",
-          categoryImage: "$categoryImage",
+          categoryImage: "$categoryImg",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
@@ -125,10 +129,23 @@ module.exports = {
         },
       },
     ]);
+    if (find_cat[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    var totalPage = Math.ceil(
+      parseInt(find_cat[0].metadata[0].total) / limit
+    );
+    const total = parseInt(find_cat[0].metadata[0].total);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.allcategorylistAdmin,
-      data: find_cat,
+      totalData: total,
+      totalPage: totalPage,
+      allCategory: find_cat[0].data,
     });
   },
 
