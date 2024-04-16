@@ -93,7 +93,7 @@ module.exports = {
           foreignField: "_id",
           as: "subcategory",
         },
-      },
+      }, 
       { $unwind: "$subcategory" },
       { $unset: "subCategoryId" },
       {
