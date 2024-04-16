@@ -1,6 +1,8 @@
 var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
 const ProductModel = mongoose.model(constants.ProductModel);
+const CategoryModel = mongoose.model(constants.CategoryModel);
+const SubCategoryModel = mongoose.model(constants.SubCategoryModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
@@ -10,8 +12,31 @@ module.exports = {
     if (req.files) {
       req.body.productImage = `uploads/products/${req.files.productImage[0].originalname}`;
     }
+    const find_cat = await CategoryModel.findOne({
+      _id: req.body.categoryId,
+      activeStatus: "1",
+    });
+    if (!find_cat) {
+      const err = new customError(
+        global.CONFIGS.api.categoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const find_Subcat = await SubCategoryModel.findOne({
+      _id: req.body.subCategoryId,
+      activeStatus: "1",
+    });
+    if (!find_Subcat) {
+      const err = new customError(
+        global.CONFIGS.api.SubcategoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const productsName = req.body.productName.trim();
     var find_prod = await ProductModel.findOne({
-      productName: req.body.productName,
+      productName: { $regex: new RegExp('^' + productsName + '$', 'i') }
     });
     if (find_prod) {
       const err = new customError(
