@@ -6,6 +6,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const subscriptionPlanModel = mongoose.model(constants.subscriptionPlanModel);
 // const ProductModel = mongoose.model(constants.ProductModel);
 var customError = require("../middleware/customerror");
+const moment = require("moment");
 const UserModel = mongoose.model(constants.UserModel);
 const UserAddressModel = mongoose.model(constants.UserAddressModel);
 const SubscriptionCheckOutModel = mongoose.model(
@@ -772,7 +773,9 @@ module.exports = {
 
   updateSubscriptionByUser: async (req, res, next) => {
     let find_subscription = await UserSubscriptionModel.findById(req.params.id);
+
     console.log(find_subscription, "....find_subscription");
+
     if (!find_subscription) {
       const err = new customError(
         global.CONFIGS.api.subscriptionNotfound,
@@ -790,14 +793,14 @@ module.exports = {
         );
         return next(err);
       }
-      const next_date = new Date();
+      var next_date = new Date();
       next_date.setDate(next_date.getDate() + 1);
 
       // return
       if (req.body.activeStatus === "Inactive") {
         console.log(next_date, "...next_date");
         var old_array = find_subscription.pauseresumeDate;
-        var newObject = { pauseDate: new Date() };
+        var newObject = { pauseDate: next_date };
         old_array.push(newObject);
         var update_subscription = await UserSubscriptionModel.updateOne(
           { _id: req.params.id },
@@ -809,23 +812,14 @@ module.exports = {
         );
       }
 
-      for(deliveryData of find_subscription.calendar){
-        if(deliveryData.deliveryStatus==false){
-
-        }
-      }
-
       console.log(
         find_subscription.pauseresumeDate.length,
         ",,......,,......,,"
       );
 
       if (req.body.activeStatus === "Active") {
-        
         for (var i = 0; i < find_subscription.pauseresumeDate.length; i++) {
-          console.log({i},"--------------->>>>>");
-
-
+          console.log(i, "--------------->>>>>");
 
           // console.log("hgdghjd loop == ");
           if (
@@ -854,14 +848,103 @@ module.exports = {
                     ),
                   },
                 ],
-              },
+              }
             );
-            
+            let find_subscriptionplan = await subscriptionPlanModel.findById(
+              find_subscription.subDurationId
+            );
+            var cal = find_subscription.calendar;
+            var indexofcal = cal.findLastIndex(
+              (item) => item.deliveryStatus === true
+            );
+            var splitArray = cal.slice(0, indexofcal + 1);
+            var remainingdays = 0;
+            if (find_subscription.dailyInterval === "daily") {
+              remainingdays =
+                find_subscription.calendar.length - splitArray.length;
+            } else if (find_subscription.dailyInterval === "alternate") {
+              remainingdays =
+                find_subscription.calendar.length / 2 - splitArray.length / 2;
+            }
+            var oldDate = moment(new Date(find_subscription.createdAt));
+            console.log(oldDate);
+            var newDate = moment(new Date());
+            console.log(newDate);
+            var days = parseInt(
+              moment.duration(newDate.diff(oldDate)).asDays() + 1
+            );
+            for (let i = 1; i <= days; i++) {
+              let currentDate = new Date(splitArray[indexofcal].dates);
+              currentDate.setDate(currentDate.getDate() + i - 1);
+              let obj = {};
+              obj.day = indexofcal + i + 1;
+              obj.dates = currentDate;
 
-            
+              splitArray.push(obj);
+            }
+            var arlength = splitArray.length;
+            let endDate = new Date(find_subscription.startDate.getTime());
+            if (find_subscription.dailyInterval === "daily") {
+              endDate.setDate(
+                endDate.getDate() + (splitArray.length + remainingdays - 1)
+              ); // 15 days includes today
+
+              // console.log(startDate, "...currentDate...");
+              console.log(endDate, "....eeeeeee");
+
+              var differenceInDays = remainingdays;
+
+              for (let i = 0; i < differenceInDays; i++) {
+                let currentDate = new Date(splitArray[arlength - 1].dates);
+                currentDate.setDate(currentDate.getDate() + arlength + i);
+                let obj = {};
+                obj.productId = find_subscription.product[0].productId;
+                obj.day = arlength + i + 1;
+                obj.dates = currentDate.toISOString().slice(0, 10);
+                obj.deliveryStatus = false;
+                splitArray.push(obj);
+              }
+            } else if (find_subscription.dailyInterval === "alternate") {
+              endDate.setDate(
+                endDate.getDate() + (splitArray.length + remainingdays * 2 - 1)
+              ); // 15 days includes today
+
+              // console.log(startDate, "...currentDate...");
+              console.log(endDate, "....eeeeeee");
+
+              var differenceInDays = remainingdays * 2;
+              // console.log(differenceInDays,"...differenceInDays");
+              for (let i = 1; i <= differenceInDays; i++) {
+                let currentDate = new Date(splitArray[arlength - 1].dates);
+                currentDate.setDate(currentDate.getDate() + arlength + i - 1);
+                let obj = {};
+                if (i % 2 !== 0) {
+                  obj.productId = find_subscription.product[0].productId;
+                  obj.day = arlength + i;
+                  obj.dates = currentDate;
+                  obj.deliveryStatus = false;
+                } else {
+                  obj.day = arlength + i;
+                  obj.dates = currentDate;
+                }
+                // obj.productId = product[0].productId;
+                // obj.day = i + 1;
+                // obj.dates = currentDate;
+                splitArray.push(obj);
+              }
+            }
+            var update_subscription = await UserSubscriptionModel.updateOne(
+              { _id: req.params.id },
+              {
+                // activeStatus: req.body.activeStatus,
+                // pauseresumeDate: old_array,
+                endDate: endDate,
+                calendar: splitArray,
+              },
+              { new: true }
+            );
+            // return res.send({ indexofcal, days, splitArray });
           }
-          
-
         }
       }
     }
