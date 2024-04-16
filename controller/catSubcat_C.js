@@ -77,20 +77,20 @@ module.exports = {
   },
 
   categoryListAdmin: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 20; 
+    const limit = parseInt(req.query.limit) || 20;
     const pageNo = parseInt(req.query.pageNo) || 1;
     const skip = (pageNo - 1) * limit;
     var query = {};
     const searchText = req.query.searchText;
-        const startDate = req.query.startDate;
-        const endDate = req.query.endDate;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
     if (req.query.activeStatus != undefined) {
       query.activeStatus = req.query.activeStatus;
     }
-     if (searchText !== undefined) {
-        query.$or= [
-                { category: { $regex: new RegExp(searchText), $options: "i" } },
-            ]
+    if (searchText !== undefined) {
+      query.$or = [
+        { category: { $regex: new RegExp(searchText), $options: "i" } },
+      ]
     }
     if (startDate != undefined && endDate != undefined) {
       // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
@@ -149,14 +149,6 @@ module.exports = {
     });
   },
 
-  // categoryListAdmin: async (req, res, next) => {
-  //   var find_cat = await CategoryModel.find({});
-  //   return res.status(global.CONFIGS.responseCode.success).json({
-  //     success: true,
-  //     message: global.CONFIGS.api.allcategorylistAdmin,
-  //     data: find_cat,
-  //   });
-  // },
 
   singleCategoryByIdAdmin: async (req, res, next) => {
     var find_cat = await CategoryModel.findById(req.params.id);
@@ -283,17 +275,44 @@ module.exports = {
   },
 
   SubcategoryListAdmin: async (req, res, next) => {
-    let query={};
-    if (req.query.categoryId != undefined) {
-      query.categoryId = new ObjectId(req.query.categoryId);
+    const limit = parseInt(req.query.limit) || 20;
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const skip = (pageNo - 1) * limit;
+    const searchText = req.query.searchText;
+    const categoryId = req.query.categoryId;
+    const activeStatus = req.query.activeStatus;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    let query = {};
+    if (categoryId != undefined) {
+      query.categoryId = new ObjectId(categoryId);
     }
-    if (req.query.activeStatus != undefined) {
-      query.activeStatus = req.query.activeStatus;
+    if (activeStatus != undefined) {
+      query.activeStatus = activeStatus;
     }
+    if (searchText !== undefined) {
+      query.$or = [
+        { subCategory: { $regex: new RegExp(searchText), $options: "i" } },
+        { "category.category": { $regex: new RegExp(searchText), $options: "i" } },
+      ]
+    }
+    if (startDate != undefined && endDate != undefined) {
+      // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      // console.log({ $gt: new Date(startDate) })
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      // console.log({  $lt: new Date(endDate) })
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query)
     let find_subcat = await SubCategoryModel.aggregate([
-      {
-        $match: query,
-      },
       {
         $lookup: {
           from: "category",
@@ -303,7 +322,10 @@ module.exports = {
         }
       },
       { $unwind: "$category" },
-      // { $unset: "categoryId" },
+      {
+        $match: query,
+      },
+
       {
         $sort: {
           subCategory: 1
@@ -315,6 +337,7 @@ module.exports = {
           categoryId: "$category._id",
           categoryName: "$category.category",
           subCategoryName: "$subCategory",
+          subCategoryImage: "$subCategoryImg",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
