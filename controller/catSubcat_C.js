@@ -77,13 +77,70 @@ module.exports = {
   },
 
   categoryListAdmin: async (req, res, next) => {
-    var find_cat = await CategoryModel.find({});
+    const limit = parseInt(req.query.limit) || 20; 
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const skip = (pageNo - 1) * limit;
+    var query = { };
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
+    var find_cat = await CategoryModel.aggregate([
+      {
+        $match: query,
+      },
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      { $unset: "categoryId" },
+      {
+        $lookup: {
+          from: "subcategory",
+          localField: "subCategoryId",
+          foreignField: "_id",
+          as: "subcategory",
+        },
+      },
+      { $unwind: "$subcategory" },
+      { $unset: "subCategoryId" },
+      {
+        $project: {
+          _id: "$_id",
+          categoryName: "$category",
+          categoryImage: "$categoryImage",
+          activeStatus: "$activeStatus",
+          createdAt: "$createdAt",
+          updatedAt: "$updatedAt",
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.allcategorylistAdmin,
       data: find_cat,
     });
   },
+
+  // categoryListAdmin: async (req, res, next) => {
+  //   var find_cat = await CategoryModel.find({});
+  //   return res.status(global.CONFIGS.responseCode.success).json({
+  //     success: true,
+  //     message: global.CONFIGS.api.allcategorylistAdmin,
+  //     data: find_cat,
+  //   });
+  // },
+
   singleCategoryByIdAdmin: async (req, res, next) => {
     var find_cat = await CategoryModel.findById(req.params.id);
     if (!find_cat) {
