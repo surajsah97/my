@@ -4,6 +4,7 @@ const CategoryModel = mongoose.model(constants.CategoryModel);
 const SubCategoryModel = mongoose.model(constants.SubCategoryModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
+const ObjectId = mongoose.Types.ObjectId;
 
 
 module.exports = {
@@ -208,7 +209,17 @@ module.exports = {
   },
 
   SubcategoryListAdmin: async (req, res, next) => {
+    let query={};
+    if (req.query.categoryId != undefined) {
+      query.categoryId = new ObjectId(req.query.categoryId);
+    }
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
     let find_subcat = await SubCategoryModel.aggregate([
+      {
+        $match: query,
+      },
       {
         $lookup: {
           from: "category",
@@ -242,6 +253,14 @@ module.exports = {
         },
       },
     ]);
+
+    if (find_subcat[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.SubcategoryNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
 
     const total = find_subcat[0].metadata[0].total
     return res.status(global.CONFIGS.responseCode.success).json({

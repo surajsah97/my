@@ -144,7 +144,20 @@ module.exports = {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
+    var query = { };
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
+    if (req.query.categoryId != undefined) {
+      query.categoryId = new ObjectId(req.query.categoryId);
+    }
+    if (req.query.subCategoryId != undefined) {
+      query.subCategoryId = new ObjectId(req.query.subCategoryId);
+    }
     var productData = await ProductModel.aggregate([
+      {
+        $match: query,
+      },
       {
         $lookup: {
           from: "category",
