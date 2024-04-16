@@ -43,19 +43,18 @@ module.exports = {
       return next(err);
     }
 
-
-    let totalReserveCapacity=req.body.totalReserveCapacity;
-    console.log(totalReserveCapacity,"......totalReserveCapacity");
-    let damagedBottle=req.body.damagedBottle;
-    console.log(damagedBottle,"......damagedBottle");
-    let leakageBottle=req.body.leakageBottle;
-    console.log(leakageBottle,"......leakageBottle");
-    let brokenBottle=req.body.brokenBottle;
-    console.log(brokenBottle,"......brokenBottle");
-    let deliveredReserveBottle=damagedBottle+leakageBottle+brokenBottle;
-    console.log(deliveredReserveBottle,"......deliveredReserveBottle");
-    let returnedReserveBottle=totalReserveCapacity-deliveredReserveBottle;
-    console.log(returnedReserveBottle,"......returnedReserveBottle");
+    let totalReserveCapacity = req.body.totalReserveCapacity;
+    console.log(totalReserveCapacity, "......totalReserveCapacity");
+    let damagedBottle = req.body.damagedBottle;
+    console.log(damagedBottle, "......damagedBottle");
+    let leakageBottle = req.body.leakageBottle;
+    console.log(leakageBottle, "......leakageBottle");
+    let brokenBottle = req.body.brokenBottle;
+    console.log(brokenBottle, "......brokenBottle");
+    let deliveredReserveBottle = damagedBottle + leakageBottle + brokenBottle;
+    console.log(deliveredReserveBottle, "......deliveredReserveBottle");
+    let returnedReserveBottle = totalReserveCapacity - deliveredReserveBottle;
+    console.log(returnedReserveBottle, "......returnedReserveBottle");
 
     const existing_assignTruck = await AssignZoneForAssignTruckModel.find({
       assignTruckId: req.body.assignTruckId,
@@ -89,7 +88,7 @@ module.exports = {
         return next(err);
       }
     }
-    
+
     const deliveryZones = req.body.deliveryZone.map(
       (item) => item.deliveryZoneId
     );
@@ -117,8 +116,7 @@ module.exports = {
       deliveryZone: req.body.deliveryZone,
       startDateAndTime: req.body.startDateAndTime,
       endDateAndTime: req.body.endDateAndTime,
-      totalTruckCapacity
-      :req.body.totalTruckCapacity,
+      totalTruckCapacity: req.body.totalTruckCapacity,
       totalReserveCapacity: req.body.totalReserveCapacity,
       damagedBottle,
       leakageBottle,
@@ -796,26 +794,26 @@ module.exports = {
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
     let assignTruckData = await AssignZoneForAssignTruckModel.aggregate([
-     {
-        $match: { activeStatus: "Active", assignTruckId: new ObjectId(req.params.id) },
+      {
+        $match: {
+          activeStatus: "Active",
+          assignTruckId: new ObjectId(req.params.id),
+        },
       },
-      
-     {
+      {
+        $unwind: "$deliveryZone", 
+      },
+      {
         $lookup: {
           from: "deliveryzone",
           localField: "deliveryZone.deliveryZoneId",
           foreignField: "_id",
-          as: "deliveryZone.deliveryZoneId",
+          as: "deliveryZone.deliveryZoneDetails",
         },
       },
       {
-        $unwind: {
-          path: "$deliveryZone.deliveryZoneId",
-          includeArrayIndex: "string",
-          preserveNullAndEmptyArrays: true,
-        },
+        $unwind: "$deliveryZone.deliveryZoneDetails",
       },
-
       {
         $lookup: {
           from: "assigntruckfordriverdetails",
@@ -825,7 +823,7 @@ module.exports = {
         },
       },
       { $unwind: "$assigntruckfordriverdetails" },
-      { $unset: "assignTruckId" },
+      // { $unset: "assignTruckId" },
       {
         $lookup: {
           from: "truckdetails",
@@ -901,7 +899,7 @@ module.exports = {
         $project: {
           // _id: 1,
           _id: "$_id",
-          // assignTruckId: "$assignTruckId",
+          assignTruckId: "$assignTruckId",
           totalTruckCapacity: "$totalTruckCapacity",
           totalReserveCapacity: "$totalReserveCapacity",
           deliveredReserveBottle: "$deliveredReserveBottle",
@@ -909,16 +907,14 @@ module.exports = {
           damagedBottle: "$damagedBottle",
           leakageBottle: "$leakageBottle",
           brokenBottle: "$brokenBottle",
-          // deliveryZoneDetails:"$deliveryZone.deliveryZoneId",
           deliveryZoneDetails: {
-            _id: "$deliveryZone.deliveryZoneId._id",
-            zoneName: "$deliveryZone.deliveryZoneId.zoneName",
+            _id: "$deliveryZone.deliveryZoneDetails._id",
+            zoneName: "$deliveryZone.deliveryZoneDetails.zoneName",
+            country: "$deliveryZone.deliveryZoneDetails.country",
             zoneStock: "$deliveryZone.zoneStock",
-
-            country: "$deliveryZone.deliveryZoneId.country",
-            activeStatus: "$deliveryZone.deliveryZoneId.activeStatus",
-            createdAt: "$deliveryZone.deliveryZoneId.createdAt",
-            updatedAt: "$deliveryZone.deliveryZoneId.updatedAt",
+            activeStatus: "$delivery Zone.deliveryZoneDetails.activeStatus",
+            createdAt: "$deliveryZone.deliveryZoneDetails.createdAt",
+            updatedAt: "$deliveryZone.deliveryZoneDetails.updatedAt",
           },
           startDateAndTime: "$startDateAndTime",
           endDateAndTime: "$endDateAndTime",
@@ -1079,7 +1075,7 @@ module.exports = {
       {
         $group: {
           _id: "$_id",
-          // assignTruckId: {$first:"$assignTruckId"},
+          assignTruckId: { $first: "$assignTruckId" },
           totalTruckCapacity: { $first: "$totalTruckCapacity" },
           totalReserveCapacity: { $first: "$totalReserveCapacity" },
           deliveredReserveBottle: { $first: "$deliveredReserveBottle" },
@@ -1088,7 +1084,8 @@ module.exports = {
           leakageBottle: { $first: "$leakageBottle" },
           brokenBottle: { $first: "$brokenBottle" },
           zoneDetails: {
-            $addToSet: "$deliveryZoneDetails",
+            $addToSet :
+              "$deliveryZoneDetails",            
           },
           startDateAndTime: { $first: "$startDateAndTime" },
           endDateAndTime: { $first: "$endDateAndTime" },
@@ -1126,24 +1123,28 @@ module.exports = {
     });
   },
 
-
   getAssignZoneByTruckDriverId: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
     const assignTruckDriver = await AssignTruckForDriverModel.findOne({
-        truckDriverId: new ObjectId(req.params.id),
-        activeStatus: "1",
-      }).sort({
-        _id: -1,
-      });
-      // console.log(assignTruckDriver,"......assignTruckDriver");
+      truckDriverId: new ObjectId(req.params.id),
+      activeStatus: "1",
+    }).sort({
+      _id: -1,
+    });
+    // console.log(assignTruckDriver,"......assignTruckDriver");
     let assignTruckData = await AssignZoneForAssignTruckModel.aggregate([
       {
-        $match: { activeStatus: "Active", assignTruckId: new ObjectId(assignTruckDriver._id) },
+        $match: {
+          activeStatus: "Active",
+          assignTruckId: new ObjectId(assignTruckDriver._id),
+        },
       },
-      
-     {
+      {
+        $unwind: "$deliveryZone", 
+      },
+      {
         $lookup: {
           from: "deliveryzone",
           localField: "deliveryZone.deliveryZoneId",
@@ -1168,7 +1169,7 @@ module.exports = {
         },
       },
       { $unwind: "$assigntruckfordriverdetails" },
-      { $unset: "assignTruckId" },
+      // { $unset: "assignTruckId" },
       {
         $lookup: {
           from: "truckdetails",
@@ -1244,7 +1245,7 @@ module.exports = {
         $project: {
           // _id: 1,
           _id: "$_id",
-          // assignTruckId: "$assignTruckId",
+          assignTruckId: "$assignTruckId",
           totalTruckCapacity: "$totalTruckCapacity",
           totalReserveCapacity: "$totalReserveCapacity",
           deliveredReserveBottle: "$deliveredReserveBottle",
@@ -1252,13 +1253,11 @@ module.exports = {
           damagedBottle: "$damagedBottle",
           leakageBottle: "$leakageBottle",
           brokenBottle: "$brokenBottle",
-          // deliveryZoneDetails:"$deliveryZone.deliveryZoneId",
           deliveryZoneDetails: {
             _id: "$deliveryZone.deliveryZoneId._id",
             zoneName: "$deliveryZone.deliveryZoneId.zoneName",
-            zoneStock: "$deliveryZone.zoneStock",
-
             country: "$deliveryZone.deliveryZoneId.country",
+            zoneStock: "$deliveryZone.zoneStock",
             activeStatus: "$deliveryZone.deliveryZoneId.activeStatus",
             createdAt: "$deliveryZone.deliveryZoneId.createdAt",
             updatedAt: "$deliveryZone.deliveryZoneId.updatedAt",
@@ -1422,7 +1421,7 @@ module.exports = {
       {
         $group: {
           _id: "$_id",
-          // assignTruckId: {$first:"$assignTruckId"},
+          assignTruckId: { $first: "$assignTruckId" },
           totalTruckCapacity: { $first: "$totalTruckCapacity" },
           totalReserveCapacity: { $first: "$totalReserveCapacity" },
           deliveredReserveBottle: { $first: "$deliveredReserveBottle" },

@@ -7,12 +7,10 @@ var customError = require("../middleware/customerror");
 
 
 module.exports = {
-  addCategory: async (req, res, next) => {
-    if (req.files.categoryImg) {
-      var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`;
-      req.body.categoryImg = categoryImage;
-    }
-    var find_cat = await CategoryModel.findOne({ category: req.body.category.toLowerCase() });
+  addCategoryAdmin: async (req, res, next) => {
+    const categoryName = req.body.category.trim();
+    const find_cat = await CategoryModel.findOne({ category: { $regex: new RegExp('^' + categoryName + '$', 'i') } });
+
     if (find_cat) {
       const err = new customError(
         global.CONFIGS.api.categoryalreadyadded,
@@ -20,7 +18,11 @@ module.exports = {
       );
       return next(err);
     }
-    var create_cat = await CategoryModel.create(req.body);
+    if (req.files.categoryImg) {
+      var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`;
+      req.body.categoryImg = categoryImage;
+    }
+    const create_cat = await CategoryModel.create(req.body);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.categoryadded,
@@ -28,24 +30,36 @@ module.exports = {
     });
   },
 
-  updateCategory: async (req, res, next) => {
+  updateCategoryAdmin: async (req, res, next) => {
+    let find_cat = await CategoryModel.findById(req.params.id);
+    if (!find_cat) {
+      const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
+      return next(err);
+    }
     if (req.files.categoryImg) {
       var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`;
       req.body.categoryImg = categoryImage;
     }
-    var find_cat = await CategoryModel.findOne({
+    let existing_cat = await CategoryModel.findOne({
       category: req.body.category,
       _id: { $nin: [req.params.id] },
     });
-    if (find_cat) {
+    if (existing_cat) {
       const err = new customError(
         global.CONFIGS.api.categoryalreadyadded,
         global.CONFIGS.responseCode.alreadyExist
       );
       return next(err);
     }
-    var categoryUpdated = await CategoryModel.findByIdAndUpdate(
-      { _id: req.params.id },
+    if (req.body.activeStatus != undefined) {
+      let validactiveStatus = ["0", "1"];
+      if (!validactiveStatus.includes(req.body.activeStatus)) {
+        const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
+        return next(err);
+      }
+    }
+    find_cat = await CategoryModel.findByIdAndUpdate(
+      req.params.id,
       req.body,
       {
         new: true,
@@ -53,11 +67,11 @@ module.exports = {
         useFindAndModify: false,
       }
     );
-    // var categoryUpdated = await CategoryModel.updateOne({ _id: req.params.id},req.body);
+
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.categoryUpdated,
-      categoryUpdated,
+      find_cat,
     });
   },
 
@@ -71,10 +85,10 @@ module.exports = {
   },
   singleCategoryByIdAdmin: async (req, res, next) => {
     var find_cat = await CategoryModel.findById(req.params.id);
-     if (!find_cat) {
-        const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
-        return next(err);
-        }
+    if (!find_cat) {
+      const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
+      return next(err);
+    }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.singleCategoryAdmin,
@@ -91,8 +105,15 @@ module.exports = {
     });
   },
 
-  categoryDelete: async (req, res, next) => {
-    var find_cat = await CategoryModel.deleteOne({ _id: req.params.id });
+  categoryDeleteAdmin: async (req, res, next) => {
+    var delete_cat = await CategoryModel.findByIdAndDelete({ _id: req.params.id });
+    if (!delete_cat) {
+      const err = new customError(
+        global.CONFIGS.api.categoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.categoryDelete,
@@ -101,7 +122,7 @@ module.exports = {
 
   // SubCat api //
 
-  addSubCategory: async (req, res, next) => {
+  addSubCategoryAdmin: async (req, res, next) => {
     if (req.files.subCategoryImg) {
       var categoryImage = `uploads/catsubcat/${req.files.subCategoryImg[0].filename}`;
       req.body.subCategoryImg = categoryImage;
@@ -113,13 +134,13 @@ module.exports = {
     if (!find_cat) {
       const err = new customError(
         global.CONFIGS.api.categoryInactive,
-        global.CONFIGS.responseCode.alreadyExist
+        global.CONFIGS.responseCode.notFound
       );
       return next(err);
     }
-    var find_Subcat = await SubCategoryModel.findOne({
-      subCategory: req.body.subCategory,
-    });
+
+    const subCategoryName = req.body.subCategory.trim();
+    let find_Subcat = await SubCategoryModel.findOne({ subCategory: { $regex: new RegExp('^' + subCategoryName + '$', 'i') } });
     if (find_Subcat) {
       const err = new customError(
         global.CONFIGS.api.Subcategoryalreadyadded,
@@ -127,7 +148,7 @@ module.exports = {
       );
       return next(err);
     }
-    var create_subcat = await SubCategoryModel.create(req.body);
+    const create_subcat = await SubCategoryModel.create(req.body);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.Subcategoryadded,
@@ -135,40 +156,102 @@ module.exports = {
     });
   },
 
-  updateSubCategory: async (req, res, next) => {
+  updateSubCategoryAdmin: async (req, res, next) => {
     if (req.files.subCategoryImg) {
       var categoryImage = `uploads/catsubcat/${req.files.subCategoryImg[0].filename}`;
       req.body.subCategoryImg = categoryImage;
     }
-    var find_cat = await SubCategoryModel.findOne({
+    let find_subCategory = await SubCategoryModel.findById(req.params.id);
+    // console.log(find_subCategory,"....find_subCategory")
+    if (!find_subCategory) {
+      const err = new customError(global.CONFIGS.api.SubcategoryInactive, global.CONFIGS.responseCode.notFound);
+      return next(err);
+    }
+
+    const existing_subCategory = await SubCategoryModel.findOne({
       subCategory: req.body.subCategory,
       _id: { $nin: [req.params.id] },
     });
-    if (find_cat) {
+    if (existing_subCategory) {
       const err = new customError(
         global.CONFIGS.api.Subcategoryalreadyadded,
         global.CONFIGS.responseCode.alreadyExist
       );
       return next(err);
     }
-    var create_cat = await SubCategoryModel.updateOne(
-      { _id: req.params.id },
-      req.body
+    if (req.body.categoryId != undefined) {
+      let find_category = await CategoryModel.findById(new ObjectId(req.body.categoryId));
+      if (!find_category) {
+        const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
+        return next(err);
+      }
+    }
+
+    if (req.body.activeStatus != undefined) {
+      let validactiveStatus = ["0", "1"];
+      if (!validactiveStatus.includes(req.body.activeStatus)) {
+        const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
+        return next(err);
+      }
+    }
+
+    find_subCategory = await SubCategoryModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.SubcategoryUpdated,
+      data: find_subCategory
     });
   },
 
   SubcategoryListAdmin: async (req, res, next) => {
-    var find_cat = await SubCategoryModel.find({});
+    let find_subcat = await SubCategoryModel.aggregate([
+      {
+        $lookup: {
+          from: "category",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "category"
+        }
+      },
+      { $unwind: "$category" },
+      // { $unset: "categoryId" },
+      {
+        $sort: {
+          subCategory: 1
+        }
+      },
+      {
+        $project: {
+          _id: "$_id",
+          categoryId: "$category._id",
+          categoryName: "$category.category",
+          subCategoryName: "$subCategory",
+          activeStatus: "$activeStatus",
+          createdAt: "$createdAt",
+          updatedAt: "$updatedAt",
+        }
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" },],
+          data: [],
+        },
+      },
+    ]);
+
+    const total = find_subcat[0].metadata[0].total
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.allSubcategorylistAdmin,
-      data: find_cat,
+      totalSubCategory: `${total} no of quantity`,
+      data: find_subcat[0].data,
     });
   },
+
 
   SubcategoryListFront: async (req, res, next) => {
     var query = { activeStatus: "1" };
@@ -176,27 +259,46 @@ module.exports = {
       query.categoryId = req.query.categoryId;
     }
     var find_cat = await SubCategoryModel.find(query);
-    if(find_cat.length>0){
+    if (find_cat.length > 0) {
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.allSubcategorylistUser,
         data: find_cat,
       });
-    }else{
+    } else {
       const err = new customError(
         global.CONFIGS.api.SubcategoryInactive,
         global.CONFIGS.responseCode.alreadyExist
       );
       return next(err);
     }
-    
+
+  },
+  singleSubCategoryByIdAdmin: async (req, res, next) => {
+    var find_subCategory = await SubCategoryModel.findById(req.params.id);
+    if (!find_subCategory) {
+      const err = new customError(global.CONFIGS.api.SubcategoryInactive, global.CONFIGS.responseCode.notFound);
+      return next(err);
+    }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.singleCategoryAdmin,
+      data: find_subCategory,
+    });
   },
 
-  SubcategoryDelete: async (req, res, next) => {
-    var find_cat = await SubCategoryModel.deleteOne({ _id: req.params.id });
+  SubcategoryDeleteAdmin: async (req, res, next) => {
+    var delete_subcategory = await SubCategoryModel.findByIdAndDelete({ _id: req.params.id });
+    if (!delete_subcategory) {
+      const err = new customError(
+        global.CONFIGS.api.SubcategoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.SubcategoryDelete,
-    });
+    })
   },
 };

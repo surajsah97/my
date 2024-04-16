@@ -26,26 +26,21 @@ var cpUpload = upload1.fields([
 // category router //
 router.route('/category/')
     .get(Auth.adminValidateToken, errorfun(cat.categoryListAdmin))
-    // .get(Auth.adminValidateToken, errorfun(cat.categoryListAdmin))
-    // .post(cpUpload, errorfun(cat.addCategory))
-    .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addCategory))
+    .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addCategoryAdmin))
 
 router.route('/category/:id')
-    // .put(cpUpload,  errorfun(cat.updateCategory))
-    .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateCategory))
+    .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateCategoryAdmin))
     .get( Auth.adminValidateToken, errorfun(cat.singleCategoryByIdAdmin))
-    .delete(Auth.adminValidateToken, errorfun(cat.categoryDelete))
+    .delete(Auth.adminValidateToken, errorfun(cat.categoryDeleteAdmin))
 
 // subCategory router //
 router.route('/subcategory/')
-    // .get(errorfun(cat.SubcategoryListAdmin))
     .get(Auth.adminValidateToken, errorfun(cat.SubcategoryListAdmin))
-    // .post(cpUpload,  errorfun(cat.addSubCategory))
-    .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addSubCategory))
+    .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addSubCategoryAdmin))
 
 router.route('/subcategory/:id')
-    // .put(cpUpload,  errorfun(cat.updateSubCategory))
-    .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateSubCategory))
-    .delete(Auth.adminValidateToken, errorfun(cat.SubcategoryDelete))
+    .put(cpUpload, Auth.adminValidateToken, errorfun(cat.updateSubCategoryAdmin))
+    .delete(Auth.adminValidateToken, errorfun(cat.SubcategoryDeleteAdmin))
+    .get( Auth.adminValidateToken, errorfun(cat.singleSubCategoryByIdAdmin))
 
 module.exports = router;
