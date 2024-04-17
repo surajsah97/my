@@ -341,6 +341,9 @@ module.exports = {
         street: req.body.lStreet,
         landmark: req.body.lLandmark,
       },
+      // location:req.body.location,
+      // lat:req.body.lat,
+      // long:req.body.long,
       driverId: createDriver._id, // Use _id from createDriver
     });
 
@@ -646,6 +649,37 @@ module.exports = {
       // Handle errors
       return next(error);
     }
+  },
+  updateBikeDriverLocation: async (req, res, next) => {
+      let find_Driver = await BikeDriverModel.findById( req.params.id,
+      );
+      if (!find_Driver) {
+        const err = new customError(
+          global.CONFIGS.api.DriverNotfound,
+          global.CONFIGS.responseCode.notFound
+        );
+        return next(err);
+      }
+      console.log(find_Driver, "......find_Driver");
+       req.body.location = {
+          type: "Point",
+          coordinates: [req.body.lat, req.body.long],
+        };
+      find_Driver = await BikeDriverModel.findByIdAndUpdate(
+        { _id: req.params.id },
+        {
+          lat:req.body.lat,
+          long:req.body.long,
+          location:req.body.location,
+        },
+        { new: true }
+      );
+      
+        return res.status(global.CONFIGS.responseCode.success).json({
+          success: true,
+          message: global.CONFIGS.api.DriverDetailsUpdated,
+          updateDriverLocation: find_Driver,
+        });
   },
 
   /** */
