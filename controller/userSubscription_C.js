@@ -435,7 +435,7 @@ module.exports = {
     const find_subscription = await UserSubscriptionModel.aggregate([
       {
         $match: {
-          activeStatus: "Active",
+          // activeStatus: "Active",
           userId: new ObjectId(req.query.userId),
         },
       },
@@ -608,7 +608,7 @@ module.exports = {
     const find_subscription = await UserSubscriptionModel.aggregate([
       {
         $match: {
-          activeStatus: "Active",
+          // activeStatus: "Active",
           userId: new ObjectId(req.query.userId),
           _id: new ObjectId(req.query.subscriptionId),
         },
