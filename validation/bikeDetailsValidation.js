@@ -51,8 +51,8 @@ const validationSchema = Joi.object({
     accountNumber: Joi.string().required(),
     accountHolderName: Joi.string().required(),
     IBAN: Joi.string().required(), 
-    lat: Joi.number().required(),
-    long: Joi.number().required(),
+    // lat: Joi.number().required(),
+    // long: Joi.number().required(),
     // activeStatus: Joi.string().required(), 
 });
 

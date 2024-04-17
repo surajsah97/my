@@ -11,6 +11,8 @@ router.get(
 );
 
 router.get("/vehicleListFront",Auth.validateTokenBikeDriver, errorfun(BikeDriverDetails.VehicleListFront));
+router.put("/updatebikedriverlocation/:id", errorfun(BikeDriverDetails.updateBikeDriverLocation));
+// router.put("/updatebikedriverlocation/:id",Auth.validateTokenBikeDriver, errorfun(BikeDriverDetails.updateBikeDriverLocation));
 
 router.route("/login").post( errorfun(BikeDriverDetails.loginBikeDriver));
 
