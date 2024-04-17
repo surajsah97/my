@@ -86,6 +86,25 @@ var DriverAddressSchema = new Schema(
             }
         
         },
+        // location: {
+        //     type: {
+        //         type: String, 
+        //         enum: ['Point'], 
+        //         required: true
+        //     },
+        //     coordinates: {
+        //         type: [Number],
+        //         required: true
+        //     }
+        // },
+        // lat: {
+        //     type: Number,
+        //     required:true
+        // },
+        // long: {
+        //     type: Number,
+        //     required: true
+        // },
         driverId: {
             type: Schema.Types.ObjectId,
             ref: constants.BikeDriverModel,

@@ -110,25 +110,25 @@ var bikeDriverSchema = new Schema(
       enum: ["Bike"],
       default: "Bike",
     },
-    // location: {
-    //   type: {
-    //     type: String, 
-    //     enum: ["Point"], 
-    //     required: true,
-    //   },
-    //   coordinates: {
-    //     type: [Number],
-    //     required: true,
-    //   },
-    // },
-    // lat: {
-    //   type: Number,
-    //   required:true
-    // },
-    // long: {
-    //   type: Number,
-    //   required: true
-    // },
+    location: {
+      type: {
+        type: String, 
+        enum: ["Point"], 
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
+    },
+    lat: {
+      type: Number,
+      required:true
+    },
+    long: {
+      type: Number,
+      required: true
+    },
 
     activeStatus: {
       type: String,

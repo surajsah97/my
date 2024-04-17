@@ -297,18 +297,15 @@ module.exports = {
       ]
     }
     if (startDate != undefined && endDate != undefined) {
-      // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
       query.createdAt = {
         $gt: new Date(startDate),
         $lt: new Date(endDate),
       };
     }
     if (startDate != undefined && endDate == undefined) {
-      // console.log({ $gt: new Date(startDate) })
       query.createdAt = { $gte: new Date(startDate) };
     }
     if (startDate == undefined && endDate != undefined) {
-      // console.log({  $lt: new Date(endDate) })
       query.createdAt = { $lte: new Date(endDate) };
     }
     console.log(query)
@@ -345,8 +342,8 @@ module.exports = {
       },
       {
         $facet: {
-          metadata: [{ $count: "total" },],
-          data: [],
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo }}],
+          data: [{ $skip: skip }, { $limit: limit }],
         },
       },
     ]);
