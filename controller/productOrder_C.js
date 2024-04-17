@@ -81,9 +81,9 @@ module.exports = {
   },
 
   getOrderByUser: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 3; // docs in single page
-    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
-    const skip = (pageNo - 1) * limit;
+    // const limit = parseInt(req.query.limit) || 3; // docs in single page
+    // const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    // const skip = (pageNo - 1) * limit;
 
     var findAllOrderList = await ProductOrderModel.aggregate([
       {
@@ -332,8 +332,9 @@ module.exports = {
 
       {
         $facet: {
-          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-          data: [{ $skip: skip }, { $limit: limit }],
+          // metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          metadata: [{ $count: "total" }, ],
+          data: [],
         },
       },
     ]);
@@ -344,23 +345,23 @@ module.exports = {
       );
       return next(err);
     }
-    const totalPage = Math.ceil(
-      parseInt(findAllOrderList[0].metadata[0].total) / limit
-    );
+    // const totalPage = Math.ceil(
+    //   parseInt(findAllOrderList[0].metadata[0].total) / limit
+    // );
     const total = parseInt(findAllOrderList[0].metadata[0].total);
-    const dataPerPage = total - skip > limit ? limit : total - skip;
-    const totalLeftdata = total - skip - dataPerPage;
-    const rangeStart = skip === 0 ? 1 : skip + 1;
-    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+    // const dataPerPage = total - skip > limit ? limit : total - skip;
+    // const totalLeftdata = total - skip - dataPerPage;
+    // const rangeStart = skip === 0 ? 1 : skip + 1;
+    // const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getOrderByUser,
-      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
-      totalData: total,
-      totalPage: totalPage,
-      totalLeftdata: totalLeftdata,
-      dataPerPage,
+      // rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+      totalData: `total order is ${total}`,
+      // totalPage: totalPage,
+      // totalLeftdata: totalLeftdata,
+      // dataPerPage,
       data: findAllOrderList[0].data,
     });
   },

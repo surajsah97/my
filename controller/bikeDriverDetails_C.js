@@ -244,10 +244,10 @@ module.exports = {
       }
 
       /** */
-      //   req.body.location = {
-      //     type: "Point",
-      //     coordinates: [req.body.long, req.body.lat],
-      //   };
+        // req.body.location = {
+        //   type: "Point",
+        //   coordinates: [req.body.lat, req.body.long],
+        // };
       /** */
       // Hash password using bcrypt
       const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
@@ -280,6 +280,9 @@ module.exports = {
         bikeDRiverDetails.docId = req.body.docId;
         bikeDRiverDetails.isVerified = req.body.isVerified;
         bikeDRiverDetails.driverType = req.body.driverType;
+        // bikeDRiverDetails.location = req.body.location;
+        // bikeDRiverDetails.lat = req.body.lat;
+        // bikeDRiverDetails.long = req.body.long;
         bikeDRiverDetails.activeStatus = req.body.activeStatus;
     const createDriver = await BikeDriverModel.create(bikeDRiverDetails);
 
@@ -397,7 +400,7 @@ module.exports = {
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.DriverDetailsAdded,
-        updateDriver: updateDriver,
+        bikeDriver: updateDriver,
       });
     }
   },

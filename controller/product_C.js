@@ -212,7 +212,10 @@ module.exports = {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
-    var query = { };
+    const searchText = req.query.searchText;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    var query = {};
     if (req.query.activeStatus != undefined) {
       query.activeStatus = req.query.activeStatus;
     }
@@ -222,10 +225,28 @@ module.exports = {
     if (req.query.subCategoryId != undefined) {
       query.subCategoryId = new ObjectId(req.query.subCategoryId);
     }
+    if (searchText !== undefined) {
+      query.$or = [
+        { productName: { $regex: new RegExp(searchText), $options: "i" } },
+        { tagLine: { $regex: new RegExp(searchText), $options: "i" } },
+        { "category.category": { $regex: new RegExp(searchText), $options: "i" } },
+        { "subcategory.subCategory": { $regex: new RegExp(searchText), $options: "i" } },
+      ]
+    }if (startDate != undefined && endDate != undefined) {
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+     query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query)
     var productData = await ProductModel.aggregate([
-      {
-        $match: query,
-      },
+      
       {
         $lookup: {
           from: "category",
@@ -235,7 +256,7 @@ module.exports = {
         },
       },
       { $unwind: "$category" },
-      { $unset: "categoryId" },
+      // { $unset: "categoryId" },
       {
         $lookup: {
           from: "subcategory",
@@ -245,7 +266,10 @@ module.exports = {
         },
       },
       { $unwind: "$subcategory" },
-      { $unset: "subCategoryId" },
+      // { $unset: "subCategoryId" },
+      {
+        $match: query,
+      },
       {
         $project: {
           _id: "$_id",
@@ -259,8 +283,10 @@ module.exports = {
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
-          subCategory: "$subcategory.subCategory",
-          category: "$category.category",
+          subCategoryId: "$subcategory._id",
+          subCategoryName: "$subcategory.subCategory",
+          categoryId: "$category._id",
+          categoryName: "$category.category",
         },
       },
       {
