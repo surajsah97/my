@@ -579,7 +579,7 @@ module.exports = {
       },
       {
         $facet: {
-          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          // metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
           metadata: [{ $count: "total" } ],
           // data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
           data: [], // add projection here wish you re-shape the docs
