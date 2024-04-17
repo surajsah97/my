@@ -429,9 +429,9 @@ module.exports = {
   },
 
   subscriptionListFront: async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 10;
-    const pageNo = parseInt(req.query.pageNo) || 1;
-    const skip = (pageNo - 1) * limit;
+    // const limit = parseInt(req.query.limit) || 10;
+    // const pageNo = parseInt(req.query.pageNo) || 1;
+    // const skip = (pageNo - 1) * limit;
     const find_subscription = await UserSubscriptionModel.aggregate([
       {
         $match: {
@@ -580,7 +580,9 @@ module.exports = {
       {
         $facet: {
           metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+          metadata: [{ $count: "total" } ],
+          // data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+          data: [], // add projection here wish you re-shape the docs
         },
       },
     ]);
@@ -592,13 +594,13 @@ module.exports = {
       return next(err);
     }
     const total = parseInt(find_subscription[0].metadata[0].total);
-    var totalPage = Math.ceil(
-      parseInt(find_subscription[0].metadata[0].total) / limit
-    );
+    // var totalPage = Math.ceil(
+      // parseInt(find_subscription[0].metadata[0].total) / limit
+    // );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       totalSubscription: total,
-      totalPage: totalPage,
+      // totalPage: totalPage,
       message: global.CONFIGS.api.subscriptionListFront,
       data: find_subscription[0].data,
     });
