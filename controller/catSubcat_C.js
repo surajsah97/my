@@ -37,7 +37,7 @@ module.exports = {
       const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
       return next(err);
     }
-    if (req.files.categoryImg) {
+    if (req?.files?.categoryImg) {
       var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`;
       req.body.categoryImg = categoryImage;
     }
@@ -224,9 +224,9 @@ module.exports = {
   },
 
   updateSubCategoryAdmin: async (req, res, next) => {
-    if (req.files.subCategoryImg) {
-      var categoryImage = `uploads/catsubcat/${req.files.subCategoryImg[0].filename}`;
-      req.body.subCategoryImg = categoryImage;
+    if (req?.files?.subCategoryImg) {
+      const subCategoryImage = `uploads/catsubcat/${req.files.subCategoryImg[0].filename}`;
+      req.body.subCategoryImg = subCategoryImage;
     }
     let find_subCategory = await SubCategoryModel.findById(req.params.id);
     // console.log(find_subCategory,"....find_subCategory")
@@ -247,7 +247,7 @@ module.exports = {
       return next(err);
     }
     if (req.body.categoryId != undefined) {
-      let find_category = await CategoryModel.findById(new ObjectId(req.body.categoryId));
+      let find_category = await CategoryModel.findOne({_id:req.body.categoryId,activeStatus: "1"});
       if (!find_category) {
         const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
         return next(err);
