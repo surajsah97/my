@@ -46,13 +46,6 @@ module.exports = {
   },
 
   login: async (req, res, next) => {
-    // var find_user1 = await UserModel.findOne({ email: req.body.email, userType: "Admin" });
-    // if (find_user1) {
-    //     return res.status(global.CONFIGS.responseCode.notFound).json({
-    //         success: false,
-    //         message: global.CONFIGS.api.userNotFound,
-    //     })
-    // }
     var find_user = await UserModel.findOne({ email: req.body.email });
     // console.log(find_user);
     if (!find_user) {

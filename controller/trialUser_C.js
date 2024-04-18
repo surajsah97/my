@@ -70,13 +70,11 @@ module.exports = {
           {
             email: { $regex: new RegExp(req.query.searchText), $options: "i" },
           },
-          // { mobileNumber: { $eq: parseInt(req.query.searchText) } },
           {
             mobileNumber: {
               $regex: new RegExp(req.query.searchText),
               $options: "i",
             },
-            // $where:"/^123.*/.test(this.mobileNumber)"
           },
           {
             flatNumber: {
