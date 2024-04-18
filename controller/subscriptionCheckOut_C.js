@@ -62,12 +62,12 @@ module.exports = {
     let endDate = new Date(startDate.getTime());
     let differenceInDays;
     if (dailyInterval === "daily") {
-    endDate.setDate(endDate.getDate() + (subDuration.planDuration -1)); // 15 days includes today
+      endDate.setDate(endDate.getDate() + (subDuration.planDuration - 1)); // 15 days includes today
 
-    console.log(startDate, "...currentDate...");
-    console.log(endDate, "....eeeeeee");
+      console.log(startDate, "...currentDate...");
+      console.log(endDate, "....eeeeeee");
 
-    differenceInDays = subDuration.planDuration
+      differenceInDays = subDuration.planDuration;
 
       for (let i = 0; i < differenceInDays; i++) {
         let currentDate = new Date(startDate);
@@ -76,28 +76,28 @@ module.exports = {
         obj.productId = product[0].productId;
         obj.day = i + 1;
         obj.dates = currentDate.toISOString().slice(0, 10);
-        obj.deliveryStatus=false;
+        obj.deliveryStatus = false;
         calendarItem.push(obj);
       }
     } else if (dailyInterval === "alternate") {
-    endDate.setDate(endDate.getDate() + ((subDuration.planDuration*2)-1)); // 15 days includes today
+      endDate.setDate(endDate.getDate() + (subDuration.planDuration * 2 - 1)); // 15 days includes today
 
-    console.log(startDate, "...currentDate...");
-    console.log(endDate, "....eeeeeee");
+      console.log(startDate, "...currentDate...");
+      console.log(endDate, "....eeeeeee");
 
-    differenceInDays =subDuration.planDuration*2;
-    // console.log(differenceInDays,"...differenceInDays");
+      differenceInDays = subDuration.planDuration * 2;
+      // console.log(differenceInDays,"...differenceInDays");
       for (let i = 1; i <= differenceInDays; i++) {
         let currentDate = new Date(startDate);
-        currentDate.setDate(currentDate.getDate() + i-1);
+        currentDate.setDate(currentDate.getDate() + i - 1);
         let obj = {};
-        if (i % 2 !== 0) { 
+        if (i % 2 !== 0) {
           obj.productId = product[0].productId;
-          obj.day = i ;
-          obj.dates = currentDate; 
-          obj.deliveryStatus=false
+          obj.day = i;
+          obj.dates = currentDate;
+          obj.deliveryStatus = false;
         } else {
-          obj.day = i ;
+          obj.day = i;
           obj.dates = currentDate;
         }
         // obj.productId = product[0].productId;
@@ -122,9 +122,9 @@ module.exports = {
     console.log(totalSubPrice, "....totalSubPrice");
 
     const vat = await VatModel.find();
-    console.log(vat,"....vatttt")
-    const vatPercentage=vat.map((item)=>item.vatPercentage)
-    console.log(vatPercentage,"......vatttttpercentage")
+    console.log(vat, "....vatttt");
+    const vatPercentage = vat.map((item) => item.vatPercentage);
+    console.log(vatPercentage, "......vatttttpercentage");
     const taxAmount = totalSubPrice * (vatPercentage / 100);
     const totalTaxablePrice = totalSubPrice + taxAmount;
 
@@ -162,7 +162,7 @@ module.exports = {
     }
   },
 
-subscriptionCheckoutListFront: async (req, res, next) => {
+  subscriptionCheckoutListFront: async (req, res, next) => {
     const find_subscription = await SubscriptionCheckOutModel.aggregate([
       {
         $match: {
@@ -232,7 +232,7 @@ subscriptionCheckoutListFront: async (req, res, next) => {
           preserveNullAndEmptyArrays: true,
         },
       },
-      
+
       {
         $project: {
           _id: 1,
@@ -262,20 +262,19 @@ subscriptionCheckoutListFront: async (req, res, next) => {
             day: "$calendar.day",
             // dates: "$calendar.dates",
             dates: {
-            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
-          },
+              $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" },
+            },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
           },
           // startDate: 1,
           startDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" },
           },
           endDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" },
           },
-          
         },
       },
       {
@@ -319,13 +318,13 @@ subscriptionCheckoutListFront: async (req, res, next) => {
       data: find_subscription,
     });
   },
-subscriptionCheckoutByIdFront: async (req, res, next) => {
+  subscriptionCheckoutByIdFront: async (req, res, next) => {
     const find_subscription = await SubscriptionCheckOutModel.aggregate([
       {
         $match: {
           activeStatus: "Active",
           userId: new ObjectId(req.query.userId),
-          _id:new ObjectId(req.query.subscriptionCheckoutId)
+          _id: new ObjectId(req.query.subscriptionCheckoutId),
         },
       },
       {
@@ -390,7 +389,7 @@ subscriptionCheckoutByIdFront: async (req, res, next) => {
           preserveNullAndEmptyArrays: true,
         },
       },
-      
+
       {
         $project: {
           _id: 1,
@@ -420,20 +419,19 @@ subscriptionCheckoutByIdFront: async (req, res, next) => {
             day: "$calendar.day",
             // dates: "$calendar.dates",
             dates: {
-            $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" }
-          },
+              $dateToString: { format: "%Y-%m-%d", date: "$calendar.dates" },
+            },
             deliveryStatus: "$calendar.deliveryStatus",
             productName: "$calendar.calendarProductDetails.productName",
             productImage: "$calendar.calendarProductDetails.productImage",
           },
           // startDate: 1,
           startDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$startDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$startDate" },
           },
           endDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$endDate" }
+            $dateToString: { format: "%Y-%m-%d", date: "$endDate" },
           },
-          
         },
       },
       {
@@ -477,5 +475,4 @@ subscriptionCheckoutByIdFront: async (req, res, next) => {
       data: find_subscription,
     });
   },
-
 };

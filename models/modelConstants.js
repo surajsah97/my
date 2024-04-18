@@ -30,6 +30,6 @@ module.exports = {
   DeliveryLocationModel: "deliverylocation",
   ProductOrderModel: "productorder",
   VatModel: "vat",
-  CartModel : "cart",
-  DeliveryZoneModel : "deliveryzone"
+  CartModel: "cart",
+  DeliveryZoneModel: "deliveryzone",
 };

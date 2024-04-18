@@ -134,22 +134,20 @@ module.exports = {
         var objIndex = myArray.findIndex(
           (obj) => obj.productId == req.body.productId
         );
-        console.log(objIndex," = objIndex")
+        console.log(objIndex, " = objIndex");
         myArray[objIndex].qty = myArray[objIndex].qty + req.body.qty;
         if (myArray[objIndex].qty === 0) {
-          myArray.splice(objIndex, 1)
+          myArray.splice(objIndex, 1);
           var totalProduct = myArray;
           var price = find_prod.productPrice * req.body.qty;
           var finalPrice = price + find_cart.price;
-          
         } else if (myArray[objIndex].qty > 0) {
           var totalProduct = myArray;
           var price = find_prod.productPrice * req.body.qty;
           var finalPrice = price + find_cart.price;
           // var myArray = find_cart.product;
-
         }
-        
+
         // return res.send(totalProduct)
         var update_cart = await CartModel.updateOne(
           { _id: find_cart._id },
@@ -158,18 +156,17 @@ module.exports = {
             price: finalPrice,
           }
         );
-      } 
+      }
       var get_cart = await CartModel.findOne({ _id: find_cart._id });
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.CartUpdated,
         data: get_cart,
       });
-    } 
+    }
   },
 
   getCartByuser: async (req, res, next) => {
-
     var findAllCartList = await CartModel.aggregate([
       {
         $match: {

@@ -1,12 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const paymentGateway = require("../../controller/paymentGateway_C");
 const Auth = require("../../middleware/auth");
-const errorfun=require("../../middleware/catchAsyncErrors")
+const errorfun = require("../../middleware/catchAsyncErrors");
 
-router.route('/processPayment')
-    .get(Auth.apiValidateToken, errorfun(paymentGateway.processPayment));
-router.route('/refundPayment')
-    .post(Auth.apiValidateToken, errorfun(paymentGateway.refundPayment));
+router
+  .route("/processPayment")
+  .get(Auth.apiValidateToken, errorfun(paymentGateway.processPayment));
+router
+  .route("/refundPayment")
+  .post(Auth.apiValidateToken, errorfun(paymentGateway.refundPayment));
 
 module.exports = router;

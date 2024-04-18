@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
-var moment = require('moment');
+var moment = require("moment");
 
 module.exports = {
   UserSingup: async (req, res, next) => {
@@ -267,10 +267,10 @@ module.exports = {
   updateUserProfile: async (req, res, next) => {
     // console.log(req.body,"....body");
     // console.log( req.files,"....file");
-      if (req.files != undefined) {
-          if (req.files.userImage != undefined) {
-              req.body.userImage = `uploads/user/${req.files.userImage[0].filename}`;
-          }
+    if (req.files != undefined) {
+      if (req.files.userImage != undefined) {
+        req.body.userImage = `uploads/user/${req.files.userImage[0].filename}`;
+      }
     }
     var find_user = await UserModel.findOne({ _id: req.body.UserId });
     if (!find_user) {
@@ -285,9 +285,9 @@ module.exports = {
       const hash = await bcrypt.hashSync(req.body.password, salt);
       req.body.password = hash;
     }
-     if (req.body.DOB != undefined) {
+    if (req.body.DOB != undefined) {
       req.body.DOB = new Date(req.body.DOB);
-     }
+    }
     var createuser = await UserModel.updateOne(
       { _id: find_user._id },
       req.body
@@ -366,28 +366,28 @@ module.exports = {
     const secret = process.env.SECRETKEY;
     const token = await jwt.sign(payload, secret, options);
     var dob = "";
-  if(find_user2.DOB!=undefined ||find_user2.DOB!=null ){
-     dob = moment(find_user2.DOB).format("DD-MM-YYYY");
-  }
+    if (find_user2.DOB != undefined || find_user2.DOB != null) {
+      dob = moment(find_user2.DOB).format("DD-MM-YYYY");
+    }
     // console.log(token);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getUserProfileSuccess,
       data: {
         UserId: find_user2._id,
-          mobile: find_user2.mobile,
-          Otp: find_user2.Otp,
-          isVerified: find_user2.isVerified,
-          userType: find_user2.userType,
-          activeStatus: find_user2.activeStatus,
-          trialActive: find_user2.trialActive,
-          trialQuantity: find_user2.trialQuantity,
-          name: find_user2.name,
-          email: find_user2.email,
-          password: find_user2.password,
-          DOB: dob,
-          userImage: find_user2.userImage,
-          token: token,
+        mobile: find_user2.mobile,
+        Otp: find_user2.Otp,
+        isVerified: find_user2.isVerified,
+        userType: find_user2.userType,
+        activeStatus: find_user2.activeStatus,
+        trialActive: find_user2.trialActive,
+        trialQuantity: find_user2.trialQuantity,
+        name: find_user2.name,
+        email: find_user2.email,
+        password: find_user2.password,
+        DOB: dob,
+        userImage: find_user2.userImage,
+        token: token,
       },
     });
   },
@@ -397,37 +397,49 @@ module.exports = {
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     // const userType=req.query.userType;
     const skip = (pageNo - 1) * limit;
-        const searchText = req.query.searchText;
-        const startDate = req.query.startDate;
-        const endDate = req.query.endDate;
-
+    const searchText = req.query.searchText;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
 
     var query = {};
     if (searchText !== undefined) {
-        query = {
-            $or: [
-                { name: { $regex: new RegExp(searchText), $options: "i" } },
-                { email: { $regex: new RegExp(searchText), $options: "i" } },
-                // { mobile: { $eq: parseInt(searchText) } },
-                {
-                    $expr: {
-                        $regexMatch: {
-                            input: { $toString: "$mobile" },
-                            regex: searchText,
-                           
-                        }
-                    }
-                },
-                { isVerified: searchText === 'true' ? true : searchText === 'false' ? false : "" },
-                { trialActive: searchText === 'true' ? true : searchText === 'false' ? false : "" },
-                {
-                    trialQuantity: {
-                        $regex: new RegExp(searchText),
-                        $options: "i",
-                    },
-                },
-            ],
-        };
+      query = {
+        $or: [
+          { name: { $regex: new RegExp(searchText), $options: "i" } },
+          { email: { $regex: new RegExp(searchText), $options: "i" } },
+          // { mobile: { $eq: parseInt(searchText) } },
+          {
+            $expr: {
+              $regexMatch: {
+                input: { $toString: "$mobile" },
+                regex: searchText,
+              },
+            },
+          },
+          {
+            isVerified:
+              searchText === "true"
+                ? true
+                : searchText === "false"
+                ? false
+                : "",
+          },
+          {
+            trialActive:
+              searchText === "true"
+                ? true
+                : searchText === "false"
+                ? false
+                : "",
+          },
+          {
+            trialQuantity: {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+        ],
+      };
     }
 
     // $match: { $expr: { $regexMatch: { input: {$toString: "$facevalue"}, regex: ".5" } } }
@@ -447,8 +459,8 @@ module.exports = {
       query.createdAt = { $lte: new Date(endDate) };
     }
 
-    query.activeStatus= "1";
-    query.userType= req.query.userType;
+    query.activeStatus = "1";
+    query.userType = req.query.userType;
 
     var find_user = await UserModel.aggregate([
       {
@@ -528,19 +540,15 @@ module.exports = {
   //   });
   // },
 
-  
   /** */
   getUserCountByAdmin: async (req, res, next) => {
-    var find_GuestType = await UserModel.countDocuments({userType:"Guest"})
-    var find_userType = await UserModel.countDocuments({userType:"User"})
+    var find_GuestType = await UserModel.countDocuments({ userType: "Guest" });
+    var find_userType = await UserModel.countDocuments({ userType: "User" });
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getUserDetailsSuccess,
-      totalUser:find_userType,
-      totalGuest:find_GuestType
+      totalUser: find_userType,
+      totalGuest: find_GuestType,
     });
   },
-
-  
-
 };

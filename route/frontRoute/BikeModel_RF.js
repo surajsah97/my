@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Model = require("../../controller/bikeModel_C")
+const Model = require("../../controller/bikeModel_C");
 const Auth = require("../../middleware/auth");
 const errorfun = require("../../middleware/catchAsyncErrors");
 

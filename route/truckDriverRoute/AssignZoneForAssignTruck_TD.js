@@ -1,12 +1,15 @@
-const express = require('express')
+const express = require("express");
 const router = express.Router();
 const path = require("path");
 const AssignZoneForAssignTruck = require("../../controller/AssignZoneForAssignTruck_C");
 const Auth = require("../../middleware/auth");
 
-const errorfun=require("../../middleware/catchAsyncErrors");
+const errorfun = require("../../middleware/catchAsyncErrors");
 
-
-router.route('/truckdriver/:id')
-    .get(Auth.validateTokenTruckDriver,errorfun(AssignZoneForAssignTruck.getAssignZoneByTruckDriverId))
+router
+  .route("/truckdriver/:id")
+  .get(
+    Auth.validateTokenTruckDriver,
+    errorfun(AssignZoneForAssignTruck.getAssignZoneByTruckDriverId)
+  );
 module.exports = router;

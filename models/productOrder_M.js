@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var constants = require("./modelConstants");
-const { randomUUID } = require('crypto'); 
+const { randomUUID } = require("crypto");
 // const { v4: uuidv4 } = require("uuid");
 var productOrderSchema = new Schema(
   {
@@ -17,7 +17,7 @@ var productOrderSchema = new Schema(
       type: String,
       // ref: "Payment",
       // required: true,
-      default:0
+      default: 0,
     },
     userId: {
       type: Schema.Types.ObjectId,

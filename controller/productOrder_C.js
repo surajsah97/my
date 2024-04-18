@@ -217,10 +217,10 @@ module.exports = {
           // createdAt: 1,
           // updatedAt: 1,
           createdAt: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
           },
           updatedAt: {
-            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" }
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
           },
           orderMonth: {
             $dateToString: { format: "%B", date: "$createdAt" },
@@ -235,7 +235,7 @@ module.exports = {
             trialActive: "$usersDetails.trialActive",
           },
           useraddress: {
-            useraddressId:"$useraddress._id",
+            useraddressId: "$useraddress._id",
             houseNo: "$useraddress.houseNo",
             buildingName: "$useraddress.buildingName",
             city: "$useraddress.city",
@@ -247,15 +247,15 @@ module.exports = {
             // orderDate: "$createdAt",
             // deliveredDate: "$updatedAt",
             orderDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
             },
             deliveredDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" }
+              $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
             },
             orderMonth: {
-            $dateToString: { format: "%B", date: "$createdAt" },
+              $dateToString: { format: "%B", date: "$createdAt" },
             },
-            deliverystatus:"$status",
+            deliverystatus: "$status",
             qty: "$product.qty",
             productPrice: "$product.productDetails.productPrice",
             individualTotalPrice: {
@@ -277,15 +277,15 @@ module.exports = {
             // orderDate: "$createdAt",
             // deliveredDate: "$updatedAt",
             orderDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
             },
             deliveredDate: {
-            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" }
+              $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
             },
             orderMonth: {
-            $dateToString: { format: "%B", date: "$createdAt" },
+              $dateToString: { format: "%B", date: "$createdAt" },
             },
-            deliverystatus:"$status",
+            deliverystatus: "$status",
             qty: "$freeProduct.qty",
             productPrice: "$freeProduct.freeProductDetails.productPrice",
             freeProductName: "$freeProduct.freeProductDetails.productName",
@@ -333,7 +333,7 @@ module.exports = {
       {
         $facet: {
           // metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-          metadata: [{ $count: "total" }, ],
+          metadata: [{ $count: "total" }],
           data: [],
         },
       },
@@ -668,39 +668,72 @@ module.exports = {
     const searchText = req.query.searchText;
     var query = {};
     //  categoryName: "$product.productDetails.category.category",
-            // subategoryName: "$product.productDetails.subcategory.subCategory",
+    // subategoryName: "$product.productDetails.subcategory.subCategory",
     if (searchText !== undefined) {
-        query = {
-            $or: [
-                { orderId: { $regex: new RegExp(searchText), $options: "i" } },
-                { transactionId: { $regex: new RegExp(searchText), $options: "i" } },
-                { "usersDetails.name": { $regex: new RegExp(searchText),$options: "i" } },
-                { "usersDetails.email": { $regex: new RegExp(searchText),$options: "i" } },
-                { "product.productDetails.productName": { $regex: new RegExp(searchText),$options: "i" } },
-                { "product.productDetails.subcategory.subCategory": { $regex: new RegExp(searchText),$options: "i" } },
-                { "useraddress.buildingName": { $regex: new RegExp(searchText),$options: "i" } },
-                { "useraddress.city": { $regex: new RegExp(searchText),$options: "i" } },
-                { "useraddress.landmark": { $regex: new RegExp(searchText),$options: "i" } },
-                {
-                    $expr: {
-                        $regexMatch: {
-                            input: { $toString: "$usersDetails.mobile" },
-                            regex: searchText,
-                           
-                        }
-                    }
-                },
-                
-                {
-                    status: {
-                        $regex: new RegExp(searchText),
-                        $options: "i",
-                    },
-                },
-            ],
-        };
-    }
+      query = {
+        $or: [
+          { orderId: { $regex: new RegExp(searchText), $options: "i" } },
+          { transactionId: { $regex: new RegExp(searchText), $options: "i" } },
+          {
+            "usersDetails.name": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            "usersDetails.email": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            "product.productDetails.productName": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            "product.productDetails.subcategory.subCategory": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            "useraddress.buildingName": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            "useraddress.city": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            "useraddress.landmark": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            $expr: {
+              $regexMatch: {
+                input: { $toString: "$usersDetails.mobile" },
+                regex: searchText,
+              },
+            },
+          },
 
+          {
+            status: {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+        ],
+      };
+    }
 
     var findAllOrderList = await ProductOrderModel.aggregate([
       {

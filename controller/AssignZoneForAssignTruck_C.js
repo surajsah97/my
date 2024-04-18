@@ -801,7 +801,7 @@ module.exports = {
         },
       },
       {
-        $unwind: "$deliveryZone", 
+        $unwind: "$deliveryZone",
       },
       {
         $lookup: {
@@ -1084,8 +1084,7 @@ module.exports = {
           leakageBottle: { $first: "$leakageBottle" },
           brokenBottle: { $first: "$brokenBottle" },
           zoneDetails: {
-            $addToSet :
-              "$deliveryZoneDetails",            
+            $addToSet: "$deliveryZoneDetails",
           },
           startDateAndTime: { $first: "$startDateAndTime" },
           endDateAndTime: { $first: "$endDateAndTime" },
@@ -1142,7 +1141,7 @@ module.exports = {
         },
       },
       {
-        $unwind: "$deliveryZone", 
+        $unwind: "$deliveryZone",
       },
       {
         $lookup: {

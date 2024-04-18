@@ -580,7 +580,7 @@ module.exports = {
       {
         $facet: {
           // metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-          metadata: [{ $count: "total" } ],
+          metadata: [{ $count: "total" }],
           // data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
           data: [], // add projection here wish you re-shape the docs
         },
@@ -595,7 +595,7 @@ module.exports = {
     }
     const total = parseInt(find_subscription[0].metadata[0].total);
     // var totalPage = Math.ceil(
-      // parseInt(find_subscription[0].metadata[0].total) / limit
+    // parseInt(find_subscription[0].metadata[0].total) / limit
     // );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,

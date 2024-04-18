@@ -33,9 +33,9 @@ var checkoutSchema = new Schema(
       required: [true, "Please enter subDurationId."],
     },
     paymentStatus: {
-        type: Boolean,
-        default:false
-        // required: [true, "Please enter paymentStatus."]
+      type: Boolean,
+      default: false,
+      // required: [true, "Please enter paymentStatus."]
     },
     totalPrice: {
       type: Number,
@@ -66,12 +66,12 @@ var checkoutSchema = new Schema(
       type: Date,
       required: [true, "Please enter startDate."],
     },
-    leftDuration:{
-      type:Number,
+    leftDuration: {
+      type: Number,
       required: [true, "Please enter leftDuration."],
     },
-    
-    calendar:{
+
+    calendar: {
       type: [
         {
           productId: {
@@ -87,10 +87,10 @@ var checkoutSchema = new Schema(
             type: Date,
             required: [true, "Please enter startDate."],
           },
-          deliveryStatus:{
+          deliveryStatus: {
             type: Boolean,
             // default:false
-          }
+          },
         },
       ],
     },

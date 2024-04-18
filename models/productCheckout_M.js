@@ -64,7 +64,7 @@ var productCheckoutSchema = new Schema(
       type: Number,
       // required: [true, "Please enter price."],
     },
-  
+
     activeStatus: {
       type: String,
       enum: ["Active", "Inactive", "Expired"],

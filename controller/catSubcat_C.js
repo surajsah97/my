@@ -6,11 +6,12 @@ const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
 
-
 module.exports = {
   addCategoryAdmin: async (req, res, next) => {
     const categoryName = req.body.category.trim();
-    const find_cat = await CategoryModel.findOne({ category: { $regex: new RegExp('^' + categoryName + '$', 'i') } });
+    const find_cat = await CategoryModel.findOne({
+      category: { $regex: new RegExp("^" + categoryName + "$", "i") },
+    });
 
     if (find_cat) {
       const err = new customError(
@@ -34,7 +35,10 @@ module.exports = {
   updateCategoryAdmin: async (req, res, next) => {
     let find_cat = await CategoryModel.findById(req.params.id);
     if (!find_cat) {
-      const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
+      const err = new customError(
+        global.CONFIGS.api.categoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
       return next(err);
     }
     if (req?.files?.categoryImg) {
@@ -55,19 +59,18 @@ module.exports = {
     if (req.body.activeStatus != undefined) {
       let validactiveStatus = ["0", "1"];
       if (!validactiveStatus.includes(req.body.activeStatus)) {
-        const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
+        const err = new customError(
+          "invalid activeStatus Allowed values are: 0,1",
+          global.CONFIGS.responseCode.invalidInput
+        );
         return next(err);
       }
     }
-    find_cat = await CategoryModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false,
-      }
-    );
+    find_cat = await CategoryModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    });
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
@@ -90,7 +93,7 @@ module.exports = {
     if (searchText !== undefined) {
       query.$or = [
         { category: { $regex: new RegExp(searchText), $options: "i" } },
-      ]
+      ];
     }
     if (startDate != undefined && endDate != undefined) {
       // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
@@ -107,7 +110,7 @@ module.exports = {
       // console.log({  $lt: new Date(endDate) })
       query.createdAt = { $lte: new Date(endDate) };
     }
-    console.log(query)
+    console.log(query);
     var find_cat = await CategoryModel.aggregate([
       {
         $match: query,
@@ -136,9 +139,7 @@ module.exports = {
       );
       return next(err);
     }
-    var totalPage = Math.ceil(
-      parseInt(find_cat[0].metadata[0].total) / limit
-    );
+    var totalPage = Math.ceil(parseInt(find_cat[0].metadata[0].total) / limit);
     const total = parseInt(find_cat[0].metadata[0].total);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
@@ -149,11 +150,13 @@ module.exports = {
     });
   },
 
-
   singleCategoryByIdAdmin: async (req, res, next) => {
     var find_cat = await CategoryModel.findById(req.params.id);
     if (!find_cat) {
-      const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
+      const err = new customError(
+        global.CONFIGS.api.categoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
       return next(err);
     }
     return res.status(global.CONFIGS.responseCode.success).json({
@@ -173,7 +176,9 @@ module.exports = {
   },
 
   categoryDeleteAdmin: async (req, res, next) => {
-    var delete_cat = await CategoryModel.findByIdAndDelete({ _id: req.params.id });
+    var delete_cat = await CategoryModel.findByIdAndDelete({
+      _id: req.params.id,
+    });
     if (!delete_cat) {
       const err = new customError(
         global.CONFIGS.api.categoryInactive,
@@ -207,7 +212,9 @@ module.exports = {
     }
 
     const subCategoryName = req.body.subCategory.trim();
-    let find_Subcat = await SubCategoryModel.findOne({ subCategory: { $regex: new RegExp('^' + subCategoryName + '$', 'i') } });
+    let find_Subcat = await SubCategoryModel.findOne({
+      subCategory: { $regex: new RegExp("^" + subCategoryName + "$", "i") },
+    });
     if (find_Subcat) {
       const err = new customError(
         global.CONFIGS.api.Subcategoryalreadyadded,
@@ -231,7 +238,10 @@ module.exports = {
     let find_subCategory = await SubCategoryModel.findById(req.params.id);
     // console.log(find_subCategory,"....find_subCategory")
     if (!find_subCategory) {
-      const err = new customError(global.CONFIGS.api.SubcategoryInactive, global.CONFIGS.responseCode.notFound);
+      const err = new customError(
+        global.CONFIGS.api.SubcategoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
       return next(err);
     }
 
@@ -247,9 +257,15 @@ module.exports = {
       return next(err);
     }
     if (req.body.categoryId != undefined) {
-      let find_category = await CategoryModel.findOne({_id:req.body.categoryId,activeStatus: "1"});
+      let find_category = await CategoryModel.findOne({
+        _id: req.body.categoryId,
+        activeStatus: "1",
+      });
       if (!find_category) {
-        const err = new customError(global.CONFIGS.api.categoryInactive, global.CONFIGS.responseCode.notFound);
+        const err = new customError(
+          global.CONFIGS.api.categoryInactive,
+          global.CONFIGS.responseCode.notFound
+        );
         return next(err);
       }
     }
@@ -257,7 +273,10 @@ module.exports = {
     if (req.body.activeStatus != undefined) {
       let validactiveStatus = ["0", "1"];
       if (!validactiveStatus.includes(req.body.activeStatus)) {
-        const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
+        const err = new customError(
+          "invalid activeStatus Allowed values are: 0,1",
+          global.CONFIGS.responseCode.invalidInput
+        );
         return next(err);
       }
     }
@@ -270,7 +289,7 @@ module.exports = {
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.SubcategoryUpdated,
-      data: find_subCategory
+      data: find_subCategory,
     });
   },
 
@@ -293,8 +312,13 @@ module.exports = {
     if (searchText !== undefined) {
       query.$or = [
         { subCategory: { $regex: new RegExp(searchText), $options: "i" } },
-        { "category.category": { $regex: new RegExp(searchText), $options: "i" } },
-      ]
+        {
+          "category.category": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+      ];
     }
     if (startDate != undefined && endDate != undefined) {
       query.createdAt = {
@@ -308,15 +332,15 @@ module.exports = {
     if (startDate == undefined && endDate != undefined) {
       query.createdAt = { $lte: new Date(endDate) };
     }
-    console.log(query)
+    console.log(query);
     let find_subcat = await SubCategoryModel.aggregate([
       {
         $lookup: {
           from: "category",
           localField: "categoryId",
           foreignField: "_id",
-          as: "category"
-        }
+          as: "category",
+        },
       },
       { $unwind: "$category" },
       {
@@ -325,8 +349,8 @@ module.exports = {
 
       {
         $sort: {
-          subCategory: 1
-        }
+          subCategory: 1,
+        },
       },
       {
         $project: {
@@ -338,11 +362,11 @@ module.exports = {
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
-        }
+        },
       },
       {
         $facet: {
-          metadata: [{ $count: "total" }, { $addFields: { page: pageNo }}],
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
           data: [{ $skip: skip }, { $limit: limit }],
         },
       },
@@ -356,7 +380,7 @@ module.exports = {
       return next(err);
     }
 
-    const total = find_subcat[0].metadata[0].total
+    const total = find_subcat[0].metadata[0].total;
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.allSubcategorylistAdmin,
@@ -364,7 +388,6 @@ module.exports = {
       data: find_subcat[0].data,
     });
   },
-
 
   SubcategoryListFront: async (req, res, next) => {
     var query = { activeStatus: "1" };
@@ -385,12 +408,14 @@ module.exports = {
       );
       return next(err);
     }
-
   },
   singleSubCategoryByIdAdmin: async (req, res, next) => {
     var find_subCategory = await SubCategoryModel.findById(req.params.id);
     if (!find_subCategory) {
-      const err = new customError(global.CONFIGS.api.SubcategoryInactive, global.CONFIGS.responseCode.notFound);
+      const err = new customError(
+        global.CONFIGS.api.SubcategoryInactive,
+        global.CONFIGS.responseCode.notFound
+      );
       return next(err);
     }
     return res.status(global.CONFIGS.responseCode.success).json({
@@ -401,7 +426,9 @@ module.exports = {
   },
 
   SubcategoryDeleteAdmin: async (req, res, next) => {
-    var delete_subcategory = await SubCategoryModel.findByIdAndDelete({ _id: req.params.id });
+    var delete_subcategory = await SubCategoryModel.findByIdAndDelete({
+      _id: req.params.id,
+    });
     if (!delete_subcategory) {
       const err = new customError(
         global.CONFIGS.api.SubcategoryInactive,
@@ -412,6 +439,6 @@ module.exports = {
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.SubcategoryDelete,
-    })
+    });
   },
 };
