@@ -26,19 +26,17 @@ var tempProductCheckoutSchema = new Schema(
             type: String,
           },
           quantity: {
-        type: Number,
-        min: [1, "Quantity cannot be less than 1"],
-        default: 1,
-      },
-         
+            type: Number,
+            min: [1, "Quantity cannot be less than 1"],
+            default: 1,
+          },
+
           productUOM: {
             type: String,
-            
           },
-        
+
           productInventory: {
             type: String,
-            
           },
         },
       ],

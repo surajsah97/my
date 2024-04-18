@@ -10,16 +10,28 @@ const customError = require("../middleware/customerror");
 
 module.exports = {
   asignTruck: async (req, res, next) => {
-    console.log(req.body,"........")
-    const find_truck = await TruckDetailModel.findOne({ _id: req.body.truckId, activeStatus: "1" });
+    console.log(req.body, "........");
+    const find_truck = await TruckDetailModel.findOne({
+      _id: req.body.truckId,
+      activeStatus: "1",
+    });
     if (!find_truck) {
-        const err = new customError(global.CONFIGS.api.truckDetailsInactive, global.CONFIGS.responseCode.notFound);
-        return next(err);
+      const err = new customError(
+        global.CONFIGS.api.truckDetailsInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
     }
-    const find_truckDriver = await TruckDriverModel.findOne({ _id: req.body.truckDriverId, activeStatus: "1" });
+    const find_truckDriver = await TruckDriverModel.findOne({
+      _id: req.body.truckDriverId,
+      activeStatus: "1",
+    });
     if (!find_truckDriver) {
-        const err = new customError(global.CONFIGS.api.truckDriverInactive, global.CONFIGS.responseCode.notFound);
-        return next(err);
+      const err = new customError(
+        global.CONFIGS.api.truckDriverInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
     }
     const find_assignTruck = await AssignTruckForDriverModel.findOne({
       $or: [
@@ -152,7 +164,9 @@ module.exports = {
       return next(err);
     }
     const total = parseInt(assignTruckData[0].metadata[0].total);
-    var totalPage = Math.ceil(parseInt(assignTruckData[0].metadata[0].total) / limit);
+    var totalPage = Math.ceil(
+      parseInt(assignTruckData[0].metadata[0].total) / limit
+    );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.AssignTruckForDriverListAdmin,
@@ -169,7 +183,7 @@ module.exports = {
     const skip = (pageNo - 1) * limit;
     let assignTruckData = await AssignTruckForDriverModel.aggregate([
       {
-        $match: { activeStatus: "1", _id: new ObjectId(req.params.id) }
+        $match: { activeStatus: "1", _id: new ObjectId(req.params.id) },
       },
       {
         $lookup: {
@@ -232,7 +246,7 @@ module.exports = {
             vehicleImage: "$truckdetails.vehicleImage",
             activeStatus: "$truckdetails.activeStatus",
           },
-         
+
           truckDriverDetails: {
             TruckDriverID: "$truckdriverdetails._id",
             Name: "$truckdriverdetails.name",
@@ -276,7 +290,9 @@ module.exports = {
       return next(err);
     }
     const total = parseInt(assignTruckData[0].metadata[0].total);
-    var totalPage = Math.ceil(parseInt(assignTruckData[0].metadata[0].total) / limit);
+    var totalPage = Math.ceil(
+      parseInt(assignTruckData[0].metadata[0].total) / limit
+    );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.AssignTruckForDriverByIdAdmin,
@@ -292,7 +308,10 @@ module.exports = {
     const skip = (pageNo - 1) * limit;
     let assignTruckData = await AssignTruckForDriverModel.aggregate([
       {
-        $match: { activeStatus: "1", truckDriverId: new ObjectId(req.params.id) }
+        $match: {
+          activeStatus: "1",
+          truckDriverId: new ObjectId(req.params.id),
+        },
       },
       {
         $lookup: {
@@ -355,7 +374,7 @@ module.exports = {
             vehicleImage: "$truckdetails.vehicleImage",
             activeStatus: "$truckdetails.activeStatus",
           },
-         
+
           truckDriverDetails: {
             TruckDriverID: "$truckdriverdetails._id",
             Name: "$truckdriverdetails.name",
@@ -399,7 +418,9 @@ module.exports = {
       return next(err);
     }
     const total = parseInt(assignTruckData[0].metadata[0].total);
-    var totalPage = Math.ceil(parseInt(assignTruckData[0].metadata[0].total) / limit);
+    var totalPage = Math.ceil(
+      parseInt(assignTruckData[0].metadata[0].total) / limit
+    );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.AssignTruckForDriverByIdAdmin,
@@ -410,70 +431,94 @@ module.exports = {
   },
 
   assignDeleteById: async (req, res, next) => {
-        const delete_brand = await AssignTruckForDriverModel.findByIdAndDelete({ _id:new ObjectId(req.params.id)});
-        if(!delete_brand){
-            const err = new customError(
-          global.CONFIGS.api.AssignTruckForDriverNotfound,
+    const delete_brand = await AssignTruckForDriverModel.findByIdAndDelete({
+      _id: new ObjectId(req.params.id),
+    });
+    if (!delete_brand) {
+      const err = new customError(
+        global.CONFIGS.api.AssignTruckForDriverNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.AssignTruckForDriverDelete,
+    });
+  },
+
+  assignUpdateById: async (req, res, next) => {
+    let find_assignTruck = await AssignTruckForDriverModel.findById(
+      req.params.id
+    );
+    console.log(find_assignTruck, "....find_assignTruck");
+    if (!find_assignTruck) {
+      const err = new customError(
+        global.CONFIGS.api.AssignTruckForDriverInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+    const existing_assignTruck = await AssignTruckForDriverModel.findOne({
+      $or: [
+        { truckId: req.body.truckId },
+        { truckDriverId: req.body.truckDriverId },
+      ],
+    });
+    if (existing_assignTruck) {
+      const err = new customError(
+        global.CONFIGS.api.AssignTruckForDriveralreadyadded,
+        global.CONFIGS.responseCode.alreadyExist
+      );
+      return next(err);
+    }
+
+    if (req.body.truckId != undefined) {
+      let find_truck = await TruckDetailModel.findById(
+        new ObjectId(req.body.truckId)
+      );
+      if (!find_truck) {
+        const err = new customError(
+          global.CONFIGS.api.truckDetailsInactive,
           global.CONFIGS.responseCode.notFound
         );
         return next(err);
-        }
-        return res.status(global.CONFIGS.responseCode.success).json({
-            success: true,
-            message: global.CONFIGS.api.AssignTruckForDriverDelete,
-        })
-    },
-
- assignUpdateById: async (req, res, next) => {
-        let find_assignTruck = await AssignTruckForDriverModel.findById(req.params.id);
-        console.log(find_assignTruck,"....find_assignTruck")
-        if (!find_assignTruck) {
-        const err = new customError(global.CONFIGS.api.AssignTruckForDriverInactive, global.CONFIGS.responseCode.notFound);
-        return next(err);
-        }
-        
-        const existing_assignTruck = await AssignTruckForDriverModel.findOne({
-         $or: [
-            { truckId: req.body.truckId },
-            { truckDriverId: req.body.truckDriverId },
-        ],
-        });
-        if (existing_assignTruck) {
+      }
+    }
+    if (req.body.truckDriverId != undefined) {
+      let find_truckDriver = await TruckDriverModel.findById(
+        new ObjectId(req.body.truckDriverId)
+      );
+      if (!find_truckDriver) {
         const err = new customError(
-        global.CONFIGS.api.AssignTruckForDriveralreadyadded,
-        global.CONFIGS.responseCode.alreadyExist
+          global.CONFIGS.api.truckDriverInactive,
+          global.CONFIGS.responseCode.notFound
         );
         return next(err);
-        }
+      }
+    }
 
-        if(req.body.truckId!=undefined){
-            let find_truck = await TruckDetailModel.findById(new ObjectId(req.body.truckId));
-            if (!find_truck) {
-            const err = new customError(global.CONFIGS.api.truckDetailsInactive, global.CONFIGS.responseCode.notFound);
-            return next(err);
-            }
-        }
-        if(req.body.truckDriverId!=undefined){
-            let find_truckDriver = await TruckDriverModel.findById(new ObjectId(req.body.truckDriverId));
-            if (!find_truckDriver) {
-            const err = new customError(global.CONFIGS.api.truckDriverInactive, global.CONFIGS.responseCode.notFound);
-            return next(err);
-            }
-        }
-        
-        if(req.body.activeStatus!=undefined){
-            let validactiveStatus = ["0","1"];
-            if (!validactiveStatus.includes(req.body.activeStatus)) {
-            const err = new customError("invalid activeStatus Allowed values are: 0,1", global.CONFIGS.responseCode.invalidInput);
-            return next(err);
-            }
-        }
+    if (req.body.activeStatus != undefined) {
+      let validactiveStatus = ["0", "1"];
+      if (!validactiveStatus.includes(req.body.activeStatus)) {
+        const err = new customError(
+          "invalid activeStatus Allowed values are: 0,1",
+          global.CONFIGS.responseCode.invalidInput
+        );
+        return next(err);
+      }
+    }
 
-        find_assignTruck = await AssignTruckForDriverModel.findByIdAndUpdate( req.params.id , req.body,{new:true});
-        return res.status(global.CONFIGS.responseCode.success).json({
-            success: true,
-            message: global.CONFIGS.api.AssignTruckForDriverUpdated,
-            data:find_assignTruck
-        })
-    },
+    find_assignTruck = await AssignTruckForDriverModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.AssignTruckForDriverUpdated,
+      data: find_assignTruck,
+    });
+  },
 };

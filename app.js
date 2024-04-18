@@ -20,7 +20,7 @@ global.CONFIGS = require("./configs/config.json");
 require("./models/dbConnections");
 
 var app = express();
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 var morgan = require("morgan");
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -40,7 +40,11 @@ console.log("here");
 // });
 
 const corsOptions = {
-  origin: [ "http://localhost:5173","https://dhudu.ae", "https://admin.dhudu.ae"],
+  origin: [
+    "http://localhost:5173",
+    "https://dhudu.ae",
+    "https://admin.dhudu.ae",
+  ],
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
@@ -241,8 +245,6 @@ app.use(
   require("./route/truckDriverRoute/AssignTruckForDriver_TD")
 );
 
-
-
 app.use(
   "/v" + process.env.VERSION + "/front/cart/",
   require("./route/frontRoute/cart_RF")
@@ -256,8 +258,7 @@ app.use(
   require("./route/frontRoute/paymentGateway_RF")
 );
 
-
-app.all("*", (req, res, next) => {  
+app.all("*", (req, res, next) => {
   const err = new customError(
     `can't find this(${req.originalUrl}) URL on server`,
     404

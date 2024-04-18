@@ -4,7 +4,7 @@ const TruckModel = mongoose.model(constants.TruckDetailModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 
-module.exports = {  
+module.exports = {
   addTruck: async (req, res, next) => {
     const find_vehicle = await TruckModel.findOne({
       chasisNumber: req.body.chasisNumber,
@@ -65,17 +65,18 @@ module.exports = {
   },
 
   updateVehicle: async (req, res, next) => {
-
     let find_vehicle = await TruckModel.findById(req.params.id);
-        if (!find_vehicle) {
-        const err = new customError(global.CONFIGS.api.truckDetailsNotfound, global.CONFIGS.responseCode.notFound);
-        return next(err);
-        }
+    if (!find_vehicle) {
+      const err = new customError(
+        global.CONFIGS.api.truckDetailsNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
     const existing_vehicle = await TruckModel.findOne({
-      $or:[
-
-      {chasisNumber: req.body.chasisNumber},
-      {vehicleNumber:req.body.vehicleNumber}
+      $or: [
+        { chasisNumber: req.body.chasisNumber },
+        { vehicleNumber: req.body.vehicleNumber },
       ],
       _id: { $nin: [req.params.id] },
     });
@@ -106,32 +107,35 @@ module.exports = {
       vehicleImage.rightImage = `uploads/truck/${req.files.vehicleImgRight[0].filename}`;
       req.body.vehicleImage = vehicleImage;
     }
-    
+
     find_vehicle = await TruckModel.findByIdAndUpdate(
       { _id: req.params.id },
-      req.body,{new:true}
+      req.body,
+      { new: true }
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.truckDetailsUpdated,
-      data:find_vehicle
+      data: find_vehicle,
     });
   },
 
   deletevehicle: async (req, res, next) => {
-    var delete_vehicle = await TruckModel.findByIdAndDelete({ _id: req.params.id });
-    
-    if(!delete_vehicle){
-            const err = new customError(
-          global.CONFIGS.api.truckDetailsNotfound,
-          global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-        }
-        return res.status(global.CONFIGS.responseCode.success).json({
-            success: true,
-            message: global.CONFIGS.api.ProductDelete,
-        })
+    var delete_vehicle = await TruckModel.findByIdAndDelete({
+      _id: req.params.id,
+    });
+
+    if (!delete_vehicle) {
+      const err = new customError(
+        global.CONFIGS.api.truckDetailsNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.ProductDelete,
+    });
   },
 
   vehicleListFront: async (req, res, next) => {
@@ -197,14 +201,14 @@ module.exports = {
         global.CONFIGS.api.truckDetailsNotfound,
         global.CONFIGS.responseCode.notFound
       );
-     return next(err);
+      return next(err);
     }
     const total = parseInt(truckData[0].metadata[0].total);
     var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.truckDetailsListFront,
-      totalData:total,
+      totalData: total,
       totalPage: totalPage,
       allOrder: truckData[0].data,
     });
@@ -276,7 +280,7 @@ module.exports = {
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.truckDetailsListAdmin,
-      totalData:total,
+      totalData: total,
       totalPage: totalPage,
       allOrder: truckData[0].data,
     });

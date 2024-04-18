@@ -77,7 +77,7 @@ module.exports = {
       );
       return next(err);
     }
-     var matchedLocation = await common.deliveryRange(req.body.location);
+    var matchedLocation = await common.deliveryRange(req.body.location);
     if (matchedLocation === false) {
       const err = new customError(
         global.CONFIGS.api.deliveryRangeNotFound,

@@ -18,23 +18,23 @@ module.exports = {
           .json({ status: "400", message: "userId required" });
       }
       let userDetail = await UserModel.findOne({ _id: userId });
-      console.log(userDetail,".......userDetail");
+      console.log(userDetail, ".......userDetail");
       if (!userDetail) {
         const err = new customError(
-        global.CONFIGS.api.userNotFound,
-        global.CONFIGS.responseCode.notFound
+          global.CONFIGS.api.userNotFound,
+          global.CONFIGS.responseCode.notFound
         );
         return next(err);
       }
       if (userDetail) {
         let find_cart = await CartModel.findOne({ userId: req.body.userId });
         if (!find_cart) {
-        const err = new customError(
-        global.CONFIGS.api.CartNotfound,
-        global.CONFIGS.responseCode.notFound
-        );
-        return next(err);
-      }
+          const err = new customError(
+            global.CONFIGS.api.CartNotfound,
+            global.CONFIGS.responseCode.notFound
+          );
+          return next(err);
+        }
         if (find_cart) {
           const product = find_cart.product;
           if (!product) {
@@ -103,7 +103,9 @@ module.exports = {
               //   }
               // ).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
 
-              let userdata = await UserModel.find({ _id: userId }).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
+              let userdata = await UserModel.find({ _id: userId }).select(
+                "name email mobile isVerified userType activeStatus trialActive trialQuantity"
+              );
 
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
@@ -134,7 +136,9 @@ module.exports = {
               checkoutCart
             );
             if (create_ProductCheckout) {
-              let userdata = await UserModel.find({ _id: userId }).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
+              let userdata = await UserModel.find({ _id: userId }).select(
+                "name email mobile isVerified userType activeStatus trialActive trialQuantity"
+              );
               return res.status(global.CONFIGS.responseCode.success).json({
                 success: true,
                 message: global.CONFIGS.api.ProductCheckOutadded,

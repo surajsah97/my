@@ -65,5 +65,8 @@ var truckDriverDocSchema = new Schema(
     timestamps: true,
   }
 );
-let address = mongoose.model(constants.TruckDriverDocModel, truckDriverDocSchema);
+let address = mongoose.model(
+  constants.TruckDriverDocModel,
+  truckDriverDocSchema
+);
 module.exports = address;

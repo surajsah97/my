@@ -21,8 +21,8 @@ var cartSchema = new Schema(
             required: [true, "Please enter qty."],
           },
           productPrice: {
-          type: Number,
-        },
+            type: Number,
+          },
         },
       ],
     },

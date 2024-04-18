@@ -16,7 +16,7 @@ var assignZoneForAssignTruckSchema = new Schema(
       type: Number,
       required: [true, "Please enter totalReserveCapacity."],
     },
-    
+
     deliveredReserveBottle: {
       type: Number,
       required: [true, "Please enter deliveredReserveBottle."],
@@ -51,20 +51,20 @@ var assignZoneForAssignTruckSchema = new Schema(
             default: 0,
           },
 
-    /**old start*/
-        //   startDateAndTime: {
-        //     type: Date,
-        //     required: [true, "Please enter startDateAndTime."],
-        //   },
-        //   endDateAndTime: {
-        //     type: Date,
-        //     required: [true, "Please enter startDateAndTime."],
-        //   },
-        //   timeDifferenceMinutes:{
-        //     type: Number,
-        //     required: [true, "Please enter timeDifferenceMinutes."],
-        //   },
-    /**old end*/
+          /**old start*/
+          //   startDateAndTime: {
+          //     type: Date,
+          //     required: [true, "Please enter startDateAndTime."],
+          //   },
+          //   endDateAndTime: {
+          //     type: Date,
+          //     required: [true, "Please enter startDateAndTime."],
+          //   },
+          //   timeDifferenceMinutes:{
+          //     type: Number,
+          //     required: [true, "Please enter timeDifferenceMinutes."],
+          //   },
+          /**old end*/
         },
       ],
     },

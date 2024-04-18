@@ -16,7 +16,7 @@ var AssignUserAddressForBikeDriverSchema = new Schema(
       type: Number,
       required: [true, "Please enter totalReserveCapacity."],
     },
-    
+
     deliveredReserveBottle: {
       type: Number,
       required: [true, "Please enter deliveredReserveBottle."],
@@ -49,7 +49,6 @@ var AssignUserAddressForBikeDriverSchema = new Schema(
             type: Number,
             default: 0,
           },
-    
         },
       ],
     },
@@ -61,7 +60,7 @@ var AssignUserAddressForBikeDriverSchema = new Schema(
       type: Date,
       required: [true, "Please enter startDateAndTime."],
     },
-   
+
     activeStatus: {
       type: String,
       enum: ["Active", "Completed"],

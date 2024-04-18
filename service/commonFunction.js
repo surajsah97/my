@@ -19,13 +19,15 @@ const datediff = (date) => {
   return minutes;
 };
 
-
 const deliveryRange = async (key) => {
-  const deliveryLocation = await DeliveryLocationModel.find({},{location:1});
-//   console.log(deliveryLocation,"....normal")
+  const deliveryLocation = await DeliveryLocationModel.find(
+    {},
+    { location: 1 }
+  );
+  //   console.log(deliveryLocation,"....normal")
   const filterlocation = deliveryLocation.some((item) => item.location === key);
   return filterlocation;
-// console.log(filterlocation,"......filter")
+  // console.log(filterlocation,"......filter")
 };
 // deliveryRange();
 

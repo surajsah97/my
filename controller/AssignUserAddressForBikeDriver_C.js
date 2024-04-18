@@ -3,12 +3,12 @@ const constants = require("../models/modelConstants");
 const AssignUserAddressForBikeDriverModel = mongoose.model(
   constants.AssignUserAddressForBikeDriverModel
 );
-const BikeDriverModel=mongoose.model(constants.BikeDriverModel);
-const UserAddressModel=mongoose.model(constants.UserAddressModel);
+const BikeDriverModel = mongoose.model(constants.BikeDriverModel);
+const UserAddressModel = mongoose.model(constants.UserAddressModel);
 const customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
-module.exports={
-addAssignUserAddress: async (req, res, next) => {
+module.exports = {
+  addAssignUserAddress: async (req, res, next) => {
     // console.log(req.body,"........")
     const find_bikeDriver = await BikeDriverModel.findOne({
       _id: req.body.bikeDriverId,
@@ -40,19 +40,18 @@ addAssignUserAddress: async (req, res, next) => {
       return next(err);
     }
 
-
-    let totalReserveCapacity=req.body.totalReserveCapacity;
-    console.log(totalReserveCapacity,"......totalReserveCapacity");
-    let damagedBottle=req.body.damagedBottle;
-    console.log(damagedBottle,"......damagedBottle");
-    let leakageBottle=req.body.leakageBottle;
-    console.log(leakageBottle,"......leakageBottle");
-    let brokenBottle=req.body.brokenBottle;
-    console.log(brokenBottle,"......brokenBottle");
-    let deliveredReserveBottle=damagedBottle+leakageBottle+brokenBottle;
-    console.log(deliveredReserveBottle,"......deliveredReserveBottle");
-    let returnedReserveBottle=totalReserveCapacity-deliveredReserveBottle;
-    console.log(returnedReserveBottle,"......returnedReserveBottle");
+    let totalReserveCapacity = req.body.totalReserveCapacity;
+    console.log(totalReserveCapacity, "......totalReserveCapacity");
+    let damagedBottle = req.body.damagedBottle;
+    console.log(damagedBottle, "......damagedBottle");
+    let leakageBottle = req.body.leakageBottle;
+    console.log(leakageBottle, "......leakageBottle");
+    let brokenBottle = req.body.brokenBottle;
+    console.log(brokenBottle, "......brokenBottle");
+    let deliveredReserveBottle = damagedBottle + leakageBottle + brokenBottle;
+    console.log(deliveredReserveBottle, "......deliveredReserveBottle");
+    let returnedReserveBottle = totalReserveCapacity - deliveredReserveBottle;
+    console.log(returnedReserveBottle, "......returnedReserveBottle");
 
     const existing_bikeDriver = await AssignUserAddressForBikeDriverModel.find({
       bikeDriverId: req.body.bikeDriverId,
@@ -86,7 +85,7 @@ addAssignUserAddress: async (req, res, next) => {
         return next(err);
       }
     }
-    
+
     const deliveryAddressed = req.body.deliveryAddress.map(
       (item) => item.deliveryAddressId
     );
@@ -114,8 +113,7 @@ addAssignUserAddress: async (req, res, next) => {
       deliveryAddress: req.body.deliveryAddress,
       startDateAndTime: req.body.startDateAndTime,
       endDateAndTime: req.body.endDateAndTime,
-      totalBottleCapacity
-      :req.body.totalBottleCapacity,
+      totalBottleCapacity: req.body.totalBottleCapacity,
       totalReserveCapacity: req.body.totalReserveCapacity,
       damagedBottle,
       leakageBottle,
@@ -124,15 +122,14 @@ addAssignUserAddress: async (req, res, next) => {
       returnedReserveBottle: returnedReserveBottle,
     };
     // return;
-    const create_assignUserAddress = await AssignUserAddressForBikeDriverModel.create(
-      addAssignUserAddressForBikeDriver
-    );
+    const create_assignUserAddress =
+      await AssignUserAddressForBikeDriverModel.create(
+        addAssignUserAddressForBikeDriver
+      );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.AssignZoneForAssignTruckadded,
       data: create_assignUserAddress,
     });
   },
-  
-
 };
