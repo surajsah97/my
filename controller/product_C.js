@@ -343,4 +343,19 @@ module.exports = {
       allProduct: productData[0].data,
     });
   },
+  singleProductByIdAdmin: async (req, res, next) => {
+    var find_product = await ProductModel.findById(req.params.id);
+    if (!find_product) {
+      const err = new customError(
+        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.singleProductAdmin,
+      data: find_product,
+    });
+  },
 };
