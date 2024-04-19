@@ -8,6 +8,11 @@ var deliveryLocationSchema = new Schema(
       required: true,
       trim: true,
     },
+    deliveryZoneId: {
+      type: Schema.Types.ObjectId,
+      ref: constants.DeliveryZoneModel,
+      required: true,
+    },
     activeStatus: {
       type: String,
       enum: ["Active", "Inactive"],
