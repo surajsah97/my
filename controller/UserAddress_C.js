@@ -112,17 +112,14 @@ module.exports = {
       req.body,
       {new:true}
     );
-    // Academic City 65defa05d8757e41baaa0752
-    // Al Badda 65defa13d8757e41baaa0755
-    // Al Barsha 65defa30d8757e41baaa075e
-    // Al Barari 65defa2ad8757e41baaa075b
-    // Abu Hail 65def9ebd8757e41baaa074f
+  
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.updateAddressSucess,
       data: updateAddress,
     });
   },
+  
   getAddress: async (req, res, next) => {
     // console.log(req.body);
     var find_user = await UserAddressModel.aggregate([

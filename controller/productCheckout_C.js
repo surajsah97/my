@@ -6,6 +6,7 @@ const ProductModel = mongoose.model(constants.ProductModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 const CartModel = mongoose.model(constants.CartModel);
+const VatModel = mongoose.model(constants.VatModel);
 
 module.exports = {
   /** */
@@ -76,8 +77,11 @@ module.exports = {
             let totaltrialQuantity =
               userDetail.trialQuantity + remainingTrialQuantity - quant;
             let checkoutCart = {};
-            const vat = 5;
-            const taxAmount = totalAmount * (vat / 100);
+            const vat = await VatModel.find();
+            console.log(vat, "....vatttt");
+            const vatPercentage = vat.map((item) => item.vatPercentage);
+            console.log(vatPercentage, "......vatttttpercentage");
+            const taxAmount = totalAmount * (vatPercentage / 100);
             const totalTaxablePrice = totalAmount + taxAmount;
             checkoutCart.vatAmount = Math.round(taxAmount);
             checkoutCart.totalPrice = Math.round(totalAmount);
@@ -111,8 +115,11 @@ module.exports = {
             find_cart.product.map((cart) => {
               totalPrice += productPrice[cart.productId] * cart.qty;
             });
-            const vat = 5;
-            const taxAmount = totalPrice * (vat / 100);
+            const vat = await VatModel.find();
+            console.log(vat, "....vatttt");
+            const vatPercentage = vat.map((item) => item.vatPercentage);
+            console.log(vatPercentage, "......vatttttpercentage");
+            const taxAmount = totalPrice * (vatPercentage / 100);
             const totalTaxablePrice = totalPrice + taxAmount;
             checkoutCart.vatAmount = Math.round(taxAmount);
             checkoutCart.totalPrice = Math.round(totalPrice);

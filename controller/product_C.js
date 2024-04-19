@@ -5,6 +5,7 @@ const CategoryModel = mongoose.model(constants.CategoryModel);
 const SubCategoryModel = mongoose.model(constants.SubCategoryModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
+const VatModel = mongoose.model(constants.VatModel);
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
@@ -45,6 +46,14 @@ module.exports = {
       );
       return next(err);
     }
+    const vat = await VatModel.find({});
+    console.log(vat, "....vatttt");
+    const vatPercentage = vat[0].vatPercentage;
+    // const vatPercentage = vat.map((item) => item.vatPercentage);
+    console.log(vatPercentage, "......vatttttpercentage");
+    const vatAmount=req.body.productPrice*(vatPercentage/100);
+    // return
+    req.body.vatAmount=vatAmount;
     const create_prod = await ProductModel.create({ ...req.body, productName });
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
@@ -117,6 +126,14 @@ module.exports = {
         return next(err);
       }
     }
+    const vat = await VatModel.find({});
+    console.log(vat, "....vatttt");
+    const vatPercentage = vat[0].vatPercentage;
+    // const vatPercentage = vat.map((item) => item.vatPercentage);
+    console.log(vatPercentage, "......vatttttpercentage");
+    const vatAmount=req.body.productPrice*(vatPercentage/100);
+    // return
+    req.body.vatAmount=vatAmount;
 
     find_prod = await ProductModel.findByIdAndUpdate(req.params.id, req.body, {
       new: true,

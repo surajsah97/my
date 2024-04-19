@@ -737,7 +737,7 @@ module.exports = {
             );
             for (let i = 1; i <= days; i++) {
               let currentDate = new Date(splitArray[indexofcal].dates);
-              currentDate.setDate(currentDate.getDate() + i - 1);
+              currentDate.setDate(currentDate.getDate() + i);
               let obj = {};
               obj.day = indexofcal + i + 1;
               obj.dates = currentDate;
@@ -758,7 +758,7 @@ module.exports = {
 
               for (let i = 0; i < differenceInDays; i++) {
                 let currentDate = new Date(splitArray[arlength - 1].dates);
-                currentDate.setDate(currentDate.getDate() + arlength + i);
+                currentDate.setDate(currentDate.getDate()+ i+1);
                 let obj = {};
                 obj.productId = find_subscription.product[0].productId;
                 obj.day = arlength + i + 1;
@@ -778,7 +778,7 @@ module.exports = {
               // console.log(differenceInDays,"...differenceInDays");
               for (let i = 1; i <= differenceInDays; i++) {
                 let currentDate = new Date(splitArray[arlength - 1].dates);
-                currentDate.setDate(currentDate.getDate() + arlength + i - 1);
+                currentDate.setDate(currentDate.getDate()  + i);
                 let obj = {};
                 if (i % 2 !== 0) {
                   obj.productId = find_subscription.product[0].productId;

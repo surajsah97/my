@@ -15,6 +15,10 @@ var productSchema = new Schema(
       type: Number,
       required: [true, "Please enter product product price."],
     },
+    vatAmount: {
+      type: Number,
+      // required: [true, "Please enter price."],
+    },
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: constants.CategoryModel,
