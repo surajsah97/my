@@ -13,6 +13,10 @@ var DeliverZoneSchema = new Schema(
       required: true,
       trim: true,
     },
+    locations: {
+      type: Array,
+      required: true,
+    },
     activeStatus: {
       type: String,
       enum: ["Active", "Inactive"],

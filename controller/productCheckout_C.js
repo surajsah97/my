@@ -90,19 +90,6 @@ module.exports = {
               checkoutCart
             );
             if (create_ProductCheckout) {
-              // let userUpdate = await UserModel.findByIdAndUpdate(
-              //   { _id: userId },
-              //   {
-              //     trialQuantity: totaltrialQuantity,
-              //     trialActive: 3 - totaltrialQuantity > 0 ? true : false,
-              //   },
-              //   {
-              //     new: true,
-              //     runValidators: true,
-              //     useFindAndModify: false,
-              //   }
-              // ).select("name email mobile isVerified userType activeStatus trialActive trialQuantity");
-
               let userdata = await UserModel.find({ _id: userId }).select(
                 "name email mobile isVerified userType activeStatus trialActive trialQuantity"
               );

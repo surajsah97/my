@@ -76,17 +76,6 @@ module.exports = {
     });
   },
 
-  /** */
-  // zoneNameListBYadmin: async (req, res, next) => {
-  //     var find_zoneName = await DeliveryZoneModel.find({}).sort({ zoneName: 1 }).select({ location: 0 });
-  //     return res.status(global.CONFIGS.responseCode.success).json({
-  //         success: true,
-  //         message: global.CONFIGS.api.getzoneNameSuccess,
-  //         data: find_zoneName
-  //     })
-  // },
-  /** */
-
   zoneNameListBYadmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
@@ -124,17 +113,6 @@ module.exports = {
       allProduct: deliveryZoneData[0].data,
     });
   },
-
-  /** */
-  // zoneNameListTruckDriver: async (req, res, next) => {
-  //     var find_zoneName = await DeliveryZoneModel.find({ activeStatus: "Active" }).sort({ zoneName: 1 });
-  //     return res.status(global.CONFIGS.responseCode.success).json({
-  //         success: true,
-  //         message: global.CONFIGS.api.getzoneNameSuccess,
-  //         data: find_zoneName
-  //     })
-  // },
-  /** */
 
   zoneNameListTruckDriver: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
