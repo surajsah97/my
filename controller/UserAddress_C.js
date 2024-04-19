@@ -4,6 +4,7 @@ const common = require("../service/commonFunction");
 const UserAddressModel = mongoose.model(constants.UserAddressModel);
 var customError = require("../middleware/customerror");
 const NodeGeocoder = require("node-geocoder");
+const DeliveryLocationModel = mongoose.model(constants.DeliveryLocationModel);
 const ObjectId = mongoose.Types.ObjectId;
 
 const options = {
@@ -38,6 +39,8 @@ module.exports = {
 
   addAddress: async (req, res, next) => {
     var matchedLocation = await common.deliveryRange(req.body.location);
+    console.log(matchedLocation,"........matchedLocation");
+
     if (matchedLocation === false) {
       const err = new customError(
         global.CONFIGS.api.deliveryRangeNotFound,
@@ -45,6 +48,11 @@ module.exports = {
       );
       return next(err);
     }
+    const deliveryLocation = await DeliveryLocationModel.findOne(
+    {location:req.body.location},
+    );
+    console.log(deliveryLocation,".....deliveryLocation")
+    console.log(deliveryLocation._id,".....deliveryLocationId")
 
     var find_address = await UserAddressModel.findOne({
       userId: req.body.userId,
@@ -56,6 +64,7 @@ module.exports = {
       );
       return next(err);
     }
+    req.body.deliveryLocationId = deliveryLocation._id;
     req.body.location = {
       type: "Point",
       coordinates: [req.body.long, req.body.lat],
@@ -85,18 +94,33 @@ module.exports = {
       );
       return next(err);
     }
+     const deliveryLocation = await DeliveryLocationModel.findOne(
+    {location:req.body.location},
+    );
+    console.log(deliveryLocation,".....deliveryLocation");
+    console.log(deliveryLocation._id,".....deliveryLocationId");
+    req.body.deliveryLocationId = deliveryLocation._id;
+    
     req.body.location = {
       type: "Point",
       coordinates: [req.body.long, req.body.lat],
     };
-    var createAddress = await UserAddressModel.updateOne(
+    
+
+    const updateAddress = await UserAddressModel.findByIdAndUpdate(
       { _id: req.params.id },
-      req.body
+      req.body,
+      {new:true}
     );
+    // Academic City 65defa05d8757e41baaa0752
+    // Al Badda 65defa13d8757e41baaa0755
+    // Al Barsha 65defa30d8757e41baaa075e
+    // Al Barari 65defa2ad8757e41baaa075b
+    // Abu Hail 65def9ebd8757e41baaa074f
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.updateAddressSucess,
-      // data: createAddress,
+      data: updateAddress,
     });
   },
   getAddress: async (req, res, next) => {

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
 const DeliveryZoneModel = mongoose.model(constants.DeliveryZoneModel);
+// const DeliveryLocationModel = mongoose.model(constants.DeliveryLocationModel);
 const customError = require("../middleware/customerror");
 
 module.exports = {
@@ -15,6 +16,16 @@ module.exports = {
       );
       return next(err);
     }
+    // var find_deliverylocation = await DeliveryLocationModel.findOne({
+    //   locations: req.body.locations,
+    // });
+    // if (find_deliverylocation) {
+    //   const err = new customError(
+    //     global.CONFIGS.api.locationalreadyadded,
+    //     global.CONFIGS.responseCode.alreadyExist
+    //   );
+    //   return next(err);
+    // }
     req.body.location = {
       type: "Point",
       coordinates: [req.body.lat, req.body.long],

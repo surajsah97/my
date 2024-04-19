@@ -14,7 +14,8 @@ router
 
 router
   .route("/:id")
-  .put(Auth.apiValidateToken, errorfun(userAddress.updateAddress))
+  .put( errorfun(userAddress.updateAddress))
+  // .put(Auth.apiValidateToken, errorfun(userAddress.updateAddress))
   .delete(Auth.apiValidateToken, errorfun(userAddress.deleteaddress));
 
 module.exports = router;

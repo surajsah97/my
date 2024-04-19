@@ -38,6 +38,11 @@ var UserAddressSchema = new Schema(
       ref: constants.UserModel,
       required: true,
     },
+    deliveryLocationId: {
+      type: Schema.Types.ObjectId,
+      ref: constants.DeliveryLocationModel,
+      required: true,
+    },
     activeStatus: {
       type: String,
       enum: ["0", "1"],
