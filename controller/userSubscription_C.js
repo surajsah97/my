@@ -132,134 +132,6 @@ module.exports = {
     }
   },
 
-  /** */
-  // addSubOld: async (req, res, next) => {
-  //   try {
-  //     const { userId } = req.body;
-  //     const userDetail=await UserModel.findOne({_id:userId})
-  //     if (!userDetail) {
-  //       const err = new customError(
-  //       global.CONFIGS.api.userNotFound,
-  //       global.CONFIGS.responseCode.notFound
-  //       );
-  //       return next(err);
-  //     }
-  //     var find_subscription = await UserSubscriptionModel.find({
-  //       userId: userId,
-  //     }).sort({ _id: -1 });
-  //     console.log(find_subscription, ".....find_subscription");
-  //     if (find_subscription) {
-  //       var prodinsubscription = find_subscription.some((item) => item.product[0].productId == req.body.product[0].productId);
-  //       console.log(prodinsubscription);
-  //       if (prodinsubscription === true) {
-  //           const err = new customError(
-  //             global.CONFIGS.api.subscriptionalreadyadded,
-  //             global.CONFIGS.responseCode.alreadyExist
-  //           );
-  //           return next(err);
-  //       }
-  //     }
-
-  //     const subDuration = await subscriptionPlanModel
-  //       .findById({ _id: new ObjectId(req.body.subDurationId) })
-  //       .select("planDuration");
-  //     console.log(subDuration, "............subduration");
-  //     if (!subDuration) {
-  //       return res.status(404).json({
-  //         success: false,
-  //         message: "Subscription duration not found.",
-  //       });
-  //     }
-
-  //     // const startDate = new Date();
-  //     // startDate.setDate(startDate.getDate() + 1); // Tommorow
-  //     // const endDate = new Date(
-  //     //   startDate.getTime() + subDuration.planDuration * 24 * 60 * 60 * 1000
-  //     // ); // 15 days after tomorrow
-  //     const startDate = new Date();
-  //     startDate.setDate(startDate.getDate() + 1); // Tomorrow
-  //     let endDate = new Date(startDate.getTime());
-  //     endDate.setDate(endDate.getDate() + subDuration.planDuration); // 15 days after tomorrow
-  //     console.log(startDate, "...currentDate...");
-  //     console.log(endDate, "....eeeeeee");
-
-  //     const differenceInMilliseconds = endDate - startDate;
-  //     const differenceInDays = Math.floor(
-  //       differenceInMilliseconds / (1000 * 60 * 60 * 24)
-  //     );
-  //     const calendarItem = [];
-
-  //     for (let i = 1; i <= differenceInDays; i++) {
-  //       let obj = {};
-  //       obj.productId = req.body.product[0].productId;
-  //       obj.day = i;
-  //       calendarItem.push(obj);
-  //     }
-  //     console.log(calendarItem, "....calendarItem");
-
-  //     // console.log("Difference in days:", differenceInDays);
-  //     // return;
-  //     const productDetails = await ProductModel.find({
-  //       _id: { $in: req.body.product[0].productId },
-  //     });
-  //     console.log(productDetails);
-  //     let productPrice = {};
-  //     productDetails.map((el) => {
-  //       productPrice = el.productPrice;
-  //     });
-  //     console.log(productPrice, "...productPrice...");
-
-  //     const totalSubPrice =
-  //       productPrice * req.body.product[0].qty * subDuration.planDuration;
-  //     console.log(totalSubPrice, "....totalSubPrice");
-  //     let addSubscription = {};
-  //     const vat = 5;
-  //     const taxAmount = totalSubPrice * (vat / 100);
-  //     const totalTaxablePrice = totalSubPrice + taxAmount;
-  //     addSubscription.vatAmount = Math.round(taxAmount);
-  //     addSubscription.totalPrice = Math.round(totalSubPrice);
-  //     addSubscription.product = req.body.product;
-  //     addSubscription.startDate = startDate;
-  //     addSubscription.endDate = endDate;
-  //     addSubscription.leftDuration = differenceInDays;
-  //     addSubscription.calendar = calendarItem;
-  //     addSubscription.subDurationId = req.body.subDurationId;
-  //     addSubscription.totalTaxablePrice = Math.round(totalTaxablePrice);
-  //     addSubscription.userId = userId;
-  //     const subscription = await UserSubscriptionModel.create(addSubscription);
-
-  //   if (subscription) {
-  //     var update_checkout = await SubscriptionCheckOutModel.findOneAndUpdate(
-  //       { userId: userId },
-  //       { activeStatus: "Expired" }
-  //     ).sort({_id:-1});
-  //       let userdata = {
-  //         name: userDetail.name,
-  //         email: userDetail.email,
-  //         mobile: userDetail.mobile,
-  //         isVerified: userDetail.isVerified,
-  //         userType: userDetail.userType,
-  //         activeStatus: userDetail.activeStatus,
-  //       };
-
-  //       return res.status(global.CONFIGS.responseCode.success).json({
-  //         success: true,
-  //         message: global.CONFIGS.api.subscriptionadded,
-  //         data: subscription,
-  //         userdata: userdata,
-  //       });
-  //     }
-
-  //   } catch (error) {
-  //     console.log(error);
-  //     res.status(global.CONFIGS.responseCode.exception).json({
-  //       success: false,
-  //       message: error.message,
-  //     });
-  //   }
-  // },
-
-  /** */
   deletesub: async (req, res, next) => {
     const existingSubscription = await UserSubscriptionModel.findById(
       req.params.id
@@ -480,13 +352,7 @@ module.exports = {
         },
       },
       { $unwind: "$product.productDetails" },
-      // {
-      //   $unwind: {
-      //     path: "$product.productDetails",
-      //     includeArrayIndex: "string",
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
+
       {
         $lookup: {
           from: "product",
@@ -594,9 +460,7 @@ module.exports = {
       return next(err);
     }
     const total = parseInt(find_subscription[0].metadata[0].total);
-    // var totalPage = Math.ceil(
-    // parseInt(find_subscription[0].metadata[0].total) / limit
-    // );
+
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       totalSubscription: total,
@@ -656,13 +520,7 @@ module.exports = {
         },
       },
       { $unwind: "$product.productDetails" },
-      // {
-      //   $unwind: {
-      //     path: "$product.productDetails",
-      //     includeArrayIndex: "string",
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
+
       {
         $lookup: {
           from: "product",
@@ -868,7 +726,9 @@ module.exports = {
               remainingdays =
                 find_subscription.calendar.length / 2 - splitArray.length / 2;
             }
-            var oldDate = moment(new Date(find_subscription.createdAt));
+            var oldDate = moment(
+              new Date(find_subscription.pauseresumeDate[i].pauseDate)
+            );
             console.log(oldDate);
             var newDate = moment(new Date());
             console.log(newDate);
@@ -929,23 +789,18 @@ module.exports = {
                   obj.day = arlength + i;
                   obj.dates = currentDate;
                 }
-                // obj.productId = product[0].productId;
-                // obj.day = i + 1;
-                // obj.dates = currentDate;
+
                 splitArray.push(obj);
               }
             }
             var update_subscription = await UserSubscriptionModel.updateOne(
               { _id: req.params.id },
               {
-                // activeStatus: req.body.activeStatus,
-                // pauseresumeDate: old_array,
                 endDate: endDate,
                 calendar: splitArray,
               },
               { new: true }
             );
-            // return res.send({ indexofcal, days, splitArray });
           }
         }
       }
