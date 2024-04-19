@@ -420,7 +420,7 @@ module.exports = {
     }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.singleCategoryAdmin,
+      message: global.CONFIGS.api.singleSubCategoryAdmin,
       data: find_subCategory,
     });
   },
