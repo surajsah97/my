@@ -257,6 +257,7 @@ module.exports = {
             },
             deliverystatus: "$status",
             qty: "$product.qty",
+            vatAmounts:{$multiply: ["$product.productDetails.vatAmount","$product.qty",],},
             productPrice: "$product.productDetails.productPrice",
             individualTotalPrice: {
               $multiply: [
@@ -264,11 +265,22 @@ module.exports = {
                 "$product.qty",
               ],
             },
+            individualTotalTaxablePrice: {
+              $sum: [
+               { $multiply: [
+                "$product.productDetails.productPrice",
+                "$product.qty",
+              ]},{
+               $multiply: ["$product.productDetails.vatAmount","$product.qty",]
+            }
+              ],
+            },
             productName: "$product.productDetails.productName",
             productImage: "$product.productDetails.productImage",
             productUOM: "$product.productDetails.productUOM",
             productDes: "$product.productDetails.productDes",
             categoryName: "$product.productDetails.category.category",
+
             subategoryName: "$product.productDetails.subcategory.subCategory",
           },
 
