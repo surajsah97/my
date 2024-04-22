@@ -25,7 +25,17 @@ module.exports = {
   },
 
   updatesubscriptionPlan: async (req, res, next) => {
-    const validDurations = [15, 30, 60, 90];
+
+    let find_subplan = await subscriptionPlanModel.findById(req.params.id);
+    if (!find_subplan) {
+      const err = new customError(
+        global.CONFIGS.api.subscriptionPlanNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    if (req.body.planDuration != undefined) {
+    let validDurations = [15, 30, 60, 90];
     if (!validDurations.includes(req.body.planDuration)) {
       const err = new customError(
         "Invalid plan duration. Allowed values are: 15,30,60,90",
@@ -33,11 +43,22 @@ module.exports = {
       );
       return next(err);
     }
-    var find_subplan = await subscriptionPlanModel.findOne({
+    }
+    if (req.body.activeStatus != undefined) {
+      let validactiveStatus = ["Active", "Inactive"];
+      if (!validactiveStatus.includes(req.body.activeStatus)) {
+        const err = new customError(
+          "invalid activeStatus Allowed values are: Active,Inactive",
+          global.CONFIGS.responseCode.invalidInput
+        );
+        return next(err);
+      }
+    }
+    let existingPlan = await subscriptionPlanModel.findOne({
       planDuration: req.body.planDuration,
       _id: { $nin: [req.params.id] },
     });
-    if (find_subplan) {
+    if (existingPlan) {
       const err = new customError(
         global.CONFIGS.api.subscriptionPlanalreadyadded,
         global.CONFIGS.responseCode.alreadyExist
@@ -45,17 +66,10 @@ module.exports = {
       return next(err);
     }
 
-    const existingPlan = await subscriptionPlanModel.findById(req.params.id);
-    if (!existingPlan) {
-      const err = new customError(
-        global.CONFIGS.api.subscriptionPlanNotfound,
-        global.CONFIGS.responseCode.notFound
-      );
-      return next(err);
-    }
     let updatePlan = {};
     updatePlan.planDuration = req.body.planDuration;
-    var create_subplan = await subscriptionPlanModel.findByIdAndUpdate(
+    updatePlan.activeStatus = req.body.activeStatus;
+    find_subplan = await subscriptionPlanModel.findByIdAndUpdate(
       { _id: req.params.id },
       updatePlan,
       { new: true }
@@ -63,7 +77,7 @@ module.exports = {
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.subscriptionPlanUpdated,
-      create_subplan,
+      data:find_subplan,
     });
   },
 

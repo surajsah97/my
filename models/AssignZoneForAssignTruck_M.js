@@ -12,10 +12,15 @@ var assignZoneForAssignTruckSchema = new Schema(
       type: Number,
       required: [true, "Please enter totalTruckCapacity."],
     },
+    availableStocks: {
+      type: Number,
+      required: [true, "Please enter availableStocks."],
+    },
     totalReserveCapacity: {
       type: Number,
       required: [true, "Please enter totalReserveCapacity."],
     },
+
 
     deliveredReserveBottle: {
       type: Number,
