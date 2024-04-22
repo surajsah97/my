@@ -5,6 +5,9 @@ const SubCategoryModel = mongoose.model(constants.SubCategoryModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
+const QRCode = require("qrcode");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   addCategoryAdmin: async (req, res, next) => {
@@ -29,6 +32,37 @@ module.exports = {
       success: true,
       message: global.CONFIGS.api.categoryadded,
       data: create_cat,
+    });
+  },
+
+  qrcodeCategory: async (req, res, next) => {
+    const url = "https://api.dhudu.ae/v1.0.0/DEV/admin/catsubcat/category";
+    // const url = "https://www.example.com";
+    QRCode.toDataURL(url, (err, qrCodeUrl) => {
+      if (err) {
+        res.status(500).send("internal server error");
+      } else {
+        res.send(`
+    <!DOCTYPE HTML>
+    <html>
+    <head>
+    <title>
+    QR code generator
+    </title>
+    </head>
+    <body>
+    <h1>
+    Qr code Generator
+    </h1>
+    <img src="${qrCodeUrl}" alt="Qr Code">
+    <p>
+    scan the qr code to visit website
+    </p>
+    </body>
+    </html>
+
+  `);
+      }
     });
   },
 

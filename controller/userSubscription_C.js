@@ -631,6 +631,7 @@ module.exports = {
     });
   },
 
+
   updateSubscriptionByUser: async (req, res, next) => {
     let find_subscription = await UserSubscriptionModel.findById(req.params.id);
 
@@ -758,7 +759,7 @@ module.exports = {
 
               for (let i = 0; i < differenceInDays; i++) {
                 let currentDate = new Date(splitArray[arlength - 1].dates);
-                currentDate.setDate(currentDate.getDate()+ i+1);
+                currentDate.setDate(currentDate.getDate() + i + 1);
                 let obj = {};
                 obj.productId = find_subscription.product[0].productId;
                 obj.day = arlength + i + 1;
@@ -778,7 +779,7 @@ module.exports = {
               // console.log(differenceInDays,"...differenceInDays");
               for (let i = 1; i <= differenceInDays; i++) {
                 let currentDate = new Date(splitArray[arlength - 1].dates);
-                currentDate.setDate(currentDate.getDate()  + i);
+                currentDate.setDate(currentDate.getDate() + i);
                 let obj = {};
                 if (i % 2 !== 0) {
                   obj.productId = find_subscription.product[0].productId;
@@ -803,6 +804,102 @@ module.exports = {
             );
           }
         }
+      }
+    }
+
+    find_subscription = await UserSubscriptionModel.findById(req.params.id);
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.subscriptionUpdated,
+      data: find_subscription,
+    });
+  },
+
+  updateSubscriptionByUsersPrakash: async (req, res, next) => {
+    let find_subscription = await UserSubscriptionModel.findById(req.params.id);
+
+    console.log(find_subscription, "....find_subscription");
+
+    if (!find_subscription) {
+      const err = new customError(
+        global.CONFIGS.api.subscriptionNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+    if (req.body.activeStatus != undefined) {
+      let validactiveStatus = ["Active", "Inactive", "Expired"];
+      if (!validactiveStatus.includes(req.body.activeStatus)) {
+        const err = new customError(
+          "invalid activeStatus Allowed values are: Active, Inactive, Expired",
+          global.CONFIGS.responseCode.invalidInput
+        );
+        return next(err);
+      }
+      var next_date = new Date();
+      next_date.setDate(next_date.getDate() + 1);
+
+      // return
+      if (req.body.activeStatus === "Inactive") {
+        console.log(next_date, "...next_date");
+        var old_array = find_subscription.pauseresumeDate;
+        var newObject = { pauseDate: next_date };
+        old_array.push(newObject);
+        var update_subscription = await UserSubscriptionModel.updateOne(
+          { _id: req.params.id },
+          {
+            activeStatus: req.body.activeStatus,
+            pauseresumeDate: old_array,
+          },
+          { new: true }
+        );
+      }
+
+      console.log(
+        find_subscription.pauseresumeDate.length,
+        ",,......,,......,,"
+      );
+
+      if (req.body.activeStatus === "Active") {
+        let todayDate = new Date().getDate();
+        let updated = 0;
+        let remaining = 0;
+
+
+        for (var i = 0; i < find_subscription.calendar.length; i++) {
+          let date = new Date(find_subscription.calendar[i].dates.date).getDate();
+          if (todayDate >= date && find_subscription.calendar[i].deliveryStatus == true) {
+            updated += 1;
+          }
+          else if (todayDate <= date) {
+            remaining += 1;
+            updated += 1;
+          }
+        }
+        if (updated < 15) {
+          let j = remaining == 0 ? 1 : remaining + 1;
+
+          for (j; j <= (15 - updated); j++) {
+
+            todayDate.setDate(todayDate.getDate() + i - 1);
+            let obj = {};
+            if (j % 2 !== 0) {
+              obj.productId = product[0].productId;
+              obj.day = j;
+              obj.dates = todayDate;
+              obj.deliveryStatus = false;
+            } else {
+              obj.day = j;
+              obj.dates = todayDate;
+            }
+            find_subscription.calendar.push(obj)
+          }
+        }
+        var update_subscription = await UserSubscriptionModel.updateOne(
+          { _id: req.params.id },
+          find_subscription
+        )
       }
     }
 

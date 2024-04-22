@@ -7,8 +7,8 @@ const errorfun = require("../../middleware/catchAsyncErrors.js");
 // category router //
 router
   .route("/category/")
-  // .get(errorfun(cat.categoryListFront));
-  .get(Auth.apiValidateToken, errorfun(cat.categoryListFront));
+  .get(errorfun(cat.categoryListFront));
+  // .get(Auth.apiValidateToken, errorfun(cat.categoryListFront));
 
 // subCategory router //
 router
