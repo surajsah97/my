@@ -36,7 +36,7 @@ module.exports = {
   },
 
   qrcodeCategory: async (req, res, next) => {
-    const url = "https://api.dhudu.ae/v1.0.0/DEV/admin/catsubcat/category";
+    const url = "https://api.dhudu.ae/v1.0.0/DEV/front/catsubcat/category/";
     // const url = "https://www.example.com";
     QRCode.toDataURL(url, (err, qrCodeUrl) => {
       if (err) {
