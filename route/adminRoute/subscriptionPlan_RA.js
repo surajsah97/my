@@ -16,6 +16,7 @@ router
   .route("/:id")
   // .put( errorfun(subplan.updatesubscriptionPlan))
   .put(Auth.adminValidateToken, errorfun(subplan.updatesubscriptionPlan))
+  .get(Auth.adminValidateToken, errorfun(subplan.singleSubscriptionPlanByIdAdmin))
   // .delete( errorfun(subplan.subscriptionPlanDelete))
   .delete(Auth.adminValidateToken, errorfun(subplan.subscriptionPlanDelete));
 

@@ -86,6 +86,22 @@ module.exports = {
     });
   },
 
+  singleSubscriptionPlanByIdAdmin: async (req, res, next) => {
+    var find_subplan = await subscriptionPlanModel.findById(req.params.id);
+    if (!find_subplan) {
+      const err = new customError(
+        global.CONFIGS.api.subscriptionPlanInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.singleSubscriptionPlanAdmin,
+      data: find_subplan,
+    });
+  },
+
   subscriptionPlanListFront: async (req, res, next) => {
     var find_subplan = await subscriptionPlanModel.find({
       activeStatus: "Active",

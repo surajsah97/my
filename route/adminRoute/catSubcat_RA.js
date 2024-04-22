@@ -29,7 +29,6 @@ router
   .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addCategoryAdmin));
 router
   .route("/category/qrcode")
-  
   .get( Auth.adminValidateToken, errorfun(cat.qrcodeCategory));
 
 router

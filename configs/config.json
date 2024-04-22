@@ -90,6 +90,7 @@
     "subscriptionPlanList": "Subscription plan list Successfully.",
     "subscriptionPlanInactive": "Subscription plan inactive or not found.",
     "subscriptionPlanDelete": "Subscription plan deleted Successfully.",
+    "singleSubscriptionPlanAdmin": "Get singleSubscriptionPlan by_Admin Successfully.",
     "subscriptionadded": "Subscription added Successfully.",
     "subscriptionalreadyadded": "You have already taken Subscription for this Product. Please try another Product.",
     "subscriptionNotfound": "subscription notFound Successfully.",
