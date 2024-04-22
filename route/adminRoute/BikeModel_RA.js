@@ -16,6 +16,7 @@ router
   .route("/:id")
   // .put( errorfun(Model.updateModel))
   .put(Auth.adminValidateToken, errorfun(Model.updateModel))
+  .get(Auth.adminValidateToken, errorfun(Model.singleBikeModelByIdAdmin))
   // .delete( errorfun(Model.modelDelete));
   .delete(Auth.adminValidateToken, errorfun(Model.modelDelete));
 

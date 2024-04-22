@@ -49,10 +49,13 @@ module.exports = {
       );
       return next(err);
     }
+    const modelName = req.body.bikeModel.trim();
     const existing_model = await BikeModelModel.findOne({
-      bikeModel: req.body.bikeModel,
+      // bikeModel: req.body.bikeModel,
+      bikeModel: { $regex: new RegExp("^" + modelName + "$", "i") },
       _id: { $nin: [req.params.id] },
     });
+    console.log(existing_model,"......existing_model");
     if (existing_model) {
       const err = new customError(
         global.CONFIGS.api.modelalreadyadded,
@@ -97,6 +100,45 @@ module.exports = {
   },
 
   modelListAdmin: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20;
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const skip = (pageNo - 1) * limit;
+    const searchText = req.query.searchText;
+    const bikeBrandId = req.query.bikeBrandId;
+    const activeStatus = req.query.activeStatus;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    let query = {};
+    if (bikeBrandId != undefined) {
+      query.bikeBrandId = new ObjectId(bikeBrandId);
+    }
+    if (activeStatus != undefined) {
+      query.activeStatus = activeStatus;
+    }
+    if (searchText !== undefined) {
+      query.$or = [
+        { bikeModel: { $regex: new RegExp(searchText), $options: "i" } },
+        {
+          "bikebrand.bikeBrand": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+      ];
+    }
+    if (startDate != undefined && endDate != undefined) {
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query);
     var find_model = await BikeModelModel.aggregate([
       {
         $lookup: {
@@ -108,6 +150,9 @@ module.exports = {
       },
       { $unwind: "$bikebrand" },
       { $unset: "bikeBrandId" },
+      {
+        $match: query,
+      },
       {
         $sort: {
           bikeModel: 1,
@@ -125,17 +170,43 @@ module.exports = {
       },
       {
         $facet: {
-          metadata: [{ $count: "total" }],
-          data: [],
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }],
         },
       },
     ]);
+    if (find_model[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.modelNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+
+
     const total = find_model[0].metadata[0].total;
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.getModelSuccess,
+      message: global.CONFIGS.api.allModelListAdmin,
       totalBikeModel: `${total} no of quantity`,
       data: find_model[0].data,
+    });
+  },
+
+  singleBikeModelByIdAdmin: async (req, res, next) => {
+    const find_model = await BikeModelModel.findById(req.params.id);
+    console.log(find_model,"....find_model")
+    if (!find_model) {
+      const err = new customError(
+        global.CONFIGS.api.modelInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.getModelSuccess,
+      data: find_model,
     });
   },
 

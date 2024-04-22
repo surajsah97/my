@@ -16,6 +16,7 @@ router
   .route("/:id")
   // .put( errorfun(Brand.updateBrand))
   .put(Auth.adminValidateToken, errorfun(Brand.updateBrand))
+  .get(Auth.adminValidateToken, errorfun(Brand.singleBrandByIdAdmin))
   // .delete( errorfun(Brand.brandDelete));
   .delete(Auth.adminValidateToken, errorfun(Brand.brandDelete));
 

@@ -35,10 +35,13 @@ module.exports = {
       );
       return next(err);
     }
+    const brandName = req.body.bikeBrand.trim();
     const existing_brand = await BikeBrandModel.findOne({
-      bikeBrand: req.body.bikeBrand,
+      // bikeBrand: req.body.bikeBrand,
+      bikeBrand: { $regex: new RegExp("^" + brandName + "$", "i") },
       _id: { $nin: [req.params.id] },
     });
+    console.log(existing_brand, ".....existing_brand");
     if (existing_brand) {
       const err = new customError(
         global.CONFIGS.api.brandalreadyadded,
@@ -72,13 +75,92 @@ module.exports = {
   },
 
   brandListAdmin: async (req, res, next) => {
-    var find_brand = await BikeBrandModel.find({}).sort({ bikeBrand: 1 });
+    const limit = parseInt(req.query.limit) || 20;
+    const pageNo = parseInt(req.query.pageNo) || 1;
+    const skip = (pageNo - 1) * limit;
+    var query = {};
+    const searchText = req.query.searchText;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
+    if (searchText !== undefined) {
+      query.$or = [
+        { bikeBrand: { $regex: new RegExp(searchText), $options: "i" } },
+      ];
+    }
+    if (startDate != undefined && endDate != undefined) {
+      // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      // console.log({ $gt: new Date(startDate) })
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      // console.log({  $lt: new Date(endDate) })
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query);
+    var find_brand = await BikeBrandModel.aggregate([
+      {
+        $match: query,
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
+    if (find_brand[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.brandNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    var totalPage = Math.ceil(parseInt(find_brand[0].metadata[0].total) / limit);
+    const total = parseInt(find_brand[0].metadata[0].total);
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.allBrandListAdmin,
+      totalData: total,
+      totalPage: totalPage,
+      allBrand: find_brand[0].data,
+    });
+
+  },
+  // brandListAdminOld: async (req, res, next) => {
+  //   var find_brand = await BikeBrandModel.find({}).sort({ bikeBrand: 1 });
+  //   return res.status(global.CONFIGS.responseCode.success).json({
+  //     success: true,
+  //     message: global.CONFIGS.api.allBrandListAdmin,
+  //     data: find_brand,
+  //   });
+  // },
+
+  singleBrandByIdAdmin: async (req, res, next) => {
+    var find_brand = await BikeBrandModel.findById(req.params.id);
+    console.log(find_brand, "....find_brand")
+    if (!find_brand) {
+      const err = new customError(
+        global.CONFIGS.api.brandInactive,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getBrandSuccess,
       data: find_brand,
     });
   },
+
 
   brandListFront: async (req, res, next) => {
     var find_brand = await BikeBrandModel.find({ activeStatus: "1" }).sort({
