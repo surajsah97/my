@@ -17,7 +17,7 @@ module.exports = {
     }).sort({
       _id: -1,
     });
-    console.log(checkOutdata, ".......checkOutData");
+    // console.log(checkOutdata, ".......checkOutData");
     if (!checkOutdata) {
       const err = new customError(
         global.CONFIGS.api.ProductCheckOutNotfound,
@@ -30,6 +30,13 @@ module.exports = {
       { userId: checkOutdata.userId },
       { _id: -1 }
     ).sort({ _id: -1 });
+    if (!userAddress) {
+      const err = new customError(
+        global.CONFIGS.api.userAddressNotFound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
 
     req.body.product = checkOutdata.product;
     req.body.addressId = userAddress._id;
@@ -41,6 +48,13 @@ module.exports = {
     // console.log(req.body, "......body");
 
     const createProductOrder = await ProductOrderModel.create(req.body);
+
+    // console.log(createProductOrder.freeProduct,".......createProductOrder");
+//     const hello=createProductOrder.freeProduct.map(car=>car.qty);
+//     console.log(hello.length,".......createProductOrderqty3");
+//     console.log(hello[0],".......createProductOrderqty3");
+// return
+    
     if (createProductOrder) {
       var update_checkout = await ProductCheckOutModel.updateOne(
         { _id: req.body.checkoutId },
@@ -51,23 +65,28 @@ module.exports = {
       });
       console.log(delete_cart, ".....deleted");
       if (createProductOrder.freeProduct.length > 0) {
-        var finduser = await UserModel.findOne({
+        let finduser = await UserModel.findOne({
           _id: createProductOrder.userId,
         });
+        console.log(finduser,".......finduser");
         if (finduser && finduser.trialActive === true) {
-          var trailprod = parseInt(
+          let trailprod = parseInt(
             createProductOrder.freeProduct.length + finduser.trialQuantity
           );
+          console.log(trailprod,".....trailprod")
           if (trailprod >= 3) {
-            var update_user = await UserModel.updateOne(
+            let update_user = await UserModel.updateOne(
               { _id: createProductOrder.userId },
               { trialQuantity: trailprod, trialActive: false }
             );
+            console.log(update_user,"....update_user  if..")
+
           } else if (trailprod < 3) {
-            var update_user = await UserModel.updateOne(
+            let update_user = await UserModel.updateOne(
               { _id: createProductOrder.userId },
               { trialQuantity: trailprod }
             );
+            console.log(update_user,"....update_user  else..")
           }
         }
       }

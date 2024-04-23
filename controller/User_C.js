@@ -2,6 +2,7 @@ var mongoose = require("mongoose");
 const constants = require("../models/modelConstants");
 const UserModel = mongoose.model(constants.UserModel);
 const TempUserModel = mongoose.model(constants.TempUserModel);
+const TrialUserModel = mongoose.model(constants.TrialUserModel);
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const common = require("../service/commonFunction");
@@ -544,11 +545,13 @@ module.exports = {
   getUserCountByAdmin: async (req, res, next) => {
     var find_GuestType = await UserModel.countDocuments({ userType: "Guest" });
     var find_userType = await UserModel.countDocuments({ userType: "User" });
+    var find_trialUserType = await TrialUserModel.countDocuments();
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getUserDetailsSuccess,
       totalUser: find_userType,
       totalGuest: find_GuestType,
+      totalTrialUser: find_trialUserType,
     });
   },
 };

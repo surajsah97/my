@@ -52,6 +52,7 @@
     "updateAddressSucess": "Address updated Successfully.",
     "deleteAddressSucess": "Address deleted Successfully.",
     "addressNotFound": "Address not found.",
+    "userAddressNotFound": "User Address not found please Add User Address First.",
     "addressalreadyadded": "Address already added. Please try another name.",
     "addSupportTypeSuccess": "Support ticket Successfully.",
     "addSupportTypeFail": "Support ticket Failed.",
