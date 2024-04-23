@@ -119,7 +119,7 @@ module.exports = {
   login: async (req, res, next) => {
     var find_user = await UserModel.findOne({
       mobile: req.body.mobile,
-      userType: req.body.userType,
+      // userType: req.body.userType,
     });
     if (!find_user) {
       const err = new customError(
