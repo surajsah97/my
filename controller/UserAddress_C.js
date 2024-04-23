@@ -135,7 +135,7 @@ module.exports = {
         },
       },
       { $unwind: "$users" },
-      { $unset: "userId" },
+      // { $unset: "userId" },
       {
         $project: {
           _id: "$_id",
@@ -159,6 +159,7 @@ module.exports = {
         },
       },
     ]);
+    console.log(find_user,".......find_user");
     // return res.send(find_user)
     if (find_user.length == 0) {
       const err = new customError(
