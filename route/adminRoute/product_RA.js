@@ -25,8 +25,8 @@ router
 
 router
   .route("/:id")
-  .put(cpUpload, errorfun(product.updateProduct))
-  // .put(cpUpload, Auth.adminValidateToken, errorfun(product.updateProduct))
+  // .put(cpUpload, errorfun(product.updateProduct))
+  .put(cpUpload, Auth.adminValidateToken, errorfun(product.updateProduct))
   .get(Auth.adminValidateToken, errorfun(product.singleProductByIdAdmin))
   .delete(Auth.adminValidateToken, errorfun(product.deleteProduct));
 
