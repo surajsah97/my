@@ -924,6 +924,7 @@ module.exports = {
             name: "$usersDetails.name",
             email: "$usersDetails.email",
             mobile: "$usersDetails.mobile",
+            trialActive: "$usersDetails.trialActive",
           },
           useraddress: {
             houseNo: "$useraddress.houseNo",
@@ -934,12 +935,33 @@ module.exports = {
           },
           product: {
             _id: "$product.productDetails._id",
+            orderDate: {
+              $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+            },
+            deliveredDate: {
+              $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" },
+            },
+            orderMonth: {
+              $dateToString: { format: "%B", date: "$createdAt" },
+            },
+            deliverystatus: "$status",
             qty: "$product.qty",
+            vatAmounts:{$multiply: ["$product.productDetails.vatAmount","$product.qty",],},
             productPrice: "$product.productDetails.productPrice",
             individualTotalPrice: {
               $multiply: [
                 "$product.productDetails.productPrice",
                 "$product.qty",
+              ],
+            },
+            individualTotalTaxablePrice: {
+              $sum: [
+               { $multiply: [
+                "$product.productDetails.productPrice",
+                "$product.qty",
+              ]},{
+               $multiply: ["$product.productDetails.vatAmount","$product.qty",]
+            }
               ],
             },
             productName: "$product.productDetails.productName",
