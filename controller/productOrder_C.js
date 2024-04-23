@@ -49,12 +49,6 @@ module.exports = {
 
     const createProductOrder = await ProductOrderModel.create(req.body);
 
-    // console.log(createProductOrder.freeProduct,".......createProductOrder");
-//     const hello=createProductOrder.freeProduct.map(car=>car.qty);
-//     console.log(hello.length,".......createProductOrderqty3");
-//     console.log(hello[0],".......createProductOrderqty3");
-// return
-    
     if (createProductOrder) {
       var update_checkout = await ProductCheckOutModel.updateOne(
         { _id: req.body.checkoutId },
@@ -70,9 +64,18 @@ module.exports = {
         });
         console.log(finduser,".......finduser");
         if (finduser && finduser.trialActive === true) {
+
+          let totalQty = 0;
+          createProductOrder.freeProduct.map(item => {
+          totalQty += item.qty;
+          });
+
           let trailprod = parseInt(
-            createProductOrder.freeProduct.length + finduser.trialQuantity
+             totalQty+ finduser.trialQuantity
           );
+          // let trailprod = parseInt(
+          //   createProductOrder.freeProduct.length + finduser.trialQuantity
+          // );
           console.log(trailprod,".....trailprod")
           if (trailprod >= 3) {
             let update_user = await UserModel.updateOne(
@@ -135,6 +138,7 @@ module.exports = {
       {
         $unwind: "$product",
       },
+      
       {
         $unwind: {
           path: "$freeProduct",
@@ -187,6 +191,7 @@ module.exports = {
           as: "freeProduct.freeProductDetails",
         },
       },
+
       {
         $unwind: {
           path: "$freeProduct.freeProductDetails",
@@ -318,7 +323,24 @@ module.exports = {
             },
             deliverystatus: "$status",
             qty: "$freeProduct.qty",
+            vatAmounts:{$multiply: ["$product.productDetails.vatAmount","$freeProduct.qty",],},
             productPrice: "$freeProduct.freeProductDetails.productPrice",
+             individualTotalPrice: {
+              $multiply: [
+                "$freeProduct.freeProductDetails.productPrice",
+                "$freeProduct.qty",
+              ],
+            },
+            individualTotalTaxablePrice: {
+              $sum: [
+               { $multiply: [
+                "$freeProduct.freeProductDetails.productPrice",
+                "$freeProduct.qty",
+              ]},{
+               $multiply: ["$product.productDetails.vatAmount","$freeProduct.qty",]
+            }
+              ],
+            },
             freeProductName: "$freeProduct.freeProductDetails.productName",
             freeProductImage: "$freeProduct.freeProductDetails.productImage",
             freeProductUOM: "$freeProduct.freeProductDetails.productUOM",
