@@ -32,6 +32,7 @@ const validationSchema = Joi.object({
   licenseCity: Joi.string().required(),
   licenseType: Joi.string().required(),
   licenseValidity: Joi.string().required(),
+  deliveryZoneId: Joi.string().required(),
   lHouseNo: Joi.string().required(),
   lBuildingName: Joi.string().required(),
   lStreet: Joi.string().required(),
@@ -53,7 +54,7 @@ const validationSchema = Joi.object({
   IBAN: Joi.string().required(),
   // lat: Joi.number().required(),
   // long: Joi.number().required(),
-  // activeStatus: Joi.string().required(),
+  activeStatus: Joi.string().required(),
 });
 
 module.exports = validationSchema;

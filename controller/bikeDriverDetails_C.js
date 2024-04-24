@@ -7,6 +7,7 @@ let customError = require("../middleware/customerror");
 const DriverDocModel = mongoose.model(constants.DriverDocModel);
 const DriverAddressModel = mongoose.model(constants.DriverAddressModel);
 const DriverBankDetailsModel = mongoose.model(constants.DriverBankDetailsModel);
+const DeliveryZoneModel = mongoose.model(constants.DeliveryZoneModel);
 const ObjectId = mongoose.Types.ObjectId;
 const validationSchema = require("../validation/bikeDetailsValidation");
 const jwt = require("jsonwebtoken");
@@ -332,6 +333,7 @@ module.exports = {
     bikeDRiverDetails.docId = req.body.docId;
     bikeDRiverDetails.bikeDetailsId = req.body.bikeDetailsId;
     bikeDRiverDetails.addressId = req.body.addressId;
+    bikeDRiverDetails.deliveryZoneId = req.body.deliveryZoneId;
     bikeDRiverDetails.bankDetailsId = req.body.bankDetailsId;
     bikeDRiverDetails.docId = req.body.docId;
     bikeDRiverDetails.isVerified = req.body.isVerified;
@@ -397,6 +399,8 @@ module.exports = {
         street: req.body.lStreet,
         landmark: req.body.lLandmark,
       },
+
+      activeStatus:req.body.activeStatus,
       // location:req.body.location,
       // lat:req.body.lat,
       // long:req.body.long,
@@ -436,6 +440,7 @@ module.exports = {
       accountNumber: req.body.accountNumber,
       branchName: req.body.branchName,
       bankName: req.body.bankName,
+      activeStatus: req.body.activeStatus,
     });
     console.log("..........33333333");
 
@@ -613,7 +618,7 @@ module.exports = {
         {
           $set: {
             emergencyContact: {
-              namr: req.body.ecName,
+              name: req.body.ecName,
               relation: req.body.ecRelation,
               mobile: req.body.ecMobile,
             },
@@ -653,31 +658,16 @@ module.exports = {
             ownerName: req.body.ownerName,
             vehicleNumber: req.body.vehicleNumber,
             registrationZone: req.body.registrationZone,
-            vehicleColor: req.body.vehicleColor,
             registrationDate: req.body.registrationDate,
+            vehicleColor: req.body.vehicleColor,
             vehicleYear: req.body.vehicleYear,
+            vehicleAge: req.body.vehicleAge,
             chasisNumber: req.body.chasisNumber,
             bikeInsuranceValidity: req.body.bikeInsuranceValidity,
             fitnessValidity: req.body.fitnessValidity,
             mulkiyaValidity: req.body.mulkiyaValidity,
-            vehicleAge: req.body.vehicleAge,
-            name: req.body.name,
-            email: req.body.email,
-            mobile: req.body.mobile,
-            nationality: req.body.nationality,
-            altMobile: req.body.altMobile,
-            passportNumber: req.body.passportNumber,
-            passportValidity: req.body.passportValidity,
-            visaNumber: req.body.visaNumber,
-            visaValidity: req.body.visaValidity,
-            emiratesId: req.body.emiratesId,
-            emiratesIdValidity: req.body.emiratesIdValidity,
-            InsuranceComp: req.body.InsuranceComp,
-            insuranceValidity: req.body.insuranceValidity,
-            licenseNumber: req.body.licenseNumber,
-            licenseCity: req.body.licenseCity,
-            licenseType: req.body.licenseType,
-            licenseValidity: req.body.licenseValidity,
+            mulkiyaDocImg: req.body.mulkiyaDocImg,
+            vehicleImage: req.body.vehicleImage,
           },
         },
         { new: true }

@@ -84,22 +84,27 @@ var bikeDriverSchema = new Schema(
     docId: {
       type: Schema.Types.ObjectId,
       ref: constants.DriverDocModel,
-      // required: [true, "Please enter Insurance Validity."]
+      // required: [true, "Please enter docId."]
     },
     bikeDetailsId: {
       type: Schema.Types.ObjectId,
       ref: constants.BikeModel,
-      // required: [true, "Please enter bikeModelId validity."]
+      // required: [true, "Please enter bikeDetailsId."]
     },
     addressId: {
       type: Schema.Types.ObjectId,
       ref: constants.DriverAddressModel,
-      // required: [true, "Please enter Insurance Validity."]
+      // required: [true, "Please enter addressId."]
+    },
+    deliveryZoneId: {
+      type: Schema.Types.ObjectId,
+     ref: constants.DeliveryZoneModel,
+    required: [true, "Please enter deliveryZoneId."]
     },
     bankDetailsId: {
       type: Schema.Types.ObjectId,
       ref: constants.DriverBankDetailsModel,
-      // required: [true, "Please enter Insurance Validity."]
+      // required: [true, "Please enter bankDetailsId."]
     },
     isVerified: {
       type: Boolean,
