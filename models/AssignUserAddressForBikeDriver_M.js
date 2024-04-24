@@ -19,23 +19,28 @@ var AssignUserAddressForBikeDriverSchema = new Schema(
 
     deliveredReserveBottle: {
       type: Number,
-      required: [true, "Please enter deliveredReserveBottle."],
+      // required: [true, "Please enter deliveredReserveBottle."],
+      default: 0,
     },
     returnedReserveBottle: {
       type: Number,
-      required: [true, "Please enter returnedReserveBottle."],
+      // required: [true, "Please enter returnedReserveBottle."],
+      default: 0,
     },
     damagedBottle: {
       type: Number,
-      required: [true, "Please enter returnedReserveBottle."],
+      // required: [true, "Please enter returnedReserveBottle."],
+      default: 0,
     },
     leakageBottle: {
       type: Number,
-      required: [true, "Please enter returnedReserveBottle."],
+      // required: [true, "Please enter returnedReserveBottle."],
+      default: 0,
     },
     brokenBottle: {
       type: Number,
-      required: [true, "Please enter returnedReserveBottle."],
+      // required: [true, "Please enter returnedReserveBottle."],
+      default: 0,
     },
     deliveryAddress: {
       type: [

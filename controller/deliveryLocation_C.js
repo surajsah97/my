@@ -134,16 +134,6 @@ module.exports = {
        {
         $match: query,
       },
-      // {
-      //   $project: {
-      //     _id: "$_id",
-      //     categoryName: "$category",
-      //     categoryImage: "$categoryImg",
-      //     activeStatus: "$activeStatus",
-      //     createdAt: "$createdAt",
-      //     updatedAt: "$updatedAt",
-      //   },
-      // },
       {
         $facet: {
           metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],

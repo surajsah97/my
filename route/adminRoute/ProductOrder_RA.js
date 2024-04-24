@@ -8,5 +8,8 @@ const errorfun = require("../../middleware/catchAsyncErrors");
 router
   .route("/")
   .post(Auth.adminValidateToken, errorfun(productOrder.orderListByAdmin));
+router
+  .route("/:id")
+  .post(Auth.adminValidateToken, errorfun(productOrder.orderListByZoneIdAdmin));
 
 module.exports = router;

@@ -443,7 +443,6 @@ module.exports = {
       };
     }
 
-    // $match: { $expr: { $regexMatch: { input: {$toString: "$facevalue"}, regex: ".5" } } }
     if (startDate != undefined && endDate != undefined) {
       // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
       query.createdAt = {
