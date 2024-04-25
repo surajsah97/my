@@ -6,9 +6,14 @@ const Auth = require("../../middleware/auth");
 const errorfun = require("../../middleware/catchAsyncErrors");
 
 router.get(
-  "/getVehicleSingleFront",
+  "/bikedriverprofile",
   Auth.validateTokenBikeDriver,
-  errorfun(BikeDriverDetails.getVehicleSingleFront)
+  errorfun(BikeDriverDetails.getBikeDriverProfileFront)
+);
+router.get(
+  "/singlebikedriverdetails",
+  Auth.apiValidateToken,
+  errorfun(BikeDriverDetails.getSingleBikeDriverDetailsFront)
 );
 
 router.get(
@@ -16,11 +21,11 @@ router.get(
   Auth.validateTokenBikeDriver,
   errorfun(BikeDriverDetails.VehicleListFront)
 );
-router.put(
-  "/updatebikedriverlocation/:id",
-  errorfun(BikeDriverDetails.updateBikeDriverLocation)
-);
-// router.put("/updatebikedriverlocation/:id",Auth.validateTokenBikeDriver, errorfun(BikeDriverDetails.updateBikeDriverLocation));
+// router.put(
+//   "/updatebikedriverlocation/:id",
+//   errorfun(BikeDriverDetails.updateBikeDriverLocation);
+// );
+router.put("/updatebikedriverlocation/:id",Auth.validateTokenBikeDriver, errorfun(BikeDriverDetails.updateBikeDriverLocation));
 
 router.route("/login").post(errorfun(BikeDriverDetails.loginBikeDriver));
 

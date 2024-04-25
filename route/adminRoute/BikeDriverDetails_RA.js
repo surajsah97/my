@@ -38,11 +38,11 @@ var cpUpload = upload1.fields([
 router
   .route("/")
 
-  .get(Auth.adminValidateToken, errorfun(bikeDRiverDetails.vehicleListAdmin))
+  .get(Auth.adminValidateToken, errorfun(bikeDRiverDetails.bikeDriverListByAdmin))
   .post(
     Auth.adminValidateToken,
     cpUpload,
-    errorfun(bikeDRiverDetails.addVehicle)
+    errorfun(bikeDRiverDetails.addBikeDriverWithDetails)
   );
 
 router
@@ -50,14 +50,17 @@ router
   .put(
     Auth.adminValidateToken,
     cpUpload,
-    errorfun(bikeDRiverDetails.updateVehicle)
+    errorfun(bikeDRiverDetails.updatebikeDriverWithDetails)
   )
-  .delete(Auth.adminValidateToken, errorfun(bikeDRiverDetails.deletevehicle));
+  .delete(Auth.adminValidateToken, errorfun(bikeDRiverDetails.deletebikeDriverWithDetails));
+router
+  .route("/bikedriverlistbyzoneid/:zoneId")
+  .get(Auth.adminValidateToken, errorfun(bikeDRiverDetails.bikeDriverListByZoneIdAdmin));
 
 router.get(
-  "/getVehicleSingleAdmin",
+  "/getsinglebikedriverdetailbyadmin",
   Auth.adminValidateToken,
-  errorfun(bikeDRiverDetails.getVehicleSingleAdmin)
+  errorfun(bikeDRiverDetails.getSingleBikeDriverDetailsByIdAdmin)
 );
 
 module.exports = router;

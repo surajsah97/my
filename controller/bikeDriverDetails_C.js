@@ -194,7 +194,7 @@ module.exports = {
   },
 
   /** */
-  addVehicle: async (req, res, next) => {
+  addBikeDriverWithDetails: async (req, res, next) => {
     let find_Driver = await BikeDriverModel.findOne({
       $or: [
         { mobile: req.body.mobile },
@@ -469,8 +469,9 @@ module.exports = {
       });
     }
   },
+
   /** */
-  updateVehicle: async (req, res, next) => {
+  updatebikeDriverWithDetails: async (req, res, next) => {
     try {
       /**Update BikeDriver */
       let find_Driver = await BikeDriverModel.findOne({
@@ -798,7 +799,6 @@ module.exports = {
     }
   },
 
-
   updateBikeDriverLocation: async (req, res, next) => {
     let find_Driver = await BikeDriverModel.findById(req.params.id);
     if (!find_Driver) {
@@ -829,9 +829,9 @@ module.exports = {
       updateDriverLocation: find_Driver,
     });
   },
-
   /** */
-  deletevehicle: async (req, res, next) => {
+
+  deletebikeDriverWithDetails: async (req, res, next) => {
     /* Delete BikeDriver*/
     const deletedDriver = await BikeDriverModel.findByIdAndDelete({
       _id: req.params.id,
@@ -905,11 +905,11 @@ module.exports = {
 
   /** */
 
-  /**get single vehicleDetails by user */
+  /**get bikeDriver Profile by bikeDriver */
 
-  getVehicleSingleFront: async (req, res, next) => {
+  getBikeDriverProfileFront: async (req, res, next) => {
     // console.log(req.body);
-    let find_user = await BikeDriverModel.aggregate([
+    let find_bikedriverlist = await BikeDriverModel.aggregate([
       {
         $match: { activeStatus: "1", _id: new ObjectId(req.query.id) },
       },
@@ -1058,10 +1058,10 @@ module.exports = {
         },
       },
     ]);
-    // return res.send(find_user)
-    if (find_user.length == 0) {
+    // return res.send(find_bikedriverlist)
+    if (find_bikedriverlist.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.getUserDetailsFail,
+        global.CONFIGS.api.DriverNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
@@ -1069,19 +1069,19 @@ module.exports = {
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.getUserDetailsSuccess,
+      message: global.CONFIGS.api.getDriverProfileDetails,
       // totalPage: totalPage,
-      data: find_user,
+      data: find_bikedriverlist,
     });
   },
   /** */
-  /**get single vehicleDetails by Admin */
 
-  getVehicleSingleAdmin: async (req, res, next) => {
+  /**get single vehicleDetails by user */
+  getSingleBikeDriverDetailsFront: async (req, res, next) => {
     // console.log(req.body);
-    let find_user = await BikeDriverModel.aggregate([
+    let find_bikedriverlist = await BikeDriverModel.aggregate([
       {
-        $match: { _id: new ObjectId(req.query.id) },
+        $match: { activeStatus: "1", _id: new ObjectId(req.query.bikeDriverId) },
       },
       /**driverbankdetails */
       {
@@ -1228,8 +1228,8 @@ module.exports = {
         },
       },
     ]);
-    // return res.send(find_user)
-    if (find_user.length == 0) {
+    // return res.send(find_bikedriverlist)
+    if (find_bikedriverlist.length == 0) {
       const err = new customError(
         global.CONFIGS.api.getUserDetailsFail,
         global.CONFIGS.responseCode.notFound
@@ -1241,7 +1241,7 @@ module.exports = {
       success: true,
       message: global.CONFIGS.api.getUserDetailsSuccess,
       // totalPage: totalPage,
-      data: find_user,
+      data: find_bikedriverlist,
     });
   },
   /** */
@@ -1433,12 +1433,567 @@ module.exports = {
     });
   },
 
-  vehicleListAdmin: async (req, res, next) => {
+  bikeDriverListByZoneIdAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
+    const searchText = req.query.searchText;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    var query = {};
     // console.log(skip, "...skip");
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
+    
+    // }
+    if (searchText !== undefined) {
+      query.$or = [
+        { name: { $regex: new RegExp(searchText), $options: "i" } },
+        {
+            $expr: {
+              $regexMatch: {
+                input: { $toString: "$mobile" },
+                regex: searchText,
+              },
+            },
+        },
+        
+        {
+          "bikedetails.ownerName": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+        {
+          "bikedetails.chasisNumber": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+      ];
+    }
+    if (startDate != undefined && endDate != undefined) {
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query,"........query");
     let bikeDriverList = await BikeDriverModel.aggregate([
+     
+      /**driverbankdetails */
+      {
+        $lookup: {
+          from: "deliveryzone",
+          localField: "deliveryZoneId",
+          foreignField: "_id",
+          as: "deliveryzonedetails",
+        },
+      },
+      { $unwind: "$deliveryzonedetails" },
+      // { $unset: "deliveryZoneId" },
+      {
+        $lookup: {
+          from: "driverbankdetails",
+          localField: "bankDetailsId",
+          foreignField: "_id",
+          as: "driverbankdetails",
+        },
+      },
+      { $unwind: "$driverbankdetails" },
+      { $unset: "bankDetailsId" },
+      /**bikedetails */
+      {
+        $lookup: {
+          from: "bikedetails",
+          localField: "bikeDetailsId",
+          foreignField: "_id",
+          as: "bikedetails",
+        },
+      },
+      { $unwind: "$bikedetails" },
+      { $unset: "bikeDetailsId" },
+      { $unset: "bikedetails.mulkiyaDocImg._id" },
+      { $unset: "bikedetails.vehicleImage._id" },
+
+      /**fetch bikeMrand into bikedetails */
+
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "bikedetails.brandId",
+          foreignField: "_id",
+          as: "bikebrandName",
+        },
+      },
+      { $unwind: "$bikebrandName" },
+      { $unset: "bikedetails.brandId" },
+
+      /**fetch bikeModel into bikedetails */
+      /**bikemodel */
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "bikedetails.modelId",
+          foreignField: "_id",
+          as: "bikemodelName",
+        },
+      },
+      { $unwind: "$bikemodelName" },
+      { $unset: "bikedetails.modelId" },
+      /**driveraddress */
+
+      {
+        $lookup: {
+          from: "driveraddress",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "driveraddress",
+        },
+      },
+      { $unwind: "$driveraddress" },
+      { $unset: "addressId" },
+      { $unset: "driveraddress.localAddress._id" },
+      { $unset: "driveraddress.homeCountryAddress._id" },
+      { $unset: "driveraddress.emergencyContact._id" },
+      /**driverdoc */
+      {
+        $lookup: {
+          from: "driverdoc",
+          localField: "docId",
+          foreignField: "_id",
+          as: "driverdoc",
+        },
+      },
+      { $unwind: "$driverdoc" },
+      { $unset: "docId" },
+      { $unset: "driverdoc.passportImg._id" },
+      { $unset: "driverdoc.emiratesIdImg._id" },
+      { $unset: "driverdoc.licenseImg._id" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+      {
+        $match: {
+          $and: [
+          query,
+        {"deliveryzonedetails._id": new ObjectId(req.params.zoneId),}
+          ]
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          // _id: "$_id",
+          /**bikedriverdetails */
+          name: 1,
+          email: 1,
+          // email: "$email",
+          mobile: 1,
+          nationality: "$nationality",
+          altMobile: 1,
+          passportNumber: "$passportNumber",
+          passwordassportValidity: "$passwordassportValidity",
+          visaNumber: "$visaNumber",
+          visaValidity: "$visaValidity",
+          emiratesId: "$emiratesId",
+          emiratesIdValidity: "$emiratesIdValidity",
+          InsuranceComp: "$InsuranceComp",
+          insuranceValidity: "$insuranceValidity",
+          password: "$password",
+          licenseNumber: "$licenseNumber",
+          licenseCity: "$licenseCity",
+          licenseType: "$licenseType",
+          licenseValidity: "$licenseValidity",
+          isVerified: "$isVerified",
+          driverType: "$driverType",
+          activeStatus: "$activeStatus",
+          /**deliveryzonedetails */
+          deliveryzonedetails:{
+          deliveryZoneId:"$deliveryzonedetails._id",
+          zoneName: "$deliveryzonedetails.zoneName",
+          country: "$deliveryzonedetails.country",
+          lat: "$deliveryzonedetails.lat",
+          long: "$deliveryzonedetails.long",
+          zoneActiveStatus: "$deliveryzonedetails.activeStatus",
+          },
+          /**driveraddress */
+          driveraddressdetails:{
+          driveraddressId: "$driveraddress._id",
+          localAddress: "$driveraddress.localAddress",
+          homeCountryAddress: "$driveraddress.homeCountryAddress",
+          emergencyContact: "$driveraddress.emergencyContact",
+          addressActiveStatus: "$driveraddress.activeStatus",
+          },
+          /**driverbankdetails */
+          driverbankdetails:{
+          driverbankdetailsId: "$driverbankdetails._id",
+          bankName: "$driverbankdetails.bankName",
+          branchName: "$driverbankdetails.branchName",
+          accountNumber: "$driverbankdetails.accountNumber",
+          accountHolderName: "$driverbankdetails.accountHolderName",
+          IBAN: "$driverbankdetails.IBAN",
+          bankActiveStatus: "$driverbankdetails.activeStatus",
+          },
+          /**driverdoc */
+          driverdocDetails:{
+          driverdocId: "$driverdoc._id",
+          passportImg: "$driverdoc.passportImg",
+          emiratesIdImg: "$driverdoc.emiratesIdImg",
+          licenseImg: "$driverdoc.licenseImg",
+          visaImg: "$driverdoc.visaImg",
+          driverImg: "$driverdoc.driverImg",
+          docActiveStatus: "$driverdoc.activeStatus",
+          },
+          /**bikedetails */
+          bikeDetails:{
+          bikedetailsId: "$bikedetails._id",
+          ownerName: "$bikedetails.ownerName",
+          vehicleNumber: "$bikedetails.vehicleNumber",
+          registrationZone: "$bikedetails.registrationZone",
+          registrationDate: "$bikedetails.registrationDate",
+          vehicleColor: "$bikedetails.vehicleColor",
+          vehicleYear: "$bikedetails.vehicleYear",
+          vehicleAge: "$bikedetails.vehicleAge",
+          chasisNumber: "$bikedetails.chasisNumber",
+          bikeInsuranceValidity: "$bikedetails.bikeInsuranceValidity",
+          fitnessValidity: "$bikedetails.fitnessValidity",
+          mulkiyaValidity: "$bikedetails.mulkiyaValidity",
+          mulkiyaDocImg: "$bikedetails.mulkiyaDocImg",
+          vehicleImage: "$bikedetails.vehicleImage",
+          bikeActiveStatus: "$bikedetails.activeStatus",
+          bikeBrand: "$bikebrandName.bikeBrand",
+          bikeModel: "$bikemodelName.bikeModel",
+          },
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
+    if (bikeDriverList[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.DriverNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const totalPage = Math.ceil(
+      parseInt(bikeDriverList[0].metadata[0].total) / limit
+    );
+    const total = parseInt(bikeDriverList[0].metadata[0].total);
+    const dataPerPage = total - skip > limit ? limit : total - skip;
+    const totalLeftdata = total - skip - dataPerPage;
+    const rangeStart = skip === 0 ? 1 : skip + 1;
+    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.allDriverlistByZoneIdAdmin,
+      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+      totalData: total,
+      totalPage: totalPage,
+      totalLeftdata: totalLeftdata,
+      dataPerPage,
+      allOrder: bikeDriverList[0].data,
+    });
+  },
+  bikeDriverListByAdmin: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
+    const searchText = req.query.searchText;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    var query = {};
+    // console.log(skip, "...skip");
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
+    if (req.query.deliveryZoneId != undefined) {
+      query.deliveryZoneId = new ObjectId(req.query.deliveryZoneId);
+    }
+    if (searchText !== undefined) {
+      query.$or = [
+        { name: { $regex: new RegExp(searchText), $options: "i" } },
+        {
+            $expr: {
+              $regexMatch: {
+                input: { $toString: "$mobile" },
+                regex: searchText,
+              },
+            },
+          },
+        {
+          "deliveryzonedetails.zoneName": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+        {
+          "bikedetails.ownerName": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+        {
+          "bikedetails.chasisNumber": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+      ];
+    }
+    if (startDate != undefined && endDate != undefined) {
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query,"........query");
+    let bikeDriverList = await BikeDriverModel.aggregate([
+     
+      /**driverbankdetails */
+      {
+        $lookup: {
+          from: "deliveryzone",
+          localField: "deliveryZoneId",
+          foreignField: "_id",
+          as: "deliveryzonedetails",
+        },
+      },
+      { $unwind: "$deliveryzonedetails" },
+      // { $unset: "deliveryZoneId" },
+      {
+        $lookup: {
+          from: "driverbankdetails",
+          localField: "bankDetailsId",
+          foreignField: "_id",
+          as: "driverbankdetails",
+        },
+      },
+      { $unwind: "$driverbankdetails" },
+      { $unset: "bankDetailsId" },
+      /**bikedetails */
+      {
+        $lookup: {
+          from: "bikedetails",
+          localField: "bikeDetailsId",
+          foreignField: "_id",
+          as: "bikedetails",
+        },
+      },
+      { $unwind: "$bikedetails" },
+      { $unset: "bikeDetailsId" },
+      { $unset: "bikedetails.mulkiyaDocImg._id" },
+      { $unset: "bikedetails.vehicleImage._id" },
+
+      /**fetch bikeMrand into bikedetails */
+
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "bikedetails.brandId",
+          foreignField: "_id",
+          as: "bikebrandName",
+        },
+      },
+      { $unwind: "$bikebrandName" },
+      { $unset: "bikedetails.brandId" },
+
+      /**fetch bikeModel into bikedetails */
+      /**bikemodel */
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "bikedetails.modelId",
+          foreignField: "_id",
+          as: "bikemodelName",
+        },
+      },
+      { $unwind: "$bikemodelName" },
+      { $unset: "bikedetails.modelId" },
+      /**driveraddress */
+
+      {
+        $lookup: {
+          from: "driveraddress",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "driveraddress",
+        },
+      },
+      { $unwind: "$driveraddress" },
+      { $unset: "addressId" },
+      { $unset: "driveraddress.localAddress._id" },
+      { $unset: "driveraddress.homeCountryAddress._id" },
+      { $unset: "driveraddress.emergencyContact._id" },
+      /**driverdoc */
+      {
+        $lookup: {
+          from: "driverdoc",
+          localField: "docId",
+          foreignField: "_id",
+          as: "driverdoc",
+        },
+      },
+      { $unwind: "$driverdoc" },
+      { $unset: "docId" },
+      { $unset: "driverdoc.passportImg._id" },
+      { $unset: "driverdoc.emiratesIdImg._id" },
+      { $unset: "driverdoc.licenseImg._id" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+       {
+        $match:query,
+      },
+      {
+        $project: {
+          _id: 1,
+          // _id: "$_id",
+          /**bikedriverdetails */
+          name: 1,
+          email: 1,
+          // email: "$email",
+          mobile: 1,
+          nationality: "$nationality",
+          altMobile: 1,
+          passportNumber: "$passportNumber",
+          passwordassportValidity: "$passwordassportValidity",
+          visaNumber: "$visaNumber",
+          visaValidity: "$visaValidity",
+          emiratesId: "$emiratesId",
+          emiratesIdValidity: "$emiratesIdValidity",
+          InsuranceComp: "$InsuranceComp",
+          insuranceValidity: "$insuranceValidity",
+          password: "$password",
+          licenseNumber: "$licenseNumber",
+          licenseCity: "$licenseCity",
+          licenseType: "$licenseType",
+          licenseValidity: "$licenseValidity",
+          isVerified: "$isVerified",
+          driverType: "$driverType",
+          activeStatus: "$activeStatus",
+          /**deliveryzonedetails */
+          deliveryzonedetails:{
+          deliveryZoneId:"$deliveryzonedetails._id",
+          zoneName: "$deliveryzonedetails.zoneName",
+          country: "$deliveryzonedetails.country",
+          lat: "$deliveryzonedetails.lat",
+          long: "$deliveryzonedetails.long",
+          zoneActiveStatus: "$deliveryzonedetails.activeStatus",
+          },
+          /**driveraddress */
+          driveraddressdetails:{
+          driveraddressId: "$driveraddress._id",
+          localAddress: "$driveraddress.localAddress",
+          homeCountryAddress: "$driveraddress.homeCountryAddress",
+          emergencyContact: "$driveraddress.emergencyContact",
+          addressActiveStatus: "$driveraddress.activeStatus",
+          },
+          /**driverbankdetails */
+          driverbankdetails:{
+          driverbankdetailsId: "$driverbankdetails._id",
+          bankName: "$driverbankdetails.bankName",
+          branchName: "$driverbankdetails.branchName",
+          accountNumber: "$driverbankdetails.accountNumber",
+          accountHolderName: "$driverbankdetails.accountHolderName",
+          IBAN: "$driverbankdetails.IBAN",
+          bankActiveStatus: "$driverbankdetails.activeStatus",
+          },
+          /**driverdoc */
+          driverdocDetails:{
+          driverdocId: "$driverdoc._id",
+          passportImg: "$driverdoc.passportImg",
+          emiratesIdImg: "$driverdoc.emiratesIdImg",
+          licenseImg: "$driverdoc.licenseImg",
+          visaImg: "$driverdoc.visaImg",
+          driverImg: "$driverdoc.driverImg",
+          docActiveStatus: "$driverdoc.activeStatus",
+          },
+          /**bikedetails */
+          bikeDetails:{
+          bikedetailsId: "$bikedetails._id",
+          ownerName: "$bikedetails.ownerName",
+          vehicleNumber: "$bikedetails.vehicleNumber",
+          registrationZone: "$bikedetails.registrationZone",
+          registrationDate: "$bikedetails.registrationDate",
+          vehicleColor: "$bikedetails.vehicleColor",
+          vehicleYear: "$bikedetails.vehicleYear",
+          vehicleAge: "$bikedetails.vehicleAge",
+          chasisNumber: "$bikedetails.chasisNumber",
+          bikeInsuranceValidity: "$bikedetails.bikeInsuranceValidity",
+          fitnessValidity: "$bikedetails.fitnessValidity",
+          mulkiyaValidity: "$bikedetails.mulkiyaValidity",
+          mulkiyaDocImg: "$bikedetails.mulkiyaDocImg",
+          vehicleImage: "$bikedetails.vehicleImage",
+          bikeActiveStatus: "$bikedetails.activeStatus",
+          bikeBrand: "$bikebrandName.bikeBrand",
+          bikeModel: "$bikemodelName.bikeModel",
+          },
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
+    if (bikeDriverList[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.DriverNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const totalPage = Math.ceil(
+      parseInt(bikeDriverList[0].metadata[0].total) / limit
+    );
+    const total = parseInt(bikeDriverList[0].metadata[0].total);
+    const dataPerPage = total - skip > limit ? limit : total - skip;
+    const totalLeftdata = total - skip - dataPerPage;
+    const rangeStart = skip === 0 ? 1 : skip + 1;
+    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.allDriverlistAdmin,
+      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+      totalData: total,
+      totalPage: totalPage,
+      totalLeftdata: totalLeftdata,
+      dataPerPage,
+      allOrder: bikeDriverList[0].data,
+    });
+  },
+
+   /**get single vehicleDetails by Admin */
+  getSingleBikeDriverDetailsByIdAdmin: async (req, res, next) => {
+    // console.log(req.body);
+    let find_bikedriverlist = await BikeDriverModel.aggregate([
+      {
+        $match: { _id: new ObjectId(req.query.bikeDriverId) },
+      },
       /**driverbankdetails */
       {
         $lookup: {
@@ -1525,17 +2080,13 @@ module.exports = {
       },
       {
         $project: {
-          _id: 1,
-          // _id: "$_id",
+          _id: "$_id",
           /**bikedriverdetails */
-          name: 1,
-          email: 1,
-          // email: "$email",
-          mobile: 1,
-          // mobile: "$mobile",
+          name: "$name",
+          email: "$email",
+          mobile: "$mobile",
           nationality: "$nationality",
-          altMobile: 1,
-          // altMobile: "$altMobile",
+          altMobile: "$altMobile",
           passportNumber: "$passportNumber",
           passwordassportValidity: "$passwordassportValidity",
           visaNumber: "$visaNumber",
@@ -1587,37 +2138,22 @@ module.exports = {
           bikeModel: "$bikemodelName.bikeModel",
         },
       },
-      {
-        $facet: {
-          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
-          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
-        },
-      },
     ]);
-    if (bikeDriverList[0].data.length == 0) {
+    // return res.send(find_bikedriverlist)
+    if (find_bikedriverlist.length == 0) {
       const err = new customError(
-        global.CONFIGS.api.ProductNotfound,
+        global.CONFIGS.api.DriverNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
     }
-    const totalPage = Math.ceil(
-      parseInt(bikeDriverList[0].metadata[0].total) / limit
-    );
-    const total = parseInt(bikeDriverList[0].metadata[0].total);
-    const dataPerPage = total - skip > limit ? limit : total - skip;
-    const totalLeftdata = total - skip - dataPerPage;
-    const rangeStart = skip === 0 ? 1 : skip + 1;
-    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
-      message: global.CONFIGS.api.getProductSuccess,
-      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
-      totalData: total,
-      totalPage: totalPage,
-      totalLeftdata: totalLeftdata,
-      dataPerPage,
-      allOrder: bikeDriverList[0].data,
+      message: global.CONFIGS.api.singleDriverDetails,
+      // totalPage: totalPage,
+      data: find_bikedriverlist,
     });
   },
+  /** */
 };
