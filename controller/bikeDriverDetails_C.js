@@ -400,7 +400,7 @@ module.exports = {
         landmark: req.body.lLandmark,
       },
 
-      activeStatus:req.body.activeStatus,
+      activeStatus: req.body.activeStatus,
       // location:req.body.location,
       // lat:req.body.lat,
       // long:req.body.long,
@@ -563,11 +563,63 @@ module.exports = {
         );
         return next(err);
       }
+      let mulkiyaDocImg = {};
+      let vehicleImage = {};
+      let passportImg = {};
+      let emiratesIdImg = {};
+      let licenseImg = {};
+
+      if (req.files.mulkiyaImgFront && req.files.mulkiyaImgBack) {
+        mulkiyaDocImg.frontImg = `uploads/bike/${req.files.mulkiyaImgFront[0].filename}`;
+        mulkiyaDocImg.backImg = `uploads/bike/${req.files.mulkiyaImgBack[0].filename}`;
+        req.body.mulkiyaDocImg = mulkiyaDocImg;
+      }
+
+      if (
+        req.files.vehicleImgFront &&
+        req.files.vehicleImgBack &&
+        req.files.vehicleImgLeft &&
+        req.files.vehicleImgRight
+      ) {
+        vehicleImage.frontImage = `uploads/bike/${req.files.vehicleImgFront[0].filename}`;
+        vehicleImage.backImage = `uploads/bike/${req.files.vehicleImgBack[0].filename}`;
+        vehicleImage.leftImage = `uploads/bike/${req.files.vehicleImgLeft[0].filename}`;
+        vehicleImage.rightImage = `uploads/bike/${req.files.vehicleImgRight[0].filename}`;
+        req.body.vehicleImage = vehicleImage;
+      }
+
+      if (req.files.passportImgFront && req.files.passportImgBack) {
+        passportImg.frontImg = `uploads/bike/${req.files.passportImgFront[0].filename}`;
+        passportImg.backImg = `uploads/bike/${req.files.passportImgBack[0].filename}`;
+        req.body.passportImg = passportImg;
+      }
+
+      if (req.files.emiratesIdImgFront && req.files.emiratesIdImgBack) {
+        emiratesIdImg.frontImg = `uploads/bike/${req.files.emiratesIdImgFront[0].filename}`;
+        emiratesIdImg.backImg = `uploads/bike/${req.files.emiratesIdImgBack[0].filename}`;
+        req.body.emiratesIdImg = emiratesIdImg;
+      }
+
+      if (req.files.licenseImgFront && req.files.licenseImgBack) {
+        licenseImg.frontImg = `uploads/bike/${req.files.licenseImgFront[0].filename}`;
+        licenseImg.backImg = `uploads/bike/${req.files.licenseImgBack[0].filename}`;
+        req.body.licenseImg = licenseImg;
+      }
+
+      if (req.files.visaImg) {
+        req.body.visaImg = `uploads/bike/${req.files.visaImg[0].filename}`;
+      }
+
+      if (req.files.driverImg) {
+        req.body.driverImg = `uploads/bike/${req.files.driverImg[0].filename}`;
+      }
+
       const updatedDriver = await BikeDriverModel.findByIdAndUpdate(
         { _id: req.params.id },
         req.body,
         { new: true }
       );
+      console.log(updatedDriver, "......updatedDriver");
       if (!updatedDriver) {
         const err = new customError(
           global.CONFIGS.api.DriverNotfound,
@@ -575,14 +627,23 @@ module.exports = {
         );
         return next(err);
       }
-      console.log(updatedDriver, "......updatedDriver");
 
       /*  Update Bank Details*/
       const updatedBankDetails = await DriverBankDetailsModel.findByIdAndUpdate(
         { _id: updatedDriver.bankDetailsId },
-        req.body,
+        {
+          $set: {
+            IBAN: req.body.IBAN,
+            accountHolderName: req.body.accountHolderName,
+            accountNumber: req.body.accountNumber,
+            branchName: req.body.branchName,
+            bankName: req.body.bankName,
+            activeStatus:req.body.activeStatus
+          }
+        },
         { new: true }
       );
+      console.log(updatedBankDetails, "....updatedBankDetails");
       if (!updatedBankDetails) {
         const err = new customError(
           global.CONFIGS.api.driverBankDetailsNotfound,
@@ -592,19 +653,49 @@ module.exports = {
       }
 
       /* Update Driver Documents*/
+      let updateDriverDocFields = {
+        activeStatus:req.body.activeStatus
+      };
+
+      if (req.files.passportImgFront && req.files.passportImgBack) {
+        updateDriverDocFields.passportImg = {
+          frontImg: `uploads/bike/${req.files.passportImgFront[0].filename}`,
+          backImg: `uploads/bike/${req.files.passportImgBack[0].filename}`,
+        };
+      }
+
+      if (req.files.emiratesIdImgFront && req.files.emiratesIdImgBack) {
+        updateDriverDocFields.emiratesIdImg = {
+          frontImg: `uploads/bike/${req.files.emiratesIdImgFront[0].filename}`,
+          backImg: `uploads/bike/${req.files.emiratesIdImgBack[0].filename}`,
+        };
+      }
+
+      if (req.files.licenseImgFront && req.files.licenseImgBack) {
+        updateDriverDocFields.licenseImg = {
+          frontImg: `uploads/bike/${req.files.licenseImgFront[0].filename}`,
+          backImg: `uploads/bike/${req.files.licenseImgBack[0].filename}`,
+        };
+      }
+
+      if (req.files.visaImg) {
+        updateDriverDocFields.visaImg = `uploads/bike/${req.files.visaImg[0].filename}`;
+      }
+
+      if (req.files.driverImg) {
+        updateDriverDocFields.driverImg = `uploads/bike/${req.files.driverImg[0].filename}`;
+      }
+
       const updatedDriverDoc = await DriverDocModel.findByIdAndUpdate(
         { _id: updatedDriver.docId },
         {
-          $set: {
-            passportImg: req.body.passportImg,
-            emiratesIdImg: req.body.emiratesIdImg,
-            licenseImg: req.body.licenseImg,
-            visaImg: req.body.visaImg,
-            driverImg: req.body.driverImg,
-          },
+          $set:
+            updateDriverDocFields
+
         },
         { new: true }
       );
+      console.log(updatedDriverDoc, "...updatedDriverDoc");
       if (!updatedDriverDoc) {
         const err = new customError(
           global.CONFIGS.api.DriverDocNotfound,
@@ -613,34 +704,30 @@ module.exports = {
         return next(err);
       }
       /* Update Driver Address*/
+      const updateDriverAddressFields = {
+        activeStatus:req.body.activeStatus
+      };
+      if (req.body.lHouseNo) updateDriverAddressFields['localAddress.houseNo'] = req.body.lHouseNo;
+      if (req.body.lBuildingName) updateDriverAddressFields['localAddress.buildingName'] = req.body.lBuildingName;
+      if (req.body.lStreet) updateDriverAddressFields['localAddress.street'] = req.body.lStreet;
+      if (req.body.lLandmark) updateDriverAddressFields['localAddress.landmark'] = req.body.lLandmark;
+      if (req.body.hcHouseNo) updateDriverAddressFields['homeCountryAddress.houseNo'] = req.body.hcHouseNo;
+      if (req.body.hcBuildingName) updateDriverAddressFields['homeCountryAddress.buildingName'] = req.body.hcBuildingName;
+      if (req.body.hcStreet) updateDriverAddressFields['homeCountryAddress.street'] = req.body.hcStreet;
+      if (req.body.hcLandmark) updateDriverAddressFields['homeCountryAddress.landmark'] = req.body.hcLandmark;
+      if (req.body.hcCity) updateDriverAddressFields['homeCountryAddress.city'] = req.body.hcCity;
+      if (req.body.hcState) updateDriverAddressFields['homeCountryAddress.state'] = req.body.hcState;
+      if (req.body.hcPinCode) updateDriverAddressFields['homeCountryAddress.pinCode'] = req.body.hcPinCode;
+      if (req.body.ecName) updateDriverAddressFields['emergencyContact.name'] = req.body.ecName;
+      if (req.body.ecRelation) updateDriverAddressFields['emergencyContact.relation'] = req.body.ecRelation;
+      if (req.body.ecMobile) updateDriverAddressFields['emergencyContact.mobile'] = req.body.ecMobile;
+
       const updateDriverAddress = await DriverAddressModel.findByIdAndUpdate(
-        { _id: updatedDriver.addressId },
-        {
-          $set: {
-            emergencyContact: {
-              name: req.body.ecName,
-              relation: req.body.ecRelation,
-              mobile: req.body.ecMobile,
-            },
-            homeCountryAddress: {
-              houseNo: req.body.hcHouseNo,
-              buildingName: req.body.hcBuildingName,
-              street: req.body.hcStreet,
-              landmark: req.body.hcLandmark,
-              city: req.body.hcCity,
-              state: req.body.hcState,
-              pinCode: req.body.hcPinCode,
-            },
-            localAddress: {
-              houseNo: req.body.lHouseNo,
-              buildingName: req.body.lBuildingName,
-              street: req.body.lStreet,
-              landmark: req.body.lLandmark,
-            },
-          },
-        },
+        { _id: find_Driver.addressId },
+        updateDriverAddressFields,
         { new: true }
       );
+      console.log(updateDriverAddress, ".....updateDriverAddress");
       if (!updateDriverAddress) {
         const err = new customError(
           global.CONFIGS.api.driverAddressNotfound,
@@ -649,29 +736,42 @@ module.exports = {
         return next(err);
       }
       /* Update Bike Details*/
+      const updateBikeDetailsFields = {
+        brandId: req.body.brandId,
+        modelId: req.body.modelId,
+        ownerName: req.body.ownerName,
+        vehicleNumber: req.body.vehicleNumber,
+        registrationZone: req.body.registrationZone,
+        registrationDate: req.body.registrationDate,
+        vehicleColor: req.body.vehicleColor,
+        vehicleYear: req.body.vehicleYear,
+        vehicleAge: req.body.vehicleAge,
+        chasisNumber: req.body.chasisNumber,
+        bikeInsuranceValidity: req.body.bikeInsuranceValidity,
+        fitnessValidity: req.body.fitnessValidity,
+        mulkiyaValidity: req.body.mulkiyaValidity,
+        activeStatus:req.body.activeStatus
+
+      };
+
+      // Save mulkiyaDocImg if provided
+      if (mulkiyaDocImg && (mulkiyaDocImg.frontImg || mulkiyaDocImg.backImg)) {
+        updateBikeDetailsFields.mulkiyaDocImg = mulkiyaDocImg;
+      }
+
+      // Save vehicleImage if provided
+      if (vehicleImage && (vehicleImage.frontImage || vehicleImage.backImage || vehicleImage.leftImage || vehicleImage.rightImage)) {
+        updateBikeDetailsFields.vehicleImage = vehicleImage;
+      }
+
       const updateBikeDetails = await BikeModel.findByIdAndUpdate(
         { _id: updatedDriver.bikeDetailsId },
         {
-          $set: {
-            brandId: req.body.brandId,
-            modelId: req.body.modelId,
-            ownerName: req.body.ownerName,
-            vehicleNumber: req.body.vehicleNumber,
-            registrationZone: req.body.registrationZone,
-            registrationDate: req.body.registrationDate,
-            vehicleColor: req.body.vehicleColor,
-            vehicleYear: req.body.vehicleYear,
-            vehicleAge: req.body.vehicleAge,
-            chasisNumber: req.body.chasisNumber,
-            bikeInsuranceValidity: req.body.bikeInsuranceValidity,
-            fitnessValidity: req.body.fitnessValidity,
-            mulkiyaValidity: req.body.mulkiyaValidity,
-            mulkiyaDocImg: req.body.mulkiyaDocImg,
-            vehicleImage: req.body.vehicleImage,
-          },
+          $set: updateBikeDetailsFields
         },
         { new: true }
       );
+      console.log(updateBikeDetails, "...updateBikeDetails");
       if (!updateBikeDetails) {
         const err = new customError(
           global.CONFIGS.api.BikeDetailsNotfound,
@@ -697,6 +797,8 @@ module.exports = {
       return next(error);
     }
   },
+
+
   updateBikeDriverLocation: async (req, res, next) => {
     let find_Driver = await BikeDriverModel.findById(req.params.id);
     if (!find_Driver) {
