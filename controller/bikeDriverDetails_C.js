@@ -8,6 +8,7 @@ const DriverDocModel = mongoose.model(constants.DriverDocModel);
 const DriverAddressModel = mongoose.model(constants.DriverAddressModel);
 const DriverBankDetailsModel = mongoose.model(constants.DriverBankDetailsModel);
 const DeliveryZoneModel = mongoose.model(constants.DeliveryZoneModel);
+const BikeBrandModel = mongoose.model(constants.BikeBrandModel);
 const ObjectId = mongoose.Types.ObjectId;
 const validationSchema = require("../validation/bikeDetailsValidation");
 const jwt = require("jsonwebtoken");
@@ -2155,5 +2156,171 @@ module.exports = {
       data: find_bikedriverlist,
     });
   },
-  /** */
+  /*
+  !bikeDetails */
+
+  getBikeCountByAdmin: async (req, res, next) => {
+    var find_brand = await BikeBrandModel.countDocuments();
+    var find_bike = await BikeModel.countDocuments();
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.BikeDetailsCountAdmin,
+      totalBrand: find_brand,
+      totalBike: find_bike,
+    });
+  },
+
+
+
+   bikeListByAdmin: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
+    const searchText = req.query.searchText;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    var query = {};
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
+    if (req.query.brandId != undefined) {
+      query.brandId = new ObjectId(req.query.brandId);
+    }
+    if (req.query.modelId != undefined) {
+      query.modelId = new ObjectId(req.query.modelId);
+    }
+    if (searchText !== undefined) {
+      query.$or = [
+        {
+          "ownerName": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+        {
+          "chasisNumber": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+        {
+          "vehicleNumber": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+        {
+          "bikebrandName.bikeBrand": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+        {
+          "bikemodelName.bikeModel": {
+            $regex: new RegExp(searchText),
+            $options: "i",
+          },
+        },
+      ];
+    }
+    if (startDate != undefined && endDate != undefined) {
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query,"........query");
+    let bikeDriverList = await BikeModel.aggregate([
+      // { $unset: "mulkiyaDocImg._id" },
+      // { $unset: "vehicleImage._id" },
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "brandId",
+          foreignField: "_id",
+          as: "bikebrandName",
+        },
+      },
+      { $unwind: "$bikebrandName" },
+      // { $unset: "brandId" },
+
+      
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "modelId",
+          foreignField: "_id",
+          as: "bikemodelName",
+        },
+      },
+      { $unwind: "$bikemodelName" },
+      // { $unset: "modelId" },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+       {
+        $match:query,
+      },
+      {
+        $project: {
+          bikedetailsId: "$_id",
+          ownerName: "$ownerName",
+          vehicleNumber: "$vehicleNumber",
+          registrationZone: "$registrationZone",
+          registrationDate: "$registrationDate",
+          vehicleColor: "$vehicleColor",
+          vehicleYear: "$vehicleYear",
+          vehicleAge: "$vehicleAge",
+          chasisNumber: "$chasisNumber",
+          bikeInsuranceValidity: "$bikeInsuranceValidity",
+          fitnessValidity: "$fitnessValidity",
+          mulkiyaValidity: "$mulkiyaValidity",
+          mulkiyaDocImg: "$mulkiyaDocImg",
+          vehicleImage: "$vehicleImage",
+          bikeActiveStatus: "$activeStatus",
+          bikeBrand: "$bikebrandName.bikeBrand",
+          bikeModel: "$bikemodelName.bikeModel",
+          },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
+    if (bikeDriverList[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.BikeDetailsNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const totalPage = Math.ceil(
+      parseInt(bikeDriverList[0].metadata[0].total) / limit
+    );
+    const total = parseInt(bikeDriverList[0].metadata[0].total);
+    const dataPerPage = total - skip > limit ? limit : total - skip;
+    const totalLeftdata = total - skip - dataPerPage;
+    const rangeStart = skip === 0 ? 1 : skip + 1;
+    const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.BikeDetailsListAdmin,
+      rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
+      totalData: total,
+      totalPage: totalPage,
+      totalLeftdata: totalLeftdata,
+      dataPerPage,
+      allOrder: bikeDriverList[0].data,
+    });
+  },
 };

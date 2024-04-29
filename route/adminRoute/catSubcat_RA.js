@@ -12,7 +12,7 @@ const localStorage = multer.diskStorage({
     next(null, path.join(__dirname, "../../public/uploads/catsubcat"));
   },
   filename: (req, file, next) => {
-    next(null, Date.now() + "-" + file.originalname);
+    next(null,file.originalname);
   },
 });
 var upload1 = multer({ storage: localStorage });
@@ -27,9 +27,6 @@ router
   .route("/category/")
   .get(Auth.adminValidateToken, errorfun(cat.categoryListAdmin))
   .post(cpUpload, Auth.adminValidateToken, errorfun(cat.addCategoryAdmin));
-router
-  .route("/category/qrcode")
-  .get( Auth.adminValidateToken, errorfun(cat.qrcodeCategory));
 
 router
   .route("/category/:id")

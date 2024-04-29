@@ -5,17 +5,15 @@ const SubCategoryModel = mongoose.model(constants.SubCategoryModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
-const QRCode = require("qrcode");
-const fs = require("fs");
-const path = require("path");
+const qrCode = require("qrcode");
 
 module.exports = {
-  addCategoryAdmin: async (req, res, next) => {
+
+  addCategoryAdminOld: async (req, res, next) => {
     const categoryName = req.body.category.trim();
     const find_cat = await CategoryModel.findOne({
       category: { $regex: new RegExp("^" + categoryName + "$", "i") },
     });
-
     if (find_cat) {
       const err = new customError(
         global.CONFIGS.api.categoryalreadyadded,
@@ -35,10 +33,41 @@ module.exports = {
     });
   },
 
+  addCategoryAdmin: async (req, res, next) => {
+    const categoryName = req.body.category.trim();
+    const find_cat = await CategoryModel.findOne({
+      category: { $regex: new RegExp("^" + categoryName + "$", "i") },
+    });
+    if (find_cat) {
+      const err = new customError(
+        global.CONFIGS.api.categoryalreadyadded,
+        global.CONFIGS.responseCode.alreadyExist
+      );
+      return next(err);
+    }
+    if (req.files.categoryImg) {
+      var categoryImage = `uploads/catsubcat/${req.files.categoryImg[0].filename}`;
+      req.body.categoryImg = categoryImage;
+    }
+    const create_cat = await CategoryModel.create(req.body);
+    console.log(create_cat,".......1")
+    const qrCodeData = await qrCode.toDataURL(JSON.stringify(create_cat),); // Convert product ID to string
+    console.log(qrCodeData,".......2")
+    // const qrCodeData = await qrCode.toDataURL(create_cat._id.toString()); // Convert product ID to string
+    // You can save this qrCodeData URL to the product model if needed
+    create_cat.qrCodeData = qrCodeData;
+    await create_cat.save();
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.categoryadded,
+      data: create_cat,
+    });
+  },
+
   qrcodeCategory: async (req, res, next) => {
     const url = "https://api.dhudu.ae/v1.0.0/DEV/front/catsubcat/category/";
     // const url = "https://www.example.com";
-    QRCode.toDataURL(url, (err, qrCodeUrl) => {
+    qrCode.toDataURL(url, (err, qrCodeUrl) => {
       if (err) {
         res.status(500).send("internal server error");
       } else {
@@ -60,7 +89,6 @@ module.exports = {
     </p>
     </body>
     </html>
-
   `);
       }
     });

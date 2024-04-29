@@ -44,6 +44,12 @@ router
     cpUpload,
     errorfun(bikeDRiverDetails.addBikeDriverWithDetails)
   );
+  router
+  .route("/bikecount")
+  .get(Auth.adminValidateToken, errorfun(bikeDRiverDetails.getBikeCountByAdmin));
+  router
+  .route("/bike")
+  .get(Auth.adminValidateToken, errorfun(bikeDRiverDetails.bikeListByAdmin));
 
 router
   .route("/:id")

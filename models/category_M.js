@@ -13,6 +13,9 @@ var categorySchema = new Schema(
       required: true,
       trim: true,
     },
+    qrCodeData: {
+    type: String // Store QR code data as a string
+  },
     activeStatus: {
       type: String,
       enum: ["0", "1"],
