@@ -6,6 +6,8 @@ const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
 const qrCode = require("qrcode");
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
 
@@ -50,47 +52,20 @@ module.exports = {
       req.body.categoryImg = categoryImage;
     }
     const create_cat = await CategoryModel.create(req.body);
-    console.log(create_cat,".......1")
-    const qrCodeData = await qrCode.toDataURL(JSON.stringify(create_cat),); // Convert product ID to string
-    console.log(qrCodeData,".......2")
-    // const qrCodeData = await qrCode.toDataURL(create_cat._id.toString()); // Convert product ID to string
-    // You can save this qrCodeData URL to the product model if needed
-    create_cat.qrCodeData = qrCodeData;
+    // console.log(create_cat, ".......1")
+    // const qrCodeData = await qrCode.toDataURL(JSON.stringify(create_cat),);
+    // console.log(qrCodeData, ".......2")
+    // create_cat.qrCodeData = qrCodeData;
+    const qrCodePath = `uploads/bikeqrcode/${create_cat._id}.png`;
+    const absoluteQrCodePath = path.join(__dirname, '../public', qrCodePath);
+    await qrCode.toFile(absoluteQrCodePath, JSON.stringify(create_cat));
+    console.log(absoluteQrCodePath, ".......2");
+    create_cat.qrCodeData = qrCodePath;
     await create_cat.save();
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.categoryadded,
       data: create_cat,
-    });
-  },
-
-  qrcodeCategory: async (req, res, next) => {
-    const url = "https://api.dhudu.ae/v1.0.0/DEV/front/catsubcat/category/";
-    // const url = "https://www.example.com";
-    qrCode.toDataURL(url, (err, qrCodeUrl) => {
-      if (err) {
-        res.status(500).send("internal server error");
-      } else {
-        res.send(`
-    <!DOCTYPE HTML>
-    <html>
-    <head>
-    <title>
-    QR code generator
-    </title>
-    </head>
-    <body>
-    <h1>
-    Qr code Generator
-    </h1>
-    <img src="${qrCodeUrl}" alt="Qr Code">
-    <p>
-    scan the qr code to visit website
-    </p>
-    </body>
-    </html>
-  `);
-      }
     });
   },
 
@@ -182,6 +157,7 @@ module.exports = {
           _id: "$_id",
           categoryName: "$category",
           categoryImage: "$categoryImg",
+          qrCodeData: "$qrCodeData",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
