@@ -6,7 +6,6 @@ const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
 const qrCode = require("qrcode");
-const fs = require('fs');
 const path = require('path');
 
 module.exports = {

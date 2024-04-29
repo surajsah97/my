@@ -13,6 +13,9 @@ const ObjectId = mongoose.Types.ObjectId;
 const validationSchema = require("../validation/bikeDetailsValidation");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const qrCode = require("qrcode");
+const path = require('path');
+
 
 module.exports = {
   loginBikeDriver: async (req, res, next) => {
@@ -344,6 +347,7 @@ module.exports = {
     // bikeDRiverDetails.long = req.body.long;
     bikeDRiverDetails.activeStatus = req.body.activeStatus;
     const createDriver = await BikeDriverModel.create(bikeDRiverDetails);
+   
 
     if (!createDriver) {
       const err = new customError(
@@ -453,6 +457,7 @@ module.exports = {
       return next(err);
     }
     if (createVehicle && createAddress && createBankDetails && createDoc) {
+
       const updateDriver = await BikeDriverModel.findByIdAndUpdate(
         { _id: createDriver._id },
         {
@@ -463,6 +468,12 @@ module.exports = {
         },
         { new: true }
       );
+       const qrCodePath = `uploads/bikedriverqrcode/${updateDriver._id}.png`;
+      const absoluteQrCodePath = path.join(__dirname, '../public', qrCodePath);
+      await qrCode.toFile(absoluteQrCodePath, JSON.stringify(updateDriver));
+      console.log(absoluteQrCodePath, ".......2");
+      updateDriver.driverQrCodeData = qrCodePath;
+      await updateDriver.save();
       return res.status(global.CONFIGS.responseCode.success).json({
         success: true,
         message: global.CONFIGS.api.DriverDetailsAdded,

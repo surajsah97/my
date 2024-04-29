@@ -134,7 +134,9 @@ var bikeDriverSchema = new Schema(
       type: Number,
       // required: true
     },
-
+    driverQrCodeData: {
+    type: String // Store QR code data as a string
+    },
     activeStatus: {
       type: String,
       enum: ["0", "1", "2"],
