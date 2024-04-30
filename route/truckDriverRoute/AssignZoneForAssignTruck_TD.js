@@ -10,6 +10,6 @@ router
   .route("/truckdriver/:id")
   .get(
     Auth.validateTokenTruckDriver,
-    errorfun(AssignZoneForAssignTruck.getAssignZoneByTruckDriverId)
+    errorfun(AssignZoneForAssignTruck.getAssignZoneByTruckDriverIdFront)
   );
 module.exports = router;

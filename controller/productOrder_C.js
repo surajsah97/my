@@ -406,12 +406,29 @@ module.exports = {
     // const totalLeftdata = total - skip - dataPerPage;
     // const rangeStart = skip === 0 ? 1 : skip + 1;
     // const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
-
+    function getTotalProducts(orderData) {
+      let totalProducts = {
+        noOfProducts: 0,
+        byProductName: {}
+      };
+      orderData.forEach(order => {
+        order.product.forEach(product => {
+          totalProducts.noOfProducts += product.qty;
+          if (product.productName in totalProducts.byProductName) {
+            totalProducts.byProductName[product.productName] += product.qty;
+          } else {
+            totalProducts.byProductName[product.productName] = product.qty;
+          }
+        });
+      });
+      return totalProducts;
+    }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getOrderByUser,
       // rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
-      totalData: `total order is ${total}`,
+      totalOrder: `total order is ${total}`,
+      totalProducts: getTotalProducts(findAllOrderList[0].data),
       // totalPage: totalPage,
       // totalLeftdata: totalLeftdata,
       // dataPerPage,
@@ -706,7 +723,7 @@ module.exports = {
       success: true,
       message: global.CONFIGS.api.getOrderByUser,
       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
-      totalData: total,
+      totalOrder: total,
       totalPage: totalPage,
       totalLeftdata: totalLeftdata,
       dataPerPage,
@@ -1071,7 +1088,6 @@ module.exports = {
           freeProduct: {
             $addToSet: "$freeProduct",
           },
-
           totalPrice: { $first: "$totalPrice" },
           vatAmount: { $first: "$vatAmount" },
           totalTaxablePrice: { $first: "$totalTaxablePrice" },
@@ -1105,12 +1121,39 @@ module.exports = {
     const totalLeftdata = total - skip - dataPerPage;
     const rangeStart = skip === 0 ? 1 : skip + 1;
     const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
-
+    /** In that function only gives totalProducts count*/
+    // function getTotalProducts(orderData) {
+    //   let totalProducts = 0;
+    //   orderData.forEach(order => {
+    //     order.product.forEach(product => {
+    //     totalProducts += product.qty;});
+    //   });
+    //   return totalProducts;
+    // }
+    /** */
+    function getTotalProducts(orderData) {
+      let totalProducts = {
+        noOfProducts: 0,
+        byProductName: {}
+      };
+      orderData.forEach(order => {
+        order.product.forEach(product => {
+          totalProducts.noOfProducts += product.qty;
+          if (product.productName in totalProducts.byProductName) {
+            totalProducts.byProductName[product.productName] += product.qty;
+          } else {
+            totalProducts.byProductName[product.productName] = product.qty;
+          }
+        });
+      });
+      return totalProducts;
+    }
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.allOrderlistAdmin,
       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
-      totalData: total,
+      totalOrder: total,
+      totalProducts: getTotalProducts(findAllOrderList[0].data),
       totalPage: totalPage,
       totalLeftdata: totalLeftdata,
       dataPerPage,
@@ -1153,6 +1196,12 @@ module.exports = {
           },
           {
             "product.productDetails.productName": {
+              $regex: new RegExp(searchText),
+              $options: "i",
+            },
+          },
+          {
+            "product.productDetails.category.category": {
               $regex: new RegExp(searchText),
               $options: "i",
             },
@@ -1509,12 +1558,57 @@ module.exports = {
     const totalLeftdata = total - skip - dataPerPage;
     const rangeStart = skip === 0 ? 1 : skip + 1;
     const rangeEnd = pageNo === totalPage ? total : skip + dataPerPage;
+    // function getTotalProducts(orderData) {
+    //   let totalProducts = 0;
+    //   orderData.forEach(order => {
+    //     order.product.forEach(product => {
+    //     totalProducts += product.qty;});
+    //   });
+    //   return totalProducts;
+    // }
+    function getTotalProducts(orderData) {
+      let totalProducts = {
+        noOfProducts: 0,
+        byProductName: {}
+      };
+      orderData.forEach(order => {
+        order.product.forEach(product => {
+          totalProducts.noOfProducts += product.qty;
+          if (product.productName in totalProducts.byProductName) {
+            totalProducts.byProductName[product.productName] += product.qty;
+          } else {
+            totalProducts.byProductName[product.productName] = product.qty;
+          }
+        });
+      });
+      return totalProducts;
+    }
+    function getTotalProductsbyDeliveryZone(orderData) {
+  let totalProducts = {
+    noOfProducts: 0,
+    byDeliveryZoneName: {}
+  };
+  orderData.forEach(order => {
+    order.product.forEach(product => {
+      totalProducts.noOfProducts += product.qty;
+      const deliveryZoneName = order.deliveryZoneDetails.deliveryZoneName;
+      if (deliveryZoneName in totalProducts.byDeliveryZoneName) {
+        totalProducts.byDeliveryZoneName[deliveryZoneName] += product.qty;
+      } else {
+        totalProducts.byDeliveryZoneName[deliveryZoneName] = product.qty;
+      }
+    });
+  });
+  return totalProducts;
+}
 
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.allOrderlistAdmin,
       rangers: `Showing ${rangeStart} – ${rangeEnd} of ${total} totalData`,
-      totalData: total,
+      totalOrder: total,
+      totalProducts: getTotalProducts(findAllOrderList[0].data),
+      getTotalProductsbyDeliveryZoneName: getTotalProductsbyDeliveryZone(findAllOrderList[0].data),
       totalPage: totalPage,
       totalLeftdata: totalLeftdata,
       dataPerPage,

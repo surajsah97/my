@@ -15,6 +15,7 @@ module.exports = {
       _id: req.body.truckId,
       activeStatus: "1",
     });
+    // console.log(find_truck,"....find_truck")
     if (!find_truck) {
       const err = new customError(
         global.CONFIGS.api.truckDetailsInactive,
@@ -26,6 +27,7 @@ module.exports = {
       _id: req.body.truckDriverId,
       activeStatus: "1",
     });
+    // console.log(find_truckDriver,".....find_truckDriver");
     if (!find_truckDriver) {
       const err = new customError(
         global.CONFIGS.api.truckDriverInactive,

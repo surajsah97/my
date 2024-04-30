@@ -98,8 +98,8 @@ var bikeDriverSchema = new Schema(
     },
     deliveryZoneId: {
       type: Schema.Types.ObjectId,
-     ref: constants.DeliveryZoneModel,
-    required: [true, "Please enter deliveryZoneId."]
+      ref: constants.DeliveryZoneModel,
+      required: [true, "Please enter deliveryZoneId."]
     },
     bankDetailsId: {
       type: Schema.Types.ObjectId,

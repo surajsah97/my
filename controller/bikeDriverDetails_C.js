@@ -1034,6 +1034,9 @@ module.exports = {
           isVerified: "$isVerified",
           driverType: "$driverType",
           driverQrImage:"$driverQrCodeData",
+          lat:"$lat",
+          long:"$long",
+          location:"$location",
           activeStatus: "$activeStatus",
           /**driveraddress */
           localAddress: "$driveraddress.localAddress",
@@ -1205,6 +1208,9 @@ module.exports = {
           isVerified: "$isVerified",
           driverType: "$driverType",
           driverQrImage:"$driverQrCodeData",
+          lat:"$lat",
+          long:"$long",
+          location:"$location",
           activeStatus: "$activeStatus",
           /**driveraddress */
           localAddress: "$driveraddress.localAddress",
@@ -1378,6 +1384,9 @@ module.exports = {
           isVerified: "$isVerified",
           driverType: "$driverType",
           driverQrImage:"$driverQrCodeData",
+          lat:"$lat",
+          long:"$long",
+          location:"$location",
           activeStatus: "$activeStatus",
           /**driveraddress */
           localAddress: "$driveraddress.localAddress",
@@ -1632,6 +1641,9 @@ module.exports = {
           isVerified: "$isVerified",
           driverType: "$driverType",
           driverQrImage:"$driverQrCodeData",
+          lat:"$lat",
+          long:"$long",
+          location:"$location",
           activeStatus: "$activeStatus",
           /**deliveryzonedetails */
           deliveryzonedetails:{
@@ -1910,6 +1922,9 @@ module.exports = {
           isVerified: "$isVerified",
           driverType: "$driverType",
           driverQrImage:"$driverQrCodeData",
+          lat:"$lat",
+          long:"$long",
+          location:"$location",
           activeStatus: "$activeStatus",
           /**deliveryzonedetails */
           deliveryzonedetails:{
@@ -2119,6 +2134,9 @@ module.exports = {
           licenseValidity: "$licenseValidity",
           isVerified: "$isVerified",
           driverType: "$driverType",
+          lat:"$lat",
+          long:"$long",
+          location:"$location",
           driverQrImage:"$driverQrCodeData",
           activeStatus: "$activeStatus",
           /**driveraddress */
@@ -2186,8 +2204,6 @@ module.exports = {
       totalBike: find_bike,
     });
   },
-
-
 
    bikeListByAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page

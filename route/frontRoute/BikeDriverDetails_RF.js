@@ -23,7 +23,7 @@ router.get(
 );
 // router.put(
 //   "/updatebikedriverlocation/:id",
-//   errorfun(BikeDriverDetails.updateBikeDriverLocation);
+//   errorfun(BikeDriverDetails.updateBikeDriverLocation)
 // );
 router.put("/updatebikedriverlocation/:id",Auth.validateTokenBikeDriver, errorfun(BikeDriverDetails.updateBikeDriverLocation));
 
