@@ -55,21 +55,6 @@ var assignZoneForAssignTruckSchema = new Schema(
             type: Number,
             default: 0,
           },
-
-          /**old start*/
-          //   startDateAndTime: {
-          //     type: Date,
-          //     required: [true, "Please enter startDateAndTime."],
-          //   },
-          //   endDateAndTime: {
-          //     type: Date,
-          //     required: [true, "Please enter startDateAndTime."],
-          //   },
-          //   timeDifferenceMinutes:{
-          //     type: Number,
-          //     required: [true, "Please enter timeDifferenceMinutes."],
-          //   },
-          /**old end*/
         },
       ],
     },

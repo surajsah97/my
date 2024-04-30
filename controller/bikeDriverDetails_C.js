@@ -1033,6 +1033,7 @@ module.exports = {
           licenseValidity: "$licenseValidity",
           isVerified: "$isVerified",
           driverType: "$driverType",
+          driverQrImage:"$driverQrCodeData",
           activeStatus: "$activeStatus",
           /**driveraddress */
           localAddress: "$driveraddress.localAddress",
@@ -1203,6 +1204,7 @@ module.exports = {
           licenseValidity: "$licenseValidity",
           isVerified: "$isVerified",
           driverType: "$driverType",
+          driverQrImage:"$driverQrCodeData",
           activeStatus: "$activeStatus",
           /**driveraddress */
           localAddress: "$driveraddress.localAddress",
@@ -1258,7 +1260,7 @@ module.exports = {
   },
   /** */
 
-  VehicleListFront: async (req, res, next) => {
+  bikeDriverListFront: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
@@ -1375,6 +1377,7 @@ module.exports = {
           licenseValidity: "$licenseValidity",
           isVerified: "$isVerified",
           driverType: "$driverType",
+          driverQrImage:"$driverQrCodeData",
           activeStatus: "$activeStatus",
           /**driveraddress */
           localAddress: "$driveraddress.localAddress",
@@ -1628,6 +1631,7 @@ module.exports = {
           licenseValidity: "$licenseValidity",
           isVerified: "$isVerified",
           driverType: "$driverType",
+          driverQrImage:"$driverQrCodeData",
           activeStatus: "$activeStatus",
           /**deliveryzonedetails */
           deliveryzonedetails:{
@@ -1905,6 +1909,7 @@ module.exports = {
           licenseValidity: "$licenseValidity",
           isVerified: "$isVerified",
           driverType: "$driverType",
+          driverQrImage:"$driverQrCodeData",
           activeStatus: "$activeStatus",
           /**deliveryzonedetails */
           deliveryzonedetails:{
@@ -2114,6 +2119,7 @@ module.exports = {
           licenseValidity: "$licenseValidity",
           isVerified: "$isVerified",
           driverType: "$driverType",
+          driverQrImage:"$driverQrCodeData",
           activeStatus: "$activeStatus",
           /**driveraddress */
           localAddress: "$driveraddress.localAddress",
