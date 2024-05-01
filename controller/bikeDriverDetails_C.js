@@ -15,7 +15,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const qrCode = require("qrcode");
 const path = require('path');
-
+const zlib = require('zlib');
 
 module.exports = {
   loginBikeDriver: async (req, res, next) => {
@@ -470,7 +470,9 @@ module.exports = {
       );
        const qrCodePath = `uploads/bikedriverqrcode/${updateDriver._id}.png`;
       const absoluteQrCodePath = path.join(__dirname, '../public', qrCodePath);
-      await qrCode.toFile(absoluteQrCodePath, JSON.stringify(updateDriver));
+      // await qrCode.toFile(absoluteQrCodePath, JSON.stringify(updateDriver));
+      const compressedData = zlib.gzipSync(JSON.stringify(updateDriver));
+      await qrCode.toFile(absoluteQrCodePath, compressedData);
       console.log(absoluteQrCodePath, ".......2");
       updateDriver.driverQrCodeData = qrCodePath;
       await updateDriver.save();

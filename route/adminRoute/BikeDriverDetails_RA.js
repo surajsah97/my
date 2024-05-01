@@ -16,7 +16,8 @@ const localStorage = multer.diskStorage({
     // next(null, Date.now() +"-" +file.originalname )
   },
 });
-var upload1 = multer({ storage: localStorage },{ limits: { fileSize: 50 * 1024 * 1024 } });
+var upload1 = multer({ storage: localStorage });
+// var upload1 = multer({ storage: localStorage },{ limits: { fileSize: 50 * 1024 * 1024 } });
 /* GET home page. */
 var cpUpload = upload1.fields([
   { name: "mulkiyaImgFront", maxCount: 1 },

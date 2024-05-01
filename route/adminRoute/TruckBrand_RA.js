@@ -8,7 +8,7 @@ const errorfun = require("../../middleware/catchAsyncErrors");
 router
   .route("/")
   // .get(errorfun(truckBrand.brandListAdmin))
-  .get(Auth.adminValidateToken, errorfun(truckBrand.brandList))
+  .get(Auth.adminValidateToken, errorfun(truckBrand.brandListAdmin))
   // .post(errorfun(truckBrand.addBrand))
   .post(Auth.adminValidateToken, errorfun(truckBrand.addBrand));
 
