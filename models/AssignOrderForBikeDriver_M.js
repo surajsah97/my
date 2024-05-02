@@ -57,7 +57,6 @@ var AssignOrderForBikeDriverSchema = new Schema(
           },
           bottleQunatity: {
             type: Number,
-            default: 0,
           },
         },
       ],
@@ -83,6 +82,14 @@ var AssignOrderForBikeDriverSchema = new Schema(
     timestamps: true,
   }
 );
+AssignOrderForBikeDriverSchema.pre('save', async function(next) {
+  for(const order of this.productOrder) {
+    const productOrderDoc = await mongoose.model(constants.ProductOrderModel).findById(order.productOrderId);
+    let totalQuantity = productOrderDoc.product.reduce((acc, item) => acc + item.qty, 0);
+    order.bottleQunatity = totalQuantity;
+  }
+  next();
+});
 let assignProductOrder = mongoose.model(
   constants.AssignOrderForBikeDriverModel,
   AssignOrderForBikeDriverSchema

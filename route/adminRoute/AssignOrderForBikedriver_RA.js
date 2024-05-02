@@ -9,8 +9,8 @@ router
   .post(
     Auth.adminValidateToken,
     errorfun(AssignOrderForBikeDriver.addAssignOrderForBikeDriver)
-  );
-// .get(Auth.adminValidateToken,errorfun(AssignOrderForBikeDriver.getAllListAssignZone))
+  )
+.get(Auth.adminValidateToken,errorfun(AssignOrderForBikeDriver.getAllListAssignOrderAdmin));
 
 // router.route('/:id')
 //     .get(Auth.adminValidateToken,errorfun(AssignOrderForBikeDriver.getAssignZoneByIdAdmin))

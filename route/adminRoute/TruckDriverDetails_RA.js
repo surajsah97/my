@@ -41,7 +41,7 @@ router
 router
   .route("/:id")
   //     .put(cpUpload, errorfun(BikeDetails.updateVehicle))
-  //     .put(cpUpload,Auth.adminValidateToken, errorfun(BikeDetails.updateVehicle))
+      .put(cpUpload,Auth.adminValidateToken, errorfun(TruckDriver.updateTruckDriver))
   .delete(errorfun(TruckDriver.truckDriverDelete));
 // .delete(Auth.adminValidateToken,errorfun(TruckDriver.truckDriverDelete))
 
