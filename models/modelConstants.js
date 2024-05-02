@@ -21,6 +21,8 @@ module.exports = {
   AssignTruckForDriverModel: "assigntruckfordriverdetails",
   AssignZoneForAssignTruckModel: "assignzoneforassigntruckdetails",
   AssignUserAddressForBikeDriverModel: "assignuseraddressforbikedriverdetails",
+  AssignBikeDriverForAssigntruckModel: "assignbikedriverforassigntruckdetails",
+  AssignOrderForBikeDriverModel: "assignorderforbikedriverdetails",
   BikeDriverModel: "bikedriverdetails",
   DriverBankDetailsModel: "driverbankdetails",
   DriverAddressModel: "driveraddress",

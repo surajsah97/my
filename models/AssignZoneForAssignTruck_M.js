@@ -41,20 +41,6 @@ var assignZoneForAssignTruckSchema = new Schema(
       type: Number,
       required: [true, "Please enter brokenBottle."],
     },
-    // product: [
-    //   {
-    //     productId: {
-    //       type: Schema.Types.ObjectId,
-    //       ref: constants.ProductModel,
-    //       required: [true, "Please enter productId."],
-    //     },
-    //     qty: {
-    //       type: Number,
-    //       min: [1, "Quantity cannot be less than 1"],
-    //       default: 1,
-    //     },
-    //   },
-    // ],
     deliveryZone: {
       type: [
         {
@@ -66,6 +52,17 @@ var assignZoneForAssignTruckSchema = new Schema(
           zoneStock: {
             type: Number,
             default: 0,
+          },
+        },
+      ],
+    },
+    assignBikeDriverAssignTruck: {
+      type: [
+        {
+          assignBikeDriverAssignTruckId: {
+            type: Schema.Types.ObjectId,
+            ref: constants.AssignBikeDriverForAssigntruckModel,
+            required: [true, "Please enter assignBikeDriverAssignTruck."],
           },
         },
       ],

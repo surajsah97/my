@@ -31,3 +31,5 @@ require("./AssignTruckforDriver_M");
 require("./deliveryZone_M");
 require("./AssignZoneForAssignTruck_M");
 require("./AssignUserAddressForBikeDriver_M");
+require("./AssignOrderForBikeDriver_M");
+require("./AssignBikeDriverForAssigntruck_M");

@@ -111,6 +111,7 @@ module.exports = {
       _id: { $in: deliveryZoneIds },
       activeStatus: "Active",
     });
+    console.log(find_deliveryZone,".....find_deliveryZone......")
     const find_deliveryZoneLength = find_deliveryZone.length;
     const deliveryZoneIdLength = deliveryZones.length;
     console.log(find_deliveryZoneLength, deliveryZoneIdLength);

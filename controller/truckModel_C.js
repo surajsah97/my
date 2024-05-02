@@ -106,7 +106,7 @@ module.exports = {
         },
       },
       { $unwind: "$truckbrand" },
-      { $unset: "truckBrandId" },
+      // { $unset: "truckBrandId" },
       {
         $sort: {
           truckModel: 1,
@@ -115,6 +115,7 @@ module.exports = {
       {
         $project: {
           _id: "$_id",
+          truckBrandId: "$truckbrand._id",
           truckBrandName: "$truckbrand.truckBrand",
           truckModel: "$truckModel",
           activeStatus: "$activeStatus",
