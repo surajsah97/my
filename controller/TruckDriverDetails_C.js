@@ -227,9 +227,11 @@ module.exports = {
     if (req.files.driverImg) {
       req.body.driverImg = `uploads/truckdriver/${req.files.driverImg[0].filename}`;
     }
-    const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
+    if(req.body.password) {
+      const salt = await bcrypt.genSaltSync(global.CONFIGS.pass.saltround);
     const hash = await bcrypt.hashSync(req.body.password, salt);
     req.body.password = hash;
+    }
 
     find_Driver = await TruckDriverModel.findByIdAndUpdate(
       { _id: req.params.id },

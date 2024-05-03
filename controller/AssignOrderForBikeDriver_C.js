@@ -164,11 +164,23 @@ module.exports = {
     });
   },
 
+/** */
+  getAllListAssignOrderAdmind: async (req, res, next) => {
+      var find_brand = await AssignOrderForBikeDriverModel.find({});
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.allBrandListAdmin,
+      data: find_brand,
+    });
+  },
+/** */ 
+  
+
   getAllListAssignOrderAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
-    let assignTruckData = await AssignOrderForBikeDriverModel.aggregate([
+    let assignOrderBiker = await AssignOrderForBikeDriverModel.aggregate([
       {
         $match: {
           $or: [
@@ -178,19 +190,19 @@ module.exports = {
         },
       },
       {
-        $unwind: "$deliveryZone",
+        $unwind: "$productOrder",
       },
       {
         $lookup: {
-          from: "deliveryzone",
-          localField: "deliveryZone.deliveryZoneId",
+          from: "productorder",
+          localField: "productOrder.productOrderId",
           foreignField: "_id",
-          as: "deliveryZone.deliveryZoneId",
+          as: "productOrder.productOrderId",
         },
       },
       {
         $unwind: {
-          path: "$deliveryZone.deliveryZoneId",
+          path: "$productOrder.productOrderId",
           includeArrayIndex: "string",
           preserveNullAndEmptyArrays: true,
         },
@@ -198,284 +210,284 @@ module.exports = {
 
       {
         $lookup: {
-          from: "assigntruckfordriverdetails",
-          localField: "assignTruckId",
+          from: "bikedriverdetails",
+          localField: "bikeDriverId",
           foreignField: "_id",
-          as: "assigntruckfordriverdetails",
+          as: "bikedriverdetails",
         },
       },
-      { $unwind: "$assigntruckfordriverdetails" },
-      // { $unset: "assignTruckId" },
+      { $unwind: "$bikedriverdetails" },
+      // { $unset: "bikeDriverId" },
       {
         $lookup: {
-          from: "truckdetails",
-          localField: "assigntruckfordriverdetails.truckId",
+          from: "bikedetails",
+          localField: "bikedriverdetails.bikeDetailsId",
           foreignField: "_id",
-          as: "assigntruckfordriverdetails.truckdetails",
+          as: "bikedriverdetails.bikedetails",
         },
       },
-      { $unwind: "$assigntruckfordriverdetails.truckdetails" },
-      { $unset: "assigntruckfordriverdetails.truckId" },
-      {
-        $lookup: {
-          from: "truckbrand",
-          localField: "assigntruckfordriverdetails.truckdetails.truckBrandId",
-          foreignField: "_id",
-          as: "assigntruckfordriverdetails.truckdetails.truckBrandId",
-        },
-      },
-      { $unwind: "$assigntruckfordriverdetails.truckdetails.truckBrandId" },
+    //   { $unwind: "$bikedriverdetails.bikedetails" },
+    //   { $unset: "bikedriverdetails.bikeDetailsId" },
+    //   {
+    //     $lookup: {
+    //       from: "bikebrand",
+    //       localField: "bikedriverdetails.bikedetails.bikebrandId",
+    //       foreignField: "_id",
+    //       as: "bikedriverdetails.bikedetails.bikebrandId",
+    //     },
+    //   },
+    //   { $unwind: "$bikedriverdetails.bikedetails.bikebrandId" },
 
-      {
-        $lookup: {
-          from: "truckmodel",
-          localField: "assigntruckfordriverdetails.truckdetails.truckModelId",
-          foreignField: "_id",
-          as: "assigntruckfordriverdetails.truckdetails.truckModelId",
-        },
-      },
-      { $unwind: "$assigntruckfordriverdetails.truckdetails.truckModelId" },
-      {
-        $lookup: {
-          from: "truckdriverdetails",
-          localField: "assigntruckfordriverdetails.truckDriverId",
-          foreignField: "_id",
-          as: "assigntruckfordriverdetails.truckdriverdetails",
-        },
-      },
-      { $unwind: "$assigntruckfordriverdetails.truckdriverdetails" },
-      { $unset: "assigntruckfordriverdetails.truckDriverId" },
-      {
-        $lookup: {
-          from: "truckdriverbankdetails",
-          localField:
-            "assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
-          foreignField: "_id",
-          as: "assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
-        },
-      },
-      {
-        $unwind:
-          "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
-      },
-      {
-        $lookup: {
-          from: "truckdriveraddress",
-          localField:
-            "assigntruckfordriverdetails.truckdriverdetails.addressId",
-          foreignField: "_id",
-          as: "assigntruckfordriverdetails.truckdriverdetails.addressId",
-        },
-      },
-      { $unwind: "$assigntruckfordriverdetails.truckdriverdetails.addressId" },
-      {
-        $lookup: {
-          from: "truckdriverdoc",
-          localField: "assigntruckfordriverdetails.truckdriverdetails.docId",
-          foreignField: "_id",
-          as: "assigntruckfordriverdetails.truckdriverdetails.docId",
-        },
-      },
-      { $unwind: "$assigntruckfordriverdetails.truckdriverdetails.docId" },
+    //   {
+    //     $lookup: {
+    //       from: "bikemodel",
+    //       localField: "bikedriverdetails.bikedetails.bikemodelId",
+    //       foreignField: "_id",
+    //       as: "bikedriverdetails.bikedetails.bikemodelId",
+    //     },
+    //   },
+    //   { $unwind: "$bikedriverdetails.bikedetails.bikemodelId" },
+    //   {
+    //     $lookup: {
+    //       from: "truckdriverdetails",
+    //       localField: "bikedriverdetails.truckDriverId",
+    //       foreignField: "_id",
+    //       as: "bikedriverdetails.truckdriverdetails",
+    //     },
+    //   },
+    //   { $unwind: "$bikedriverdetails.truckdriverdetails" },
+    //   { $unset: "bikedriverdetails.truckDriverId" },
+    //   {
+    //     $lookup: {
+    //       from: "truckdriverbankdetails",
+    //       localField:
+    //         "bikedriverdetails.truckdriverdetails.bankDetailsId",
+    //       foreignField: "_id",
+    //       as: "bikedriverdetails.truckdriverdetails.bankDetailsId",
+    //     },
+    //   },
+    //   {
+    //     $unwind:
+    //       "$bikedriverdetails.truckdriverdetails.bankDetailsId",
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "truckdriveraddress",
+    //       localField:
+    //         "bikedriverdetails.truckdriverdetails.addressId",
+    //       foreignField: "_id",
+    //       as: "bikedriverdetails.truckdriverdetails.addressId",
+    //     },
+    //   },
+    //   { $unwind: "$bikedriverdetails.truckdriverdetails.addressId" },
+    //   {
+    //     $lookup: {
+    //       from: "truckdriverdoc",
+    //       localField: "bikedriverdetails.truckdriverdetails.docId",
+    //       foreignField: "_id",
+    //       as: "bikedriverdetails.truckdriverdetails.docId",
+    //     },
+    //   },
+    //   { $unwind: "$bikedriverdetails.truckdriverdetails.docId" },
       {
         $project: {
           // _id: 1,
           _id: "$_id",
-          assignTruckId: "$assignTruckId",
-          totalTruckCapacity: "$totalTruckCapacity",
+          bikeDriverId: "$bikeDriverId",
+          totalBottleCapacity: "$totalBottleCapacity",
           totalReserveCapacity: "$totalReserveCapacity",
           deliveredReserveBottle: "$deliveredReserveBottle",
           returnedReserveBottle: "$returnedReserveBottle",
           damagedBottle: "$damagedBottle",
           leakageBottle: "$leakageBottle",
           brokenBottle: "$brokenBottle",
-          // deliveryZoneDetails:"$deliveryZone.deliveryZoneId",
-          deliveryZoneDetails: {
-            _id: "$deliveryZone.deliveryZoneId._id",
-            zoneName: "$deliveryZone.deliveryZoneId.zoneName",
-            country: "$deliveryZone.deliveryZoneId.country",
-            zoneStock: "$deliveryZone.zoneStock",
-            activeStatus: "$deliveryZone.deliveryZoneId.activeStatus",
-            createdAt: "$deliveryZone.deliveryZoneId.createdAt",
-            updatedAt: "$deliveryZone.deliveryZoneId.updatedAt",
-          },
-          startDateAndTime: "$startDateAndTime",
-          endDateAndTime: "$endDateAndTime",
+          productOrderDetails:"$productOrder.productOrderId",
+        //   productOrderDetails: {
+        //     _id: "$productOrder.productOrderId._id",
+        //     zoneName: "$productOrder.productOrderId.zoneName",
+        //     country: "$productOrder.productOrderId.country",
+        //     zoneStock: "$productOrder.zoneStock",
+        //     activeStatus: "$productOrder.productOrderId.activeStatus",
+        //     createdAt: "$productOrder.productOrderId.createdAt",
+        //     updatedAt: "$productOrder.productOrderId.updatedAt",
+        //   },
+        //   startDateAndTime: "$startDateAndTime",
+        //   endDateAndTime: "$endDateAndTime",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
 
-          // // //truckDetails:"$assigntruckfordriverdetails.truckdetails",
-          truckDetails: {
-            TruckId: "$assigntruckfordriverdetails.truckdetails._id",
-            ownerName: "$assigntruckfordriverdetails.truckdetails.ownerName",
-            truckBrandName:
-              "$assigntruckfordriverdetails.truckdetails.truckBrandId.truckBrand",
-            truckModelName:
-              "$assigntruckfordriverdetails.truckdetails.truckModelId.truckModel",
-            chasisNumber:
-              "$assigntruckfordriverdetails.truckdetails.chasisNumber",
-            vehicleNumber:
-              "$assigntruckfordriverdetails.truckdetails.vehicleNumber",
-            registrationZone:
-              "$assigntruckfordriverdetails.truckdetails.registrationZone",
-            registrationDate:
-              "$assigntruckfordriverdetails.truckdetails.registrationDate",
-            vehicleColor:
-              "$assigntruckfordriverdetails.truckdetails.vehicleColor",
-            vehicleYear:
-              "$assigntruckfordriverdetails.truckdetails/vehicleYear",
-            vehicleAge: "$assigntruckfordriverdetails.truckdetails.vehicleAge",
-            fuelType: "$assigntruckfordriverdetails.truckdetails.fuelType",
-            insuranceValidity:
-              "$assigntruckfordriverdetails.truckdetails.insuranceValidity",
-            fitnessValidity:
-              "$assigntruckfordriverdetails.truckdetails.fitnessValidity",
-            mulkiyaValidity:
-              "$assigntruckfordriverdetails.truckdetails.mulkiyaValidity",
-            mulkiyaDocFrontImg:
-              "$assigntruckfordriverdetails.truckdetails.mulkiyaDocImg.frontImg",
-            mulkiyaDocBackImg:
-              "$assigntruckfordriverdetails.truckdetails.mulkiyaDocImg.backImg",
-            vehicleFrontImage:
-              "$assigntruckfordriverdetails.truckdetails.vehicleImage.frontImage",
-            vehicleBackImage:
-              "$assigntruckfordriverdetails.truckdetails.vehicleImage.backImage",
-            vehicleLeftImage:
-              "$assigntruckfordriverdetails.truckdetails.vehicleImage.leftImage",
-            vehicleRightImage:
-              "$assigntruckfordriverdetails.truckdetails.vehicleImage.rightImage",
-            activeStatus:
-              "$assigntruckfordriverdetails.truckdetails.activeStatus",
-          },
-          // // // truckDriverDetails:"$assigntruckfordriverdetails.truckdriverdetails",
+          // // //bikedetails:"$bikedriverdetails.bikedetails",
+        //   bikedetails: {
+        //     BikeDetailsId: "$bikedriverdetails.bikedetails._id",
+        //     ownerName: "$bikedriverdetails.bikedetails.ownerName",
+        //     bikebrandName:
+        //       "$bikedriverdetails.bikedetails.bikebrandId.bikebrand",
+        //     bikemodelName:
+        //       "$bikedriverdetails.bikedetails.bikemodelId.bikemodel",
+        //     chasisNumber:
+        //       "$bikedriverdetails.bikedetails.chasisNumber",
+        //     vehicleNumber:
+        //       "$bikedriverdetails.bikedetails.vehicleNumber",
+        //     registrationZone:
+        //       "$bikedriverdetails.bikedetails.registrationZone",
+        //     registrationDate:
+        //       "$bikedriverdetails.bikedetails.registrationDate",
+        //     vehicleColor:
+        //       "$bikedriverdetails.bikedetails.vehicleColor",
+        //     vehicleYear:
+        //       "$bikedriverdetails.bikedetails/vehicleYear",
+        //     vehicleAge: "$bikedriverdetails.bikedetails.vehicleAge",
+        //     fuelType: "$bikedriverdetails.bikedetails.fuelType",
+        //     insuranceValidity:
+        //       "$bikedriverdetails.bikedetails.insuranceValidity",
+        //     fitnessValidity:
+        //       "$bikedriverdetails.bikedetails.fitnessValidity",
+        //     mulkiyaValidity:
+        //       "$bikedriverdetails.bikedetails.mulkiyaValidity",
+        //     mulkiyaDocFrontImg:
+        //       "$bikedriverdetails.bikedetails.mulkiyaDocImg.frontImg",
+        //     mulkiyaDocBackImg:
+        //       "$bikedriverdetails.bikedetails.mulkiyaDocImg.backImg",
+        //     vehicleFrontImage:
+        //       "$bikedriverdetails.bikedetails.vehicleImage.frontImage",
+        //     vehicleBackImage:
+        //       "$bikedriverdetails.bikedetails.vehicleImage.backImage",
+        //     vehicleLeftImage:
+        //       "$bikedriverdetails.bikedetails.vehicleImage.leftImage",
+        //     vehicleRightImage:
+        //       "$bikedriverdetails.bikedetails.vehicleImage.rightImage",
+        //     activeStatus:
+        //       "$bikedriverdetails.bikedetails.activeStatus",
+        //   },
+        //   // // // truckDriverDetails:"$bikedriverdetails.truckdriverdetails",
 
-          truckDriverDetails: {
-            TruckDriverID:
-              "$assigntruckfordriverdetails.truckdriverdetails._id",
-            Name: "$assigntruckfordriverdetails.truckdriverdetails.name",
-            Email: "$assigntruckfordriverdetails.truckdriverdetails.email",
-            Mobile: "$assigntruckfordriverdetails.truckdriverdetails.mobile",
-            AlterNateMobile:
-              "$assigntruckfordriverdetails.truckdriverdetails.altMobile",
-            Nationality:
-              "$assigntruckfordriverdetails.truckdriverdetails.nationality",
-            PassportNumber:
-              "$assigntruckfordriverdetails.truckdriverdetails.passportNumber",
-            PassportValidity:
-              "assigntruckfordriverdetails.$truckdriverdetails.passportValidity",
-            VisaNumber:
-              "$assigntruckfordriverdetails.truckdriverdetails.visaNumber",
-            VisaValidity:
-              "$assigntruckfordriverdetails.truckdriverdetails.visaValidity",
-            EmiratesId:
-              "$assigntruckfordriverdetails.truckdriverdetails.emiratesId",
-            EmiratesIdValidity:
-              "$assigntruckfordriverdetails.truckdriverdetails.emiratesIdValidity",
-            InsuranceComp:
-              "$assigntruckfordriverdetails.truckdriverdetails.InsuranceComp",
-            InsuranceValidity:
-              "$assigntruckfordriverdetails.truckdriverdetails.insuranceValidity",
-            LicenseNumber:
-              "$assigntruckfordriverdetails.truckdriverdetails.licenseNumber",
-            LicenseCity:
-              "$assigntruckfordriverdetails.truckdriverdetails.licenseCity",
-            LicenseType:
-              "$assigntruckfordriverdetails.truckdriverdetails.licenseType",
-            LicenseValidity:
-              "$assigntruckfordriverdetails.truckdriverdetails.licenseValidity",
-            IsVerified:
-              "$assigntruckfordriverdetails.truckdriverdetails.isVerified",
-            DriverType:
-              "$assigntruckfordriverdetails.truckdriverdetails.driverType",
-            activeStatus:
-              "$assigntruckfordriverdetails.truckdriverdetails.activeStatus",
-            // addressId: "$assigntruckfordriverdetails.truckdriverdetails.addressId",
-            truckDriverAddressDetails: {
-              localAddressHouseNo:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
-              localAddressBuildingName:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.buildingName",
-              localAddressStreet:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
-              localAddressLandmark:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.localAddress.street",
-              homeCountryAddressHouseNo:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.houseNo",
-              homeCountryAddressBuildingName:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.buildingName",
-              homeCountryAddressStreet:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.street",
-              homeCountryAddressLandmark:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.landmark",
-              homeCountryAddressCity:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.city",
-              homeCountryAddressState:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.state",
-              homeCountryAddressPinCode:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.homeCountryAddress.pinCode",
-              emergencyContactName:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.emergencyContact.name",
-              emergencyContactRelation:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.emergencyContact.relation",
-              emergencyContactMobile:
-                "$assigntruckfordriverdetails.truckdriverdetails.addressId.emergencyContact.mobile",
-            },
-            // // //truckDriverBankDetails:"$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId",
-            truckDriverBankDetails: {
-              bankName:
-                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.bankName",
-              accountNumber:
-                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.accountNumber",
-              accountHolderName:
-                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.accountHolderName",
-              branchName:
-                "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.branchName",
-              IBAN: "$assigntruckfordriverdetails.truckdriverdetails.bankDetailsId.IBAN",
-            },
-            // docId: "$assigntruckfordriverdetails.truckdriverdetails.docId",
-            truckDriverDocumentDetails: {
-              passportFrontImage:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.passportImg.frontImg",
-              passportBackImage:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.passportImg.backImg",
-              emiratesIdFrontImage:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.emiratesIdImg.frontImg",
-              emiratesIdBackImage:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.emiratesIdImg.backImg",
-              licenseFrontImage:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.licenseImg.frontImg",
-              licenseBackImage:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.licenseImg.backImg",
-              visaImg:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.visaImg",
-              driverImg:
-                "$assigntruckfordriverdetails.truckdriverdetails.docId.driverImg",
-            },
-          },
+        //   truckDriverDetails: {
+        //     TruckDriverID:
+        //       "$bikedriverdetails.truckdriverdetails._id",
+        //     Name: "$bikedriverdetails.truckdriverdetails.name",
+        //     Email: "$bikedriverdetails.truckdriverdetails.email",
+        //     Mobile: "$bikedriverdetails.truckdriverdetails.mobile",
+        //     AlterNateMobile:
+        //       "$bikedriverdetails.truckdriverdetails.altMobile",
+        //     Nationality:
+        //       "$bikedriverdetails.truckdriverdetails.nationality",
+        //     PassportNumber:
+        //       "$bikedriverdetails.truckdriverdetails.passportNumber",
+        //     PassportValidity:
+        //       "bikedriverdetails.$truckdriverdetails.passportValidity",
+        //     VisaNumber:
+        //       "$bikedriverdetails.truckdriverdetails.visaNumber",
+        //     VisaValidity:
+        //       "$bikedriverdetails.truckdriverdetails.visaValidity",
+        //     EmiratesId:
+        //       "$bikedriverdetails.truckdriverdetails.emiratesId",
+        //     EmiratesIdValidity:
+        //       "$bikedriverdetails.truckdriverdetails.emiratesIdValidity",
+        //     InsuranceComp:
+        //       "$bikedriverdetails.truckdriverdetails.InsuranceComp",
+        //     InsuranceValidity:
+        //       "$bikedriverdetails.truckdriverdetails.insuranceValidity",
+        //     LicenseNumber:
+        //       "$bikedriverdetails.truckdriverdetails.licenseNumber",
+        //     LicenseCity:
+        //       "$bikedriverdetails.truckdriverdetails.licenseCity",
+        //     LicenseType:
+        //       "$bikedriverdetails.truckdriverdetails.licenseType",
+        //     LicenseValidity:
+        //       "$bikedriverdetails.truckdriverdetails.licenseValidity",
+        //     IsVerified:
+        //       "$bikedriverdetails.truckdriverdetails.isVerified",
+        //     DriverType:
+        //       "$bikedriverdetails.truckdriverdetails.driverType",
+        //     activeStatus:
+        //       "$bikedriverdetails.truckdriverdetails.activeStatus",
+        //     // addressId: "$bikedriverdetails.truckdriverdetails.addressId",
+        //     truckDriverAddressDetails: {
+        //       localAddressHouseNo:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
+        //       localAddressBuildingName:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.buildingName",
+        //       localAddressStreet:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
+        //       localAddressLandmark:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.street",
+        //       homeCountryAddressHouseNo:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.houseNo",
+        //       homeCountryAddressBuildingName:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.buildingName",
+        //       homeCountryAddressStreet:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.street",
+        //       homeCountryAddressLandmark:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.landmark",
+        //       homeCountryAddressCity:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.city",
+        //       homeCountryAddressState:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.state",
+        //       homeCountryAddressPinCode:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.pinCode",
+        //       emergencyContactName:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.emergencyContact.name",
+        //       emergencyContactRelation:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.emergencyContact.relation",
+        //       emergencyContactMobile:
+        //         "$bikedriverdetails.truckdriverdetails.addressId.emergencyContact.mobile",
+        //     },
+        //     // // //truckDriverBankDetails:"$bikedriverdetails.truckdriverdetails.bankDetailsId",
+        //     truckDriverBankDetails: {
+        //       bankName:
+        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.bankName",
+        //       accountNumber:
+        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.accountNumber",
+        //       accountHolderName:
+        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.accountHolderName",
+        //       branchName:
+        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.branchName",
+        //       IBAN: "$bikedriverdetails.truckdriverdetails.bankDetailsId.IBAN",
+        //     },
+        //     // docId: "$bikedriverdetails.truckdriverdetails.docId",
+        //     truckDriverDocumentDetails: {
+        //       passportFrontImage:
+        //         "$bikedriverdetails.truckdriverdetails.docId.passportImg.frontImg",
+        //       passportBackImage:
+        //         "$bikedriverdetails.truckdriverdetails.docId.passportImg.backImg",
+        //       emiratesIdFrontImage:
+        //         "$bikedriverdetails.truckdriverdetails.docId.emiratesIdImg.frontImg",
+        //       emiratesIdBackImage:
+        //         "$bikedriverdetails.truckdriverdetails.docId.emiratesIdImg.backImg",
+        //       licenseFrontImage:
+        //         "$bikedriverdetails.truckdriverdetails.docId.licenseImg.frontImg",
+        //       licenseBackImage:
+        //         "$bikedriverdetails.truckdriverdetails.docId.licenseImg.backImg",
+        //       visaImg:
+        //         "$bikedriverdetails.truckdriverdetails.docId.visaImg",
+        //       driverImg:
+        //         "$bikedriverdetails.truckdriverdetails.docId.driverImg",
+        //     },
+        //   },
         },
       },
       {
         $group: {
           _id: "$_id",
-          assignTruckId: { $first: "$assignTruckId" },
-          totalTruckCapacity: { $first: "$totalTruckCapacity" },
+          bikeDriverId: { $first: "$bikeDriverId" },
+          totalBottleCapacity: { $first: "$totalBottleCapacity" },
           totalReserveCapacity: { $first: "$totalReserveCapacity" },
           deliveredReserveBottle: { $first: "$deliveredReserveBottle" },
           returnedReserveBottle: { $first: "$returnedReserveBottle" },
           damagedBottle: { $first: "$damagedBottle" },
           leakageBottle: { $first: "$leakageBottle" },
           brokenBottle: { $first: "$brokenBottle" },
-          zoneDetails: {
-            $addToSet: "$deliveryZoneDetails",
+          orderDetails: {
+            $addToSet: "$productOrderDetails",
           },
-          startDateAndTime: { $first: "$startDateAndTime" },
-          endDateAndTime: { $first: "$endDateAndTime" },
+        //   startDateAndTime: { $first: "$startDateAndTime" },
+        //   endDateAndTime: { $first: "$endDateAndTime" },
           activeStatus: { $first: "$activeStatus" },
           createdAt: { $first: "$createdAt" },
           updatedAt: { $first: "$updatedAt" },
-          truckDetails: { $first: "$truckDetails" },
-          truckDriverDetails: { $first: "$truckDriverDetails" },
+        //   bikedetails: { $first: "$bikedetails" },
+        //   truckDriverDetails: { $first: "$truckDriverDetails" },
         },
       },
       {
@@ -485,23 +497,23 @@ module.exports = {
         },
       },
     ]);
-    if (assignTruckData[0].data.length == 0) {
+    if (assignOrderBiker[0].data.length == 0) {
       const err = new customError(
         global.CONFIGS.api.AssignZoneForAssignTruckNotfound,
         global.CONFIGS.responseCode.notFound
       );
       return next(err);
     }
-    const total = parseInt(assignTruckData[0].metadata[0].total);
+    const total = parseInt(assignOrderBiker[0].metadata[0].total);
     var totalPage = Math.ceil(
-      parseInt(assignTruckData[0].metadata[0].total) / limit
+      parseInt(assignOrderBiker[0].metadata[0].total) / limit
     );
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.AssignZoneForAssignTruckListAdmin,
       totalData: total,
       totalPage: totalPage,
-      data: assignTruckData[0].data,
+      data: assignOrderBiker[0].data,
     });
   },
 

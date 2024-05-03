@@ -3,6 +3,7 @@ const constants = require("../models/modelConstants");
 const TruckModel = mongoose.model(constants.TruckDetailModel);
 const common = require("../service/commonFunction");
 var customError = require("../middleware/customerror");
+const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   addTruck: async (req, res, next) => {
@@ -64,7 +65,7 @@ module.exports = {
     });
   },
 
-  updateVehicle: async (req, res, next) => {
+  updateTruck: async (req, res, next) => {
     let find_vehicle = await TruckModel.findById(req.params.id);
     if (!find_vehicle) {
       const err = new customError(
@@ -120,7 +121,7 @@ module.exports = {
     });
   },
 
-  deletevehicle: async (req, res, next) => {
+  deleteTruck: async (req, res, next) => {
     var delete_vehicle = await TruckModel.findByIdAndDelete({
       _id: req.params.id,
     });
@@ -138,7 +139,7 @@ module.exports = {
     });
   },
 
-  vehicleListFront: async (req, res, next) => {
+  TruckListFront: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
@@ -210,11 +211,11 @@ module.exports = {
       message: global.CONFIGS.api.truckDetailsListFront,
       totalData: total,
       totalPage: totalPage,
-      allOrder: truckData[0].data,
+      alltruckData: truckData[0].data,
     });
   },
 
-  vehicleListAdmin: async (req, res, next) => {
+  TruckListAdmin: async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
@@ -282,7 +283,82 @@ module.exports = {
       message: global.CONFIGS.api.truckDetailsListAdmin,
       totalData: total,
       totalPage: totalPage,
-      allOrder: truckData[0].data,
+      alltruckdata: truckData[0].data,
     });
   },
+  getSingleTruckDetailsByIdAdmin: async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20; // docs in single page
+    const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+    const skip = (pageNo - 1) * limit;
+    let truckData = await TruckModel.aggregate([
+      {
+        $match: { _id: new ObjectId(req.params.id) },
+      },
+      {
+        $lookup: {
+          from: "truckbrand",
+          localField: "truckBrandId",
+          foreignField: "_id",
+          as: "truckbrand",
+        },
+      },
+      { $unwind: "$truckbrand" },
+      { $unset: "truckBrandId" },
+      {
+        $lookup: {
+          from: "truckmodel",
+          localField: "truckModelId",
+          foreignField: "_id",
+          as: "truckmodel",
+        },
+      },
+      { $unwind: "$truckmodel" },
+      { $unset: "truckModelId" },
+      {
+        $project: {
+          _id: "$_id",
+          ownerName: "$ownerName",
+          truckBrand: "$truckbrand.truckBrand",
+          truckModel: "$truckmodel.truckModel",
+          chasisNumber: "$chasisNumber",
+          vehicleNumber: "$vehicleNumber",
+          registrationZone: "$registrationZone",
+          registrationDate: "$registrationDate",
+          vehicleColor: "$vehicleColor",
+          vehicleYear: "$vehicleYear",
+          vehicleAge: "$vehicleAge",
+          fuelType: "$fuelType",
+          insuranceValidity: "$insuranceValidity",
+          fitnessValidity: "$fitnessValidity",
+          mulkiyaValidity: "$mulkiyaValidity",
+          mulkiyaDocImg: "$mulkiyaDocImg",
+          vehicleImage: "$vehicleImage",
+          activeStatus: "$activeStatus",
+        },
+      },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+          data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+        },
+      },
+    ]);
+    if (truckData[0].data.length == 0) {
+      const err = new customError(
+        global.CONFIGS.api.truckDetailsNotfound,
+        global.CONFIGS.responseCode.notFound
+      );
+      return next(err);
+    }
+    const total = parseInt(truckData[0].metadata[0].total);
+    var totalPage = Math.ceil(parseInt(truckData[0].metadata[0].total) / limit);
+    return res.status(global.CONFIGS.responseCode.success).json({
+      success: true,
+      message: global.CONFIGS.api.truckDetailsListAdmin,
+      totalData: total,
+      totalPage: totalPage,
+      truckData: truckData[0].data,
+    });
+  },
+
 };
