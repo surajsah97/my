@@ -57,18 +57,18 @@ module.exports = {
     // let totalBottleCapacity = req.body.totalBottleCapacity;
     // console.log(totalBottleCapacity, "......totalBottleCapacity");
     /**Old End */
-    let totalReserveCapacity = req.body.totalReserveCapacity;
-    console.log(totalReserveCapacity, "......totalReserveCapacity");
-    let damagedBottle = req.body.damagedBottle;
-    console.log(damagedBottle, "......damagedBottle");
-    let leakageBottle = req.body.leakageBottle;
-    console.log(leakageBottle, "......leakageBottle");
-    let brokenBottle = req.body.brokenBottle;
-    console.log(brokenBottle, "......brokenBottle");
-    let deliveredReserveBottle = damagedBottle + leakageBottle + brokenBottle;
-    console.log(deliveredReserveBottle, "......deliveredReserveBottle");
-    let returnedReserveBottle = totalReserveCapacity - deliveredReserveBottle;
-    console.log(returnedReserveBottle, "......returnedReserveBottle");
+    // let totalReserveCapacity = req.body.totalReserveCapacity;
+    // console.log(totalReserveCapacity, "......totalReserveCapacity");
+    // let damagedBottle = req.body.damagedBottle;
+    // console.log(damagedBottle, "......damagedBottle");
+    // let leakageBottle = req.body.leakageBottle;
+    // console.log(leakageBottle, "......leakageBottle");
+    // let brokenBottle = req.body.brokenBottle;
+    // console.log(brokenBottle, "......brokenBottle");
+    // let deliveredReserveBottle = damagedBottle + leakageBottle + brokenBottle;
+    // console.log(deliveredReserveBottle, "......deliveredReserveBottle");
+    // let returnedReserveBottle = totalReserveCapacity - deliveredReserveBottle;
+    // console.log(returnedReserveBottle, "......returnedReserveBottle");
     /**ForStartTime_EndTime */
     // const existing_bikeDriver = await AssignOrderForBikeDriverModel.find({
     //   bikeDriverId: req.body.bikeDriverId,
@@ -146,11 +146,11 @@ module.exports = {
       totalBottleCapacity:productOrderOfproduct,
     //   totalBottleCapacity,
       totalReserveCapacity: req.body.totalReserveCapacity,
-      damagedBottle,
-      leakageBottle,
-      brokenBottle,
-      deliveredReserveBottle: deliveredReserveBottle,
-      returnedReserveBottle:returnedReserveBottle,
+      damagedBottle: req.body.damagedBottle,
+      leakageBottle: req.body.leakageBottle,
+      brokenBottle: req.body.brokenBottle,
+      deliveredReserveBottle: req.body.deliveredReserveBottle,
+      returnedReserveBottle:req.body.returnedReserveBottle,
     };
     // return;
     const create_assignOrderbikeDriver =
@@ -189,25 +189,46 @@ module.exports = {
           ],
         },
       },
+    //   { $unwind: "$productOrder" },
       {
-        $unwind: "$productOrder",
+        $unwind: {
+          path: "$productOrder",
+          includeArrayIndex: "string",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
           from: "productorder",
           localField: "productOrder.productOrderId",
           foreignField: "_id",
-          as: "productOrder.productOrderId",
+          as: "productOrder.productOrderDetails",
         },
       },
       {
         $unwind: {
-          path: "$productOrder.productOrderId",
+          path: "$productOrder.productOrderDetails",
           includeArrayIndex: "string",
           preserveNullAndEmptyArrays: true,
         },
       },
-
+    //   { $unwind: "$productOrder.productOrderDetails" },
+      {
+        $lookup: {
+          from: "product",
+          localField: "productOrder.productOrderDetails.product.productId",
+          foreignField: "_id",
+          as: "productOrder.productOrderDetails.product.productDetails",
+        },
+      },
+    //   {
+    //     $unwind: {
+    //       path: "$productOrder.productOrderDetails.product.productDetails",
+    //       includeArrayIndex: "string",
+    //       preserveNullAndEmptyArrays: true,
+    //     },
+    //   },
+    //   { $unwind: "$productOrder.productOrderDetails.product.productDetails" },
       {
         $lookup: {
           from: "bikedriverdetails",
@@ -223,72 +244,64 @@ module.exports = {
           from: "bikedetails",
           localField: "bikedriverdetails.bikeDetailsId",
           foreignField: "_id",
-          as: "bikedriverdetails.bikedetails",
+          as: "bikedriverdetails.bikeDetails",
         },
       },
-    //   { $unwind: "$bikedriverdetails.bikedetails" },
-    //   { $unset: "bikedriverdetails.bikeDetailsId" },
-    //   {
-    //     $lookup: {
-    //       from: "bikebrand",
-    //       localField: "bikedriverdetails.bikedetails.bikebrandId",
-    //       foreignField: "_id",
-    //       as: "bikedriverdetails.bikedetails.bikebrandId",
-    //     },
-    //   },
-    //   { $unwind: "$bikedriverdetails.bikedetails.bikebrandId" },
+      { $unwind: "$bikedriverdetails.bikeDetails" },
+      { $unset: "bikedriverdetails.bikeDetailsId" },
+      {
+        $lookup: {
+          from: "bikebrand",
+          localField: "bikedriverdetails.bikeDetails.brandId",
+          foreignField: "_id",
+          as: "bikedriverdetails.bikeDetails.brandDetails",
+        },
+      },
+      { $unwind: "$bikedriverdetails.bikeDetails.brandDetails" },
+      { $unset: "bikedriverdetails.bikeDetails.brandId" },
 
-    //   {
-    //     $lookup: {
-    //       from: "bikemodel",
-    //       localField: "bikedriverdetails.bikedetails.bikemodelId",
-    //       foreignField: "_id",
-    //       as: "bikedriverdetails.bikedetails.bikemodelId",
-    //     },
-    //   },
-    //   { $unwind: "$bikedriverdetails.bikedetails.bikemodelId" },
-    //   {
-    //     $lookup: {
-    //       from: "truckdriverdetails",
-    //       localField: "bikedriverdetails.truckDriverId",
-    //       foreignField: "_id",
-    //       as: "bikedriverdetails.truckdriverdetails",
-    //     },
-    //   },
-    //   { $unwind: "$bikedriverdetails.truckdriverdetails" },
-    //   { $unset: "bikedriverdetails.truckDriverId" },
-    //   {
-    //     $lookup: {
-    //       from: "truckdriverbankdetails",
-    //       localField:
-    //         "bikedriverdetails.truckdriverdetails.bankDetailsId",
-    //       foreignField: "_id",
-    //       as: "bikedriverdetails.truckdriverdetails.bankDetailsId",
-    //     },
-    //   },
-    //   {
-    //     $unwind:
-    //       "$bikedriverdetails.truckdriverdetails.bankDetailsId",
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: "truckdriveraddress",
-    //       localField:
-    //         "bikedriverdetails.truckdriverdetails.addressId",
-    //       foreignField: "_id",
-    //       as: "bikedriverdetails.truckdriverdetails.addressId",
-    //     },
-    //   },
-    //   { $unwind: "$bikedriverdetails.truckdriverdetails.addressId" },
-    //   {
-    //     $lookup: {
-    //       from: "truckdriverdoc",
-    //       localField: "bikedriverdetails.truckdriverdetails.docId",
-    //       foreignField: "_id",
-    //       as: "bikedriverdetails.truckdriverdetails.docId",
-    //     },
-    //   },
-    //   { $unwind: "$bikedriverdetails.truckdriverdetails.docId" },
+      {
+        $lookup: {
+          from: "bikemodel",
+          localField: "bikedriverdetails.bikeDetails.modelId",
+          foreignField: "_id",
+          as: "bikedriverdetails.bikeDetails.modelDetails",
+        },
+      },
+      { $unwind: "$bikedriverdetails.bikeDetails.modelDetails" },
+      { $unset: "bikedriverdetails.bikeDetails.modelId" },
+      {
+        $lookup: {
+          from: "driverbankdetails",
+          localField:
+            "bikedriverdetails.bankDetailsId",
+          foreignField: "_id",
+          as: "bikedriverdetails.bankDetails",
+        },
+      },
+      {$unwind:"$bikedriverdetails.bankDetails",},
+      {$unset:"bikedriverdetails.bankDetailsId",},
+      {
+        $lookup: {
+          from: "driveraddress",
+          localField:
+            "bikedriverdetails.addressId",
+          foreignField: "_id",
+          as: "bikedriverdetails.addressDetails",
+        },
+      },
+      { $unwind: "$bikedriverdetails.addressDetails" },
+       {$unset:"bikedriverdetails.addressId",},
+      {
+        $lookup: {
+          from: "driverdoc",
+          localField: "bikedriverdetails.docId",
+          foreignField: "_id",
+          as: "bikedriverdetails.docDetails",
+        },
+      },
+      { $unwind: "$bikedriverdetails.docDetails" },
+      {$unset:"bikedriverdetails.docId",},
       {
         $project: {
           // _id: 1,
@@ -301,170 +314,31 @@ module.exports = {
           damagedBottle: "$damagedBottle",
           leakageBottle: "$leakageBottle",
           brokenBottle: "$brokenBottle",
-          productOrderDetails:"$productOrder.productOrderId",
-        //   productOrderDetails: {
-        //     _id: "$productOrder.productOrderId._id",
-        //     zoneName: "$productOrder.productOrderId.zoneName",
-        //     country: "$productOrder.productOrderId.country",
-        //     zoneStock: "$productOrder.zoneStock",
-        //     activeStatus: "$productOrder.productOrderId.activeStatus",
-        //     createdAt: "$productOrder.productOrderId.createdAt",
-        //     updatedAt: "$productOrder.productOrderId.updatedAt",
-        //   },
-        //   startDateAndTime: "$startDateAndTime",
-        //   endDateAndTime: "$endDateAndTime",
+          productOrderDetails:"$productOrder.productOrderDetails",
+        productOrderDetails:{
+            
+            _id:"$productOrder.productOrderDetails._id",
+            orderId:"$productOrder.productOrderDetails.orderId",
+            transactionId:"$productOrder.productOrderDetails.transactionId",
+            userId:"$productOrder.productOrderDetails.userId",
+            product:{
+                // qty:"$qty",
+                productDetails:{
+                    _id:"$productOrder.productOrderDetails.product.productDetails._id",
+                    productName:"$productOrder.productOrderDetails.product.productDetails.productName",
+                    productImage:"$productOrder.productOrderDetails.product.productDetails.productImage",
+                    productPrice:"$productOrder.productOrderDetails.product.productDetails.productPrice",
+                    productUOM:"$productOrder.productOrderDetails.product.productDetails.productUOM",
+                    // qty:"$productOrder.qty",
+                    
+            }
+            }
+        },
+          bottleQunatityDetails:"$productOrder.bottleQunatity",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
-
-          // // //bikedetails:"$bikedriverdetails.bikedetails",
-        //   bikedetails: {
-        //     BikeDetailsId: "$bikedriverdetails.bikedetails._id",
-        //     ownerName: "$bikedriverdetails.bikedetails.ownerName",
-        //     bikebrandName:
-        //       "$bikedriverdetails.bikedetails.bikebrandId.bikebrand",
-        //     bikemodelName:
-        //       "$bikedriverdetails.bikedetails.bikemodelId.bikemodel",
-        //     chasisNumber:
-        //       "$bikedriverdetails.bikedetails.chasisNumber",
-        //     vehicleNumber:
-        //       "$bikedriverdetails.bikedetails.vehicleNumber",
-        //     registrationZone:
-        //       "$bikedriverdetails.bikedetails.registrationZone",
-        //     registrationDate:
-        //       "$bikedriverdetails.bikedetails.registrationDate",
-        //     vehicleColor:
-        //       "$bikedriverdetails.bikedetails.vehicleColor",
-        //     vehicleYear:
-        //       "$bikedriverdetails.bikedetails/vehicleYear",
-        //     vehicleAge: "$bikedriverdetails.bikedetails.vehicleAge",
-        //     fuelType: "$bikedriverdetails.bikedetails.fuelType",
-        //     insuranceValidity:
-        //       "$bikedriverdetails.bikedetails.insuranceValidity",
-        //     fitnessValidity:
-        //       "$bikedriverdetails.bikedetails.fitnessValidity",
-        //     mulkiyaValidity:
-        //       "$bikedriverdetails.bikedetails.mulkiyaValidity",
-        //     mulkiyaDocFrontImg:
-        //       "$bikedriverdetails.bikedetails.mulkiyaDocImg.frontImg",
-        //     mulkiyaDocBackImg:
-        //       "$bikedriverdetails.bikedetails.mulkiyaDocImg.backImg",
-        //     vehicleFrontImage:
-        //       "$bikedriverdetails.bikedetails.vehicleImage.frontImage",
-        //     vehicleBackImage:
-        //       "$bikedriverdetails.bikedetails.vehicleImage.backImage",
-        //     vehicleLeftImage:
-        //       "$bikedriverdetails.bikedetails.vehicleImage.leftImage",
-        //     vehicleRightImage:
-        //       "$bikedriverdetails.bikedetails.vehicleImage.rightImage",
-        //     activeStatus:
-        //       "$bikedriverdetails.bikedetails.activeStatus",
-        //   },
-        //   // // // truckDriverDetails:"$bikedriverdetails.truckdriverdetails",
-
-        //   truckDriverDetails: {
-        //     TruckDriverID:
-        //       "$bikedriverdetails.truckdriverdetails._id",
-        //     Name: "$bikedriverdetails.truckdriverdetails.name",
-        //     Email: "$bikedriverdetails.truckdriverdetails.email",
-        //     Mobile: "$bikedriverdetails.truckdriverdetails.mobile",
-        //     AlterNateMobile:
-        //       "$bikedriverdetails.truckdriverdetails.altMobile",
-        //     Nationality:
-        //       "$bikedriverdetails.truckdriverdetails.nationality",
-        //     PassportNumber:
-        //       "$bikedriverdetails.truckdriverdetails.passportNumber",
-        //     PassportValidity:
-        //       "bikedriverdetails.$truckdriverdetails.passportValidity",
-        //     VisaNumber:
-        //       "$bikedriverdetails.truckdriverdetails.visaNumber",
-        //     VisaValidity:
-        //       "$bikedriverdetails.truckdriverdetails.visaValidity",
-        //     EmiratesId:
-        //       "$bikedriverdetails.truckdriverdetails.emiratesId",
-        //     EmiratesIdValidity:
-        //       "$bikedriverdetails.truckdriverdetails.emiratesIdValidity",
-        //     InsuranceComp:
-        //       "$bikedriverdetails.truckdriverdetails.InsuranceComp",
-        //     InsuranceValidity:
-        //       "$bikedriverdetails.truckdriverdetails.insuranceValidity",
-        //     LicenseNumber:
-        //       "$bikedriverdetails.truckdriverdetails.licenseNumber",
-        //     LicenseCity:
-        //       "$bikedriverdetails.truckdriverdetails.licenseCity",
-        //     LicenseType:
-        //       "$bikedriverdetails.truckdriverdetails.licenseType",
-        //     LicenseValidity:
-        //       "$bikedriverdetails.truckdriverdetails.licenseValidity",
-        //     IsVerified:
-        //       "$bikedriverdetails.truckdriverdetails.isVerified",
-        //     DriverType:
-        //       "$bikedriverdetails.truckdriverdetails.driverType",
-        //     activeStatus:
-        //       "$bikedriverdetails.truckdriverdetails.activeStatus",
-        //     // addressId: "$bikedriverdetails.truckdriverdetails.addressId",
-        //     truckDriverAddressDetails: {
-        //       localAddressHouseNo:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
-        //       localAddressBuildingName:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.buildingName",
-        //       localAddressStreet:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.houseNo",
-        //       localAddressLandmark:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.localAddress.street",
-        //       homeCountryAddressHouseNo:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.houseNo",
-        //       homeCountryAddressBuildingName:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.buildingName",
-        //       homeCountryAddressStreet:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.street",
-        //       homeCountryAddressLandmark:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.landmark",
-        //       homeCountryAddressCity:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.city",
-        //       homeCountryAddressState:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.state",
-        //       homeCountryAddressPinCode:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.homeCountryAddress.pinCode",
-        //       emergencyContactName:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.emergencyContact.name",
-        //       emergencyContactRelation:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.emergencyContact.relation",
-        //       emergencyContactMobile:
-        //         "$bikedriverdetails.truckdriverdetails.addressId.emergencyContact.mobile",
-        //     },
-        //     // // //truckDriverBankDetails:"$bikedriverdetails.truckdriverdetails.bankDetailsId",
-        //     truckDriverBankDetails: {
-        //       bankName:
-        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.bankName",
-        //       accountNumber:
-        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.accountNumber",
-        //       accountHolderName:
-        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.accountHolderName",
-        //       branchName:
-        //         "$bikedriverdetails.truckdriverdetails.bankDetailsId.branchName",
-        //       IBAN: "$bikedriverdetails.truckdriverdetails.bankDetailsId.IBAN",
-        //     },
-        //     // docId: "$bikedriverdetails.truckdriverdetails.docId",
-        //     truckDriverDocumentDetails: {
-        //       passportFrontImage:
-        //         "$bikedriverdetails.truckdriverdetails.docId.passportImg.frontImg",
-        //       passportBackImage:
-        //         "$bikedriverdetails.truckdriverdetails.docId.passportImg.backImg",
-        //       emiratesIdFrontImage:
-        //         "$bikedriverdetails.truckdriverdetails.docId.emiratesIdImg.frontImg",
-        //       emiratesIdBackImage:
-        //         "$bikedriverdetails.truckdriverdetails.docId.emiratesIdImg.backImg",
-        //       licenseFrontImage:
-        //         "$bikedriverdetails.truckdriverdetails.docId.licenseImg.frontImg",
-        //       licenseBackImage:
-        //         "$bikedriverdetails.truckdriverdetails.docId.licenseImg.backImg",
-        //       visaImg:
-        //         "$bikedriverdetails.truckdriverdetails.docId.visaImg",
-        //       driverImg:
-        //         "$bikedriverdetails.truckdriverdetails.docId.driverImg",
-        //     },
-        //   },
+          bikeDriverDetails:"$bikedriverdetails",
         },
       },
       {
@@ -479,15 +353,15 @@ module.exports = {
           leakageBottle: { $first: "$leakageBottle" },
           brokenBottle: { $first: "$brokenBottle" },
           orderDetails: {
-            $addToSet: "$productOrderDetails",
-          },
-        //   startDateAndTime: { $first: "$startDateAndTime" },
-        //   endDateAndTime: { $first: "$endDateAndTime" },
+            $addToSet: {
+                         bottleQunatity: "$bottleQunatityDetails", // Add bottle quantity field here
+                         productOrderDetails: "$productOrderDetails",
+                    },
+         },
           activeStatus: { $first: "$activeStatus" },
           createdAt: { $first: "$createdAt" },
           updatedAt: { $first: "$updatedAt" },
-        //   bikedetails: { $first: "$bikedetails" },
-        //   truckDriverDetails: { $first: "$truckDriverDetails" },
+          bikeDriverDetails: { $first: "$bikeDriverDetails" },
         },
       },
       {
