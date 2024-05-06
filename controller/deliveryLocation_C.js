@@ -3,6 +3,7 @@ const constants = require("../models/modelConstants");
 const DeliveryLocationModel = mongoose.model(constants.DeliveryLocationModel);
 const DeliveryZoneModel = mongoose.model(constants.DeliveryZoneModel);
 var customError = require("../middleware/customerror");
+const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
   addlocation: async (req, res, next) => {
@@ -121,18 +122,54 @@ module.exports = {
     const searchText = req.query.searchText;
     const activeStatus = req.query.activeStatus;
     let query = {};
+    if (deliveryZoneId != undefined) {
+      query.deliveryZoneId = new ObjectId(deliveryZoneId);
+    }
     if (activeStatus != undefined) {
       query.activeStatus = activeStatus;
     };
     if (searchText !== undefined) {
       query.$or = [
         { location: { $regex: new RegExp(searchText), $options: "i" } },
+        { "deliveryzone.zoneName": { $regex: new RegExp(searchText), $options: "i" } },
       ];
     };
+    if (startDate != undefined && endDate != undefined) {
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      query.createdAt = { $lte: new Date(endDate) };
+    }
     console.log(query,"...query");
     const find_location = await DeliveryLocationModel.aggregate([
+      {
+        $lookup: {
+          from: "deliveryzone",
+          localField: "deliveryZoneId",
+          foreignField: "_id",
+          as: "deliveryzone",
+        },
+      },
+      { $unwind: "$deliveryzone" },
        {
         $match: query,
+      },
+      {
+        $project: {
+          _id: "$_id",
+          deliveryLocationName: "$location",
+          deliveryZoneName: "$deliveryzone.zoneName",
+          deliveryZoneId: "$deliveryzone._id",
+          activeStatus: "$activeStatus",
+          createdAt: "$createdAt",
+          updatedAt: "$updatedAt",
+        },
       },
       {
         $facet: {

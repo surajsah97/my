@@ -91,7 +91,51 @@ module.exports = {
     const limit = parseInt(req.query.limit) || 20; // docs in single page
     const pageNo = parseInt(req.query.pageNo) || 1; //  page number
     const skip = (pageNo - 1) * limit;
+    var query = {};
+    const searchText = req.query.searchText;
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+    if (req.query.activeStatus != undefined) {
+      query.activeStatus = req.query.activeStatus;
+    }
+    if (searchText !== undefined) {
+      query.$or = [
+        { zoneName: { $regex: new RegExp(searchText), $options: "i" } },
+      ];
+    }
+    if (startDate != undefined && endDate != undefined) {
+      // console.log({ $gt: new Date(startDate), $lt: new Date(endDate) })
+      query.createdAt = {
+        $gt: new Date(startDate),
+        $lt: new Date(endDate),
+      };
+    }
+    if (startDate != undefined && endDate == undefined) {
+      // console.log({ $gt: new Date(startDate) })
+      query.createdAt = { $gte: new Date(startDate) };
+    }
+    if (startDate == undefined && endDate != undefined) {
+      // console.log({  $lt: new Date(endDate) })
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+    console.log(query);
     var deliveryZoneData = await DeliveryZoneModel.aggregate([
+      {
+        $match: query,
+      },
+      {
+        $project: {
+          _id: "$_id",
+          deliveryZoneName: "$zoneName",
+          countryName: "$country",
+          location: "$location",
+          latitude: "$lat",
+          longitude: "$long",
+          activeStatus: "$activeStatus",
+          createdAt: "$createdAt",
+          updatedAt: "$updatedAt",
+        },
+      },
       {
         $sort: {
           zoneName: 1,
