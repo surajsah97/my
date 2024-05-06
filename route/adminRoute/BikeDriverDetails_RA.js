@@ -63,6 +63,9 @@ router
 router
   .route("/bikedriverlistbyzoneid/:zoneId")
   .get(Auth.adminValidateToken, errorfun(bikeDRiverDetails.bikeDriverListByZoneIdAdmin));
+router
+  .route("/istbyzoneidforassignorder/:zoneId")
+  .get(Auth.adminValidateToken, errorfun(bikeDRiverDetails.bikeDriverListByZoneIdAdminForassignOrder));
 
 router.get(
   "/getsinglebikedriverdetailbyadmin",

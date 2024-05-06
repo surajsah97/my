@@ -227,7 +227,7 @@
     "AssignUseraddressForBikedriverDelete": "AssignUseraddressForBikedriver Delete Successfully.",
     "AssignUseraddressForBikedriverInactive": "AssignUseraddressForBikedriver Inactive or not found Successfully.",
     "AssignUseraddressForBikedriverNotFound": "AssignUseraddressForBikedriver not found Successfully.",
-
+    "totalBottleCapacity":"Total bottle capacity must be less than equal to 20",
     "EnterEndDateGreaterThanStartDate": "Please Enter EndDate is GreaterThan StartDate Successfully.",
     "EnterStartDateGreaterThanEndDate": "Please Enter StartDate is GreaterThan previousEndDate Successfully."
   },

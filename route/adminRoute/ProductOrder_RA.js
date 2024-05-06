@@ -11,5 +11,8 @@ router
 router
   .route("/orderlistbyzoneid/:id")
   .post(Auth.adminValidateToken, errorfun(productOrder.orderListByZoneIdAdmin));
+router
+  .route("/listbyzoneidforassignorder/:id")
+  .post(Auth.adminValidateToken, errorfun(productOrder.orderListByZoneIdAdminForassignorder));
 
 module.exports = router;
