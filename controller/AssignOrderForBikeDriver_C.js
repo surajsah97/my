@@ -132,6 +132,8 @@ module.exports = {
         const find_productOrderLength = find_productOrder.length;
         const productOrderIdLength = productOrdered.length;
         console.log(find_productOrderLength, productOrderIdLength);
+        console.log(productOrderIdLength, productOrderIdLength);
+
         if ( productOrderOfproduct > 20) {
             const err = new customError(
                 global.CONFIGS.api.totalBottleCapacity,
@@ -189,7 +191,7 @@ module.exports = {
             console.log(update_ProductOrder,".....update_ProductOrder");
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.AssignUseraddressForBikedriverAdded,
+            message: global.CONFIGS.api.AssignOrderForBikedriverAdded,
             data: create_assignOrderbikeDriver,
         });
     },
@@ -502,7 +504,7 @@ module.exports = {
         ]);
         if (assignOrderBiker[0].data.length == 0) {
             const err = new customError(
-                global.CONFIGS.api.AssignZoneForAssignTruckNotfound,
+                global.CONFIGS.api.AssignOrderForBikedriverNotfound,
                 global.CONFIGS.responseCode.notFound
             );
             return next(err);
@@ -513,7 +515,7 @@ module.exports = {
         );
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.AssignZoneForAssignTruckListAdmin,
+            message: global.CONFIGS.api.AssignOrderForBikedriverListAdmin,
             totalData: total,
             totalPage: totalPage,
             data: assignOrderBiker[0].data,
@@ -816,7 +818,7 @@ module.exports = {
         ]);
         if (assignOrderBiker[0].data.length == 0) {
             const err = new customError(
-                global.CONFIGS.api.AssignZoneForAssignTruckNotfound,
+                global.CONFIGS.api.AssignOrderForBikedriverNotfound,
                 global.CONFIGS.responseCode.notFound
             );
             return next(err);
@@ -827,7 +829,7 @@ module.exports = {
         );
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
-            message: global.CONFIGS.api.AssignZoneForAssignTruckListAdmin,
+            message: global.CONFIGS.api.AssignOrderForBikedriverByIdAdmin,
             totalData: total,
             totalPage: totalPage,
             data: assignOrderBiker[0].data,

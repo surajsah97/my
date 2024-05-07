@@ -30,63 +30,100 @@ module.exports={
             );
             return next(err);
         }
-        const find_bikeDriver = await BikeDriverModel.findOne({
-            _id: req.body.bikeDriverId,
+        const find_assigntruck = await AssignTruckForDriverModel.findOne({
+            _id: req.body.assigntruckId,
             activeStatus: "1",
         });
-        // console.log(find_bikeDriver,"....find_bikeDriver");
-        if (!find_bikeDriver) {
+        console.log(find_assigntruck,"....find_assigntruck");
+        if (!find_assigntruck) {
             const err = new customError(
-                global.CONFIGS.api.DriverInactive,
+                global.CONFIGS.api.AssignTruckForDriverInactive,
                 global.CONFIGS.responseCode.notFound
             );
             return next(err);
         }
-         const productOrdered = req.body.productOrder.map(
-            (item) => item.productOrderId
+/**bikeDriverId find start */
+        const bikeDrivered = req.body.bikeDriver.map(
+            (item) => item.bikeDriverId
         );
-        console.log(productOrdered, "....productOrdered");
+        console.log(bikeDrivered, "....bikeDrivered");
 
-        const find_productOrder = await ProductOrderModel.find({
-            _id: { $in: productOrdered },
-            status: "Pending",
+        const find_bikeDriver = await BikeDriverModel.find({
+            _id: { $in: bikeDrivered },
+            activeStatus: "2",
         });
-        console.log(find_productOrder, "......find_productOrder");
-
-        const productOrderOfproduct = find_productOrder.reduce((accumulator, order) => {
-            let totalQty = 0;
-
-            order.product.forEach(item => {
-                totalQty += item.qty;
-            });
-            return accumulator + totalQty;
-        }, 0);
-        console.log(productOrderOfproduct, "....productOrderOfproduct..");
-        // return
-        const find_productOrderLength = find_productOrder.length;
-        const productOrderIdLength = productOrdered.length;
-        console.log(find_productOrderLength, productOrderIdLength);
-        if ( productOrderOfproduct > 20) {
+        console.log(find_bikeDriver, "......find_bikeDriver");
+        const find_bikeDriverLength = find_bikeDriver.length;
+        const bikeDriverIdLength = bikeDrivered.length;
+        console.log(find_bikeDriverLength, bikeDriverIdLength);
+        if (find_bikeDriverLength !== bikeDriverIdLength) {
             const err = new customError(
-                global.CONFIGS.api.totalBottleCapacity,
-                global.CONFIGS.responseCode.badRequest
-            );
-            return next(err);
-        }
-        if (find_productOrder.length !== productOrdered.length) {
-            const err = new customError(
-                global.CONFIGS.api.OrderNotfound,
+                global.CONFIGS.api.DriverNotfound,
                 global.CONFIGS.responseCode.notFound
             );
             return next(err);
         }
-        const addAssignOderForBikeDriver = {
+/**bikeDriverId find success */
+        // return
+
+
+
+
+
+
+         const assignOrderbikeDrivered = req.body.assignOrderbikeDriver.map(
+            (item) => item.assignOrderbikeDriverId
+        );
+        console.log(assignOrderbikeDrivered, "....assignOrderbikeDrivered");
+
+        const find_assignOrderForbikeDriver = await AssignOrderForBikeDriverModel.find({
+            _id: { $in: assignOrderbikeDrivered },
+            activeStatus: "Active",
+        });
+        console.log(find_assignOrderForbikeDriver, "......find_assignOrderForbikeDriver");
+// return
+const updatedAssignOrderbikeDriver = req.body.assignOrderbikeDriver.map((item, index) => {
+    return {
+        assignOrderbikeDriverId: item.assignOrderbikeDriverId,
+        bottleQunatity: find_assignOrderForbikeDriver[index].totalBottleCapacity, // Assuming totalBottleCapacity is the correct property
+        _id: item._id
+    };
+});
+/** */
+        const bottleOfassignOrder = find_assignOrderForbikeDriver.reduce((acc, currentValue) => {
+           return acc + currentValue.totalBottleCapacity;
+        }, 0);
+        console.log(bottleOfassignOrder, "....bottleOfassignOrder..");
+        /** */
+        // return
+        const find_assignOrderForbikeDriverLength = find_assignOrderForbikeDriver.length;
+        const assignOrderForbikeDriverLength = assignOrderbikeDrivered.length;
+        console.log(find_assignOrderForbikeDriverLength,"...find_assignOrderForbikeDriverLength.......");
+        console.log( find_assignOrderForbikeDriverLength,"....find_assignOrderForbikeDriverLength......");
+        console.log(assignOrderForbikeDriverLength, assignOrderForbikeDriverLength);
+        // if ( productOrderOfproduct > 20) {
+        //     const err = new customError(
+        //         global.CONFIGS.api.totalBottleCapacity,
+        //         global.CONFIGS.responseCode.badRequest
+        //     );
+        //     return next(err);
+        // }
+        if (find_assignOrderForbikeDriverLength !== assignOrderForbikeDriverLength) {
+            const err = new customError(
+                global.CONFIGS.api.AssignOrderForBikedriverNotfound,
+                global.CONFIGS.responseCode.notFound
+            );
+            return next(err);
+        }
+        // return
+        const addAssignBikedriverForAssignTruck = {
             deliveryZoneId: req.body.deliveryZoneId,
-            bikeDriverId: req.body.bikeDriverId,
-            productOrder: req.body.productOrder,
+            bikeDriver: req.body.bikeDriver, 
+            assigntruckId: req.body.assigntruckId, 
+            assignOrderbikeDriver: req.body.assignOrderbikeDriver,
             //   startDateAndTime: req.body.startDateAndTime,
             //   endDateAndTime: req.body.endDateAndTime,
-            totalBottleCapacity: productOrderOfproduct,
+            totalBottleCapacity: bottleOfassignOrder,
             //   totalBottleCapacity,
             totalReserveCapacity: req.body.totalReserveCapacity,
             damagedBottle: req.body.damagedBottle,
@@ -97,34 +134,34 @@ module.exports={
         };
         // return;
         
-        const create_assignOrderbikeDriver =
-            await AssignOrderForBikeDriverModel.create(
-                addAssignOderForBikeDriver
+        const create_assignBikedriverForAssigntruck =
+            await AssignBikeDriverForAssigntruckModel.create(
+                addAssignBikedriverForAssignTruck
             );
             /** */
-            const qrCodePath = `uploads/assignorderqrcode/${create_assignOrderbikeDriver._id}.png`;
+            const qrCodePath = `uploads/assignbikedriverqrcode/${create_assignBikedriverForAssigntruck._id}.png`;
             const absoluteQrCodePath = path.join(__dirname, '../public', qrCodePath);
-            await qrCode.toFile(absoluteQrCodePath, JSON.stringify(create_assignOrderbikeDriver));
+            await qrCode.toFile(absoluteQrCodePath, JSON.stringify(create_assignBikedriverForAssigntruck));
             console.log(absoluteQrCodePath, ".......2");
-            create_assignOrderbikeDriver.assignorderQrCode = qrCodePath;
-            await create_assignOrderbikeDriver.save();
+            create_assignBikedriverForAssigntruck.assignbikedriverQrCode = qrCodePath;
+            await create_assignBikedriverForAssigntruck.save();
 
-            if (create_assignOrderbikeDriver) {
-            var update_BikeDriver = await BikeDriverModel.updateOne(
-                { _id: req.body.bikeDriverId },
+            if (create_assignBikedriverForAssigntruck) {
+            var update_assignTruck = await AssignTruckForDriverModel.updateOne(
+                { _id: req.body.assigntruckId },
                 { activeStatus: "2" }
             );
-            var update_ProductOrder = await ProductOrderModel.updateMany(
-                { _id: { $in: productOrdered } },
-                { status: "Shipped" }
+            var update_orderForBikedriver = await AssignOrderForBikeDriverModel.updateMany(
+                { _id: { $in: assignOrderbikeDrivered } },
+                { activeStatus: "AssignByAdmin" }
             );
             }
-            console.log(update_BikeDriver,".....update_BikeDriver");
-            console.log(update_ProductOrder,".....update_ProductOrder");
+            console.log(update_assignTruck,".....update_assignTruck");
+            console.log(update_orderForBikedriver,".....update_orderForBikedriver");
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
             message: global.CONFIGS.api.AssignUseraddressForBikedriverAdded,
-            data: create_assignOrderbikeDriver,
+            data: create_assignBikedriverForAssigntruck,
         });
     },
 

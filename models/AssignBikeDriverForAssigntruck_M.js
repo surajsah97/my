@@ -72,7 +72,8 @@ var AssignBikeDriverForAssigntruckSchema = new Schema(
           },
           bottleQunatity: {
             type: Number,
-            default: 0,
+             _id: false
+            // default: 0,
           },
         },
       ],
@@ -100,6 +101,28 @@ var AssignBikeDriverForAssigntruckSchema = new Schema(
     timestamps: true,
   }
 );
+AssignBikeDriverForAssigntruckSchema.pre('save', async function(next) {
+    const assignOrderIds = this.assignOrderbikeDriver.map(item => item.assignOrderbikeDriverId);
+
+    try {
+        const assignOrders = await mongoose.model(constants.AssignOrderForBikeDriverModel).find({
+            _id: { $in: assignOrderIds },
+            activeStatus: "Active"
+        });
+
+        this.assignOrderbikeDriver.forEach((item, index) => {
+            const matchingOrder = assignOrders.find(order => order._id.equals(item.assignOrderbikeDriverId));
+            if (matchingOrder) {
+                this.assignOrderbikeDriver[index].bottleQunatity = matchingOrder.totalBottleCapacity;
+            }
+        });
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 let assignBikeDriverForassigntruck = mongoose.model(
   constants.AssignBikeDriverForAssigntruckModel,
   AssignBikeDriverForAssigntruckSchema

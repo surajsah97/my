@@ -15,7 +15,7 @@ var assignTruckForDriverSchema = new Schema(
     },
     activeStatus: {
       type: String,
-      enum: ["0", "1"],
+      enum: ["0", "1","2"],
       default: "1",
     },
   },
