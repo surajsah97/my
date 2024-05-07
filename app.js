@@ -247,6 +247,10 @@ app.use(
   require("./route/adminRoute/AssignOrderForBikedriver_RA")
 );
 app.use(
+  "/v" + process.env.VERSION + "/front/assignorderforbikedriver/",
+  require("./route/bikeDriverRoute/AssignOrderForBikedriver_BD")
+);
+app.use(
   "/v" + process.env.VERSION + "/front/truckdriver/assigntruckfordriver/",
   require("./route/truckDriverRoute/AssignTruckForDriver_TD")
 );

@@ -55,10 +55,10 @@ var AssignBikeDriverForAssigntruckSchema = new Schema(
             ref: constants.BikeDriverModel,
             required: [true, "Please enter deliveryAddressId."],
           },
-          bottleQunatity: {
-            type: Number,
-            default: 0,
-          },
+          // bottleQunatity: {
+          //   type: Number,
+          //   default: 0,
+          // },
         },
       ],
     },
@@ -70,25 +70,27 @@ var AssignBikeDriverForAssigntruckSchema = new Schema(
             ref: constants.AssignOrderForBikeDriverModel,
             required: [true, "Please enter assignOrderbikeDriverId."],
           },
-        //   bottleQunatity: {
-        //     type: Number,
-        //     default: 0,
-        //   },
+          bottleQunatity: {
+            type: Number,
+            default: 0,
+          },
         },
       ],
     },
-    startDateAndTime: {
-      type: Date,
-      required: [true, "Please enter startDateAndTime."],
+    // startDateAndTime: {
+    //   type: Date,
+    //   required: [true, "Please enter startDateAndTime."],
+    // },
+    // endDateAndTime: {
+    //   type: Date,
+    //   required: [true, "Please enter startDateAndTime."],
+    // },
+    assignbikedriverQrCode: {
+    type: String // Store QR code data as a string
     },
-    endDateAndTime: {
-      type: Date,
-      required: [true, "Please enter startDateAndTime."],
-    },
-
     activeStatus: {
       type: String,
-      enum: ["Active", "Completed"],
+      enum: ["Active", "AssignByAdmin","Completed"],
       default: "Active",
     },
   },

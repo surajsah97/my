@@ -165,7 +165,7 @@ module.exports = {
       message: global.CONFIGS.api.getzoneNameSuccess,
       totalData: total,
       totalPage: totalPage,
-      allProduct: deliveryZoneData[0].data,
+      deliveryZonelist: deliveryZoneData[0].data,
     });
   },
 

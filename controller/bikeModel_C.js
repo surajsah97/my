@@ -149,7 +149,7 @@ module.exports = {
         },
       },
       { $unwind: "$bikebrand" },
-      { $unset: "bikeBrandId" },
+      // { $unset: "bikeBrandId" },
       {
         $match: query,
       },

@@ -69,10 +69,12 @@ var AssignOrderForBikeDriverSchema = new Schema(
     //   type: Date,
     //   required: [true, "Please enter startDateAndTime."],
     // },
-
+    assignorderQrCode: {
+    type: String // Store QR code data as a string
+    },
     activeStatus: {
       type: String,
-      enum: ["Active", "Completed"],
+      enum: ["Active","AssignBytruck", "Completed"],
       default: "Active",
     },
   },

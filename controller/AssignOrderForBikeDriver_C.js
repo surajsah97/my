@@ -8,6 +8,8 @@ const BikeDriverModel = mongoose.model(constants.BikeDriverModel);
 const ProductOrderModel = mongoose.model(constants.ProductOrderModel);
 const customError = require("../middleware/customerror");
 const ObjectId = mongoose.Types.ObjectId;
+const qrCode = require("qrcode");
+const path = require('path');
 module.exports = {
     addAssignOrderForBikeDriver: async (req, res, next) => {
         // console.log(req.body,"........req.body")
@@ -160,10 +162,19 @@ module.exports = {
             returnedReserveBottle: req.body.returnedReserveBottle,
         };
         // return;
+        
         const create_assignOrderbikeDriver =
             await AssignOrderForBikeDriverModel.create(
                 addAssignOderForBikeDriver
             );
+            /** */
+            const qrCodePath = `uploads/assignorderqrcode/${create_assignOrderbikeDriver._id}.png`;
+            const absoluteQrCodePath = path.join(__dirname, '../public', qrCodePath);
+            await qrCode.toFile(absoluteQrCodePath, JSON.stringify(create_assignOrderbikeDriver));
+            console.log(absoluteQrCodePath, ".......2");
+            create_assignOrderbikeDriver.assignorderQrCode = qrCodePath;
+            await create_assignOrderbikeDriver.save();
+
             if (create_assignOrderbikeDriver) {
             var update_BikeDriver = await BikeDriverModel.updateOne(
                 { _id: req.body.bikeDriverId },
@@ -173,7 +184,6 @@ module.exports = {
                 { _id: { $in: productOrdered } },
                 { status: "Shipped" }
             );
-
             }
             console.log(update_BikeDriver,".....update_BikeDriver");
             console.log(update_ProductOrder,".....update_ProductOrder");
@@ -185,7 +195,7 @@ module.exports = {
     },
 
     /** */
-    getAllListAssignOrderAdmind: async (req, res, next) => {
+    getAllListAssignOrderAdminOldWay: async (req, res, next) => {
         var find_brand = await AssignOrderForBikeDriverModel.find({});
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
@@ -453,6 +463,7 @@ module.exports = {
                     activeStatus: "$activeStatus",
                     createdAt: "$createdAt",
                     updatedAt: "$updatedAt",
+                    assignorderQrCode:"$assignorderQrCode",
                     bikeDriverDetails: "$bikedriverdetails",
                 },
             },
@@ -478,6 +489,321 @@ module.exports = {
                     activeStatus: { $first: "$activeStatus" },
                     createdAt: { $first: "$createdAt" },
                     updatedAt: { $first: "$updatedAt" },
+                    assignorderQrCode: { $first: "$assignorderQrCode" },
+                    bikeDriverDetails: { $first: "$bikeDriverDetails" },
+                },
+            },
+            {
+                $facet: {
+                    metadata: [{ $count: "total" }, { $addFields: { page: pageNo } }],
+                    data: [{ $skip: skip }, { $limit: limit }], // add projection here wish you re-shape the docs
+                },
+            },
+        ]);
+        if (assignOrderBiker[0].data.length == 0) {
+            const err = new customError(
+                global.CONFIGS.api.AssignZoneForAssignTruckNotfound,
+                global.CONFIGS.responseCode.notFound
+            );
+            return next(err);
+        }
+        const total = parseInt(assignOrderBiker[0].metadata[0].total);
+        var totalPage = Math.ceil(
+            parseInt(assignOrderBiker[0].metadata[0].total) / limit
+        );
+        return res.status(global.CONFIGS.responseCode.success).json({
+            success: true,
+            message: global.CONFIGS.api.AssignZoneForAssignTruckListAdmin,
+            totalData: total,
+            totalPage: totalPage,
+            data: assignOrderBiker[0].data,
+        });
+    },
+    getAllListAssignOrderBikedriverId: async (req, res, next) => {
+        const limit = parseInt(req.query.limit) || 20; // docs in single page
+        const pageNo = parseInt(req.query.pageNo) || 1; //  page number
+        const skip = (pageNo - 1) * limit;
+        let assignOrderBiker = await AssignOrderForBikeDriverModel.aggregate([
+            {
+                $match: {
+                    $or: [
+                        { activeStatus: "Active" },
+                        // { activeStatus: "Completed" },
+                    ],
+                        bikeDriverId : new ObjectId(req.params.id),
+                },
+            },
+            {
+                $unwind: {
+                    path: "$productOrder",
+                    includeArrayIndex: "string",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "productorder",
+                    localField: "productOrder.productOrderId",
+                    foreignField: "_id",
+                    as: "productOrder.productOrderDetails",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$productOrder.productOrderDetails",
+                    includeArrayIndex: "string",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "product",
+                    localField: "productOrder.productOrderDetails.product.productId",
+                    foreignField: "_id",
+                    as: "productOrder.productOrderDetails.products.productDetails",
+                },
+            },
+            // // //{$unset:"productOrder.productOrderDetails.product"},
+            
+            /** in these add quantity and matched with proper qty of product Array*/
+            {
+                $addFields: {
+                    "productOrder.productOrderDetails.products.productDetails": {
+                        $map: {
+                            input: "$productOrder.productOrderDetails.products.productDetails",
+                            as: "productDetail",
+                            in: {
+                                $mergeObjects: [
+                                    "$$productDetail",
+                                    {
+                                        quantity: {
+                                            $arrayElemAt: [
+                                                "$productOrder.productOrderDetails.product.qty",
+                                                {
+                                                    $indexOfArray: [
+                                                        "$productOrder.productOrderDetails.product.productId",
+                                                        "$$productDetail._id"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            /** */
+
+            {
+                $lookup: {
+                from: "category",
+                localField: "productOrder.productOrderDetails.products.productDetails.categoryId",
+                foreignField: "_id",
+                as: "categoryDetails"
+                }
+            },
+            {
+                $addFields: {
+                "productOrder.productOrderDetails.products.productDetails.categoryDetails": {
+                $arrayElemAt: ["$categoryDetails" ,{
+                    $indexOfArray: [
+                        "$productOrder.productOrderDetails.products.productDetails.categoryId",
+                        "$_id"
+                    ]
+                    }]
+                }
+                }
+            },
+            // {$unset: "categoryDetails"},
+            {
+                 $lookup: {
+                from: "subcategory",
+                localField: "productOrder.productOrderDetails.products.productDetails.subCategoryId",
+                foreignField: "_id",
+                as: "subcategoryDetails"
+                }
+            },
+            {
+                $addFields: {
+                    "productOrder.productOrderDetails.products.productDetails": {
+                        $map: {
+                            input: "$productOrder.productOrderDetails.products.productDetails",
+                            as: "productDetail",
+                            in: {
+                            $mergeObjects: [
+                            "$$productDetail",
+                                {
+                                subcategoryDetails: {
+                                    $arrayElemAt: [
+                                        "$subcategoryDetails",
+                                        {
+                                            $indexOfArray: [
+                                             "$productOrder.productOrderDetails.products.productDetails.subCategoryId",
+                                            "$$productDetail.subCategoryId"
+                                            ]
+                                        }
+                                    ]
+                                }
+                                }
+                            ]
+                        }
+                        }
+                    }
+                }
+            },
+
+            // {$unset: "subcategoryDetails"},
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "productOrder.productOrderDetails.userId",
+                    foreignField: "_id",
+                    as: "productOrder.productOrderDetails.userDetails",
+                },
+            },
+            { $unwind: "$productOrder.productOrderDetails.userDetails" },
+            { $unset: "productOrder.productOrderDetails.userId" },
+            {
+                $lookup: {
+                    from: "useraddress",
+                    localField: "productOrder.productOrderDetails.addressId",
+                    foreignField: "_id",
+                    as: "productOrder.productOrderDetails.userAddressDetails",
+                },
+            },
+            { $unwind: "$productOrder.productOrderDetails.userAddressDetails" },
+            { $unset: "productOrder.productOrderDetails.addressId" },
+            {
+                $lookup: {
+                    from: "deliverylocation",
+                    localField: "productOrder.productOrderDetails.userAddressDetails.deliveryLocationId",
+                    foreignField: "_id",
+                    as: "productOrder.productOrderDetails.userAddressDetails.deliveryLocationDetails",
+                },
+            },
+            { $unwind: "$productOrder.productOrderDetails.userAddressDetails.deliveryLocationDetails" },
+            { $unset: "productOrder.productOrderDetails.userAddressDetails.deliveryLocationId" },
+            {
+                $lookup: {
+                    from: "bikedriverdetails",
+                    localField: "bikeDriverId",
+                    foreignField: "_id",
+                    as: "bikedriverdetails",
+                },
+            },
+            { $unwind: "$bikedriverdetails" },
+            // { $unset: "bikeDriverId" },
+            {
+                $lookup: {
+                    from: "bikedetails",
+                    localField: "bikedriverdetails.bikeDetailsId",
+                    foreignField: "_id",
+                    as: "bikedriverdetails.bikeDetails",
+                },
+            },
+
+            { $unwind: "$bikedriverdetails.bikeDetails" },
+            { $unset: "bikedriverdetails.bikeDetailsId" },
+            {
+                $lookup: {
+                    from: "bikebrand",
+                    localField: "bikedriverdetails.bikeDetails.brandId",
+                    foreignField: "_id",
+                    as: "bikedriverdetails.bikeDetails.brandDetails",
+                },
+            },
+            { $unwind: "$bikedriverdetails.bikeDetails.brandDetails" },
+            { $unset: "bikedriverdetails.bikeDetails.brandId" },
+
+            {
+                $lookup: {
+                    from: "bikemodel",
+                    localField: "bikedriverdetails.bikeDetails.modelId",
+                    foreignField: "_id",
+                    as: "bikedriverdetails.bikeDetails.modelDetails",
+                },
+            },
+            { $unwind: "$bikedriverdetails.bikeDetails.modelDetails" },
+            { $unset: "bikedriverdetails.bikeDetails.modelId" },
+            {
+                $lookup: {
+                    from: "driverbankdetails",
+                    localField:
+                        "bikedriverdetails.bankDetailsId",
+                    foreignField: "_id",
+                    as: "bikedriverdetails.bankDetails",
+                },
+            },
+            { $unwind: "$bikedriverdetails.bankDetails", },
+            { $unset: "bikedriverdetails.bankDetailsId", },
+            {
+                $lookup: {
+                    from: "driveraddress",
+                    localField:
+                        "bikedriverdetails.addressId",
+                    foreignField: "_id",
+                    as: "bikedriverdetails.addressDetails",
+                },
+            },
+            { $unwind: "$bikedriverdetails.addressDetails" },
+            { $unset: "bikedriverdetails.addressId", },
+            {
+                $lookup: {
+                    from: "driverdoc",
+                    localField: "bikedriverdetails.docId",
+                    foreignField: "_id",
+                    as: "bikedriverdetails.docDetails",
+                },
+            },
+            { $unwind: "$bikedriverdetails.docDetails" },
+            { $unset: "bikedriverdetails.docId", },
+            {
+                $project: {
+                    // _id: 1,
+                    _id: "$_id",
+                    bikeDriverId: "$bikeDriverId",
+                    totalBottleCapacity: "$totalBottleCapacity",
+                    totalReserveCapacity: "$totalReserveCapacity",
+                    deliveredReserveBottle: "$deliveredReserveBottle",
+                    returnedReserveBottle: "$returnedReserveBottle",
+                    damagedBottle: "$damagedBottle",
+                    leakageBottle: "$leakageBottle",
+                    brokenBottle: "$brokenBottle",
+                    productOrderDetails: "$productOrder.productOrderDetails",
+                    bottleQunatityDetails: "$productOrder.bottleQunatity",
+                    activeStatus: "$activeStatus",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    assignorderQrCode:"$assignorderQrCode",
+                    bikeDriverDetails: "$bikedriverdetails",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    bikeDriverId: { $first: "$bikeDriverId" },
+                    totalBottleCapacity: { $first: "$totalBottleCapacity" },
+                    totalReserveCapacity: { $first: "$totalReserveCapacity" },
+                    deliveredReserveBottle: { $first: "$deliveredReserveBottle" },
+                    returnedReserveBottle: { $first: "$returnedReserveBottle" },
+                    damagedBottle: { $first: "$damagedBottle" },
+                    leakageBottle: { $first: "$leakageBottle" },
+                    brokenBottle: { $first: "$brokenBottle" },
+
+                    orderDetails: {
+                        $addToSet: {
+                            bottleQunatity: "$bottleQunatityDetails", // Add bottle quantity field here
+                            productOrderDetails: "$productOrderDetails",
+                        },
+                    },
+
+                    activeStatus: { $first: "$activeStatus" },
+                    createdAt: { $first: "$createdAt" },
+                    updatedAt: { $first: "$updatedAt" },
+                    assignorderQrCode: { $first: "$assignorderQrCode" },
                     bikeDriverDetails: { $first: "$bikeDriverDetails" },
                 },
             },
