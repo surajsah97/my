@@ -1470,7 +1470,6 @@ module.exports = {
       query.activeStatus = req.query.activeStatus;
     }
     
-    // }
     if (searchText !== undefined) {
       query.$or = [
         { name: { $regex: new RegExp(searchText), $options: "i" } },
@@ -1509,7 +1508,7 @@ module.exports = {
     if (startDate == undefined && endDate != undefined) {
       query.createdAt = { $lte: new Date(endDate) };
     }
-    // query.activeStatus = "1";
+    
     console.log(query,"........query");
     let bikeDriverList = await BikeDriverModel.aggregate([
      
@@ -1748,11 +1747,6 @@ module.exports = {
     const endDate = req.query.endDate;
     var query = {};
     // console.log(skip, "...skip");
-    if (req.query.activeStatus != undefined) {
-      query.activeStatus = req.query.activeStatus;
-    }
-    
-    // }
     if (searchText !== undefined) {
       query.$or = [
         { name: { $regex: new RegExp(searchText), $options: "i" } },

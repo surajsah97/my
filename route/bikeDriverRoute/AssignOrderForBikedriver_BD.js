@@ -12,4 +12,10 @@ router
     Auth.validateTokenBikeDriver,
     errorfun(AssignOrderForBikeDriver.getAllListAssignOrderBikedriverId)
   );
+  router
+  .route("/bikedrivers/truckdriver")
+  .get(
+    Auth.validateTokenBikeDriver,
+    errorfun(AssignOrderForBikeDriver.getAllListAssignOrderScannerTruck)
+  );
 module.exports = router;

@@ -65,12 +65,6 @@ module.exports={
         }
 /**bikeDriverId find success */
         // return
-
-
-
-
-
-
          const assignOrderbikeDrivered = req.body.assignOrderbikeDriver.map(
             (item) => item.assignOrderbikeDriverId
         );
@@ -82,14 +76,8 @@ module.exports={
         });
         console.log(find_assignOrderForbikeDriver, "......find_assignOrderForbikeDriver");
 // return
-const updatedAssignOrderbikeDriver = req.body.assignOrderbikeDriver.map((item, index) => {
-    return {
-        assignOrderbikeDriverId: item.assignOrderbikeDriverId,
-        bottleQunatity: find_assignOrderForbikeDriver[index].totalBottleCapacity, // Assuming totalBottleCapacity is the correct property
-        _id: item._id
-    };
-});
-/** */
+
+
         const bottleOfassignOrder = find_assignOrderForbikeDriver.reduce((acc, currentValue) => {
            return acc + currentValue.totalBottleCapacity;
         }, 0);
@@ -151,12 +139,17 @@ const updatedAssignOrderbikeDriver = req.body.assignOrderbikeDriver.map((item, i
                 { _id: req.body.assigntruckId },
                 { activeStatus: "2" }
             );
+            var update_BikeDriver = await BikeDriverModel.updateOne(
+                { _id: req.body.bikeDriverId },
+                { activeStatus: "3" }
+            );
             var update_orderForBikedriver = await AssignOrderForBikeDriverModel.updateMany(
                 { _id: { $in: assignOrderbikeDrivered } },
                 { activeStatus: "AssignByAdmin" }
             );
             }
             console.log(update_assignTruck,".....update_assignTruck");
+            console.log(update_BikeDriver,".....update_BikeDriver");
             console.log(update_orderForBikedriver,".....update_orderForBikedriver");
         return res.status(global.CONFIGS.responseCode.success).json({
             success: true,
