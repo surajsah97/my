@@ -12,6 +12,6 @@ router
   )
 .get(Auth.adminValidateToken,errorfun(AssignOrderForBikeDriver.getAllListAssignOrderAdmin));
 
-// router.route('/:id')
-//     .get(Auth.adminValidateToken,errorfun(AssignOrderForBikeDriver.getAssignZoneByIdAdmin))
+router.route('/:id')
+    .get(Auth.adminValidateToken,errorfun(AssignOrderForBikeDriver.getAllListAssignOrderBYIDAdmin))
 module.exports = router;
