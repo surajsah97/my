@@ -22,25 +22,25 @@ var DeliverZoneSchema = new Schema(
       enum: ["Active", "Inactive"],
       default: "Active",
     },
-    location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-        required: true,
-      },
-      coordinates: {
-        type: [Number],
-        required: true,
-      },
-    },
-    lat: {
-      type: Number,
-      required: true,
-    },
-    long: {
-      type: Number,
-      required: true,
-    },
+    // location: {
+    //   type: {
+    //     type: String,
+    //     enum: ["Point"],
+    //     required: true,
+    //   },
+    //   coordinates: {
+    //     type: [Number],
+    //     required: true,
+    //   },
+    // },
+    // lat: {
+    //   type: Number,
+    //   required: true,
+    // },
+    // long: {
+    //   type: Number,
+    //   required: true,
+    // },
   },
   {
     collection: constants.DeliveryZoneModel,

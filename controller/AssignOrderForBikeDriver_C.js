@@ -134,7 +134,7 @@ module.exports = {
         console.log(find_productOrderLength, productOrderIdLength);
         console.log(productOrderIdLength, productOrderIdLength);
 
-        if ( productOrderOfproduct > 20) {
+        if ( productOrderOfproduct > 40) {
             const err = new customError(
                 global.CONFIGS.api.totalBottleCapacity,
                 global.CONFIGS.responseCode.badRequest

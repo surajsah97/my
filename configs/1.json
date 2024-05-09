@@ -1,0 +1,628 @@
+
+
+{
+//  this is data of old assignOrderforBikeDriver
+    "success": true,
+    "message": "AssignOrderForBikedriver list for Admin Successfully.",
+    "totalData": 1,
+    "totalPage": 1,
+    "data": [
+        {
+            "_id": "663a1e01cba7237f5de74aca",
+            "bikeDriverId": "662f91408b2cd6e4542cdf87",
+            "totalBottleCapacity": 11,
+            "totalReserveCapacity": 8,
+            "deliveredReserveBottle": 0,
+            "returnedReserveBottle": 0,
+            "damagedBottle": 0,
+            "leakageBottle": 0,
+            "brokenBottle": 0,
+            "orderDetails": [
+                {
+                    "bottleQunatity": 1,
+                    "productOrderDetails": {
+                        "_id": "66277cb76367ecd4404eec76",
+                        "orderId": "fcd13f2b-d197-4a29-9a6c-04e7b814e7c4",
+                        "transactionId": "0",
+                        "product": [
+                            {
+                                "productId": "65e5ad5157de6eafd59b34b3",
+                                "qty": 1,
+                                "_id": "66277c826367ecd4404eec66"
+                            }
+                        ],
+                        "freeProduct": [
+                            {
+                                "productId": "65e5ad5157de6eafd59b34b3",
+                                "qty": 1,
+                                "_id": "66277c826367ecd4404eec66"
+                            }
+                        ],
+                        "paymentstatus": false,
+                        "totalPrice": 0,
+                        "vatAmount": 0,
+                        "status": "Pending",
+                        "totalTaxablePrice": 0,
+                        "createdAt": "2024-04-23T09:17:43.438Z",
+                        "updatedAt": "2024-05-07T12:26:45.186Z",
+                        "products": {
+                            "productDetails": [
+                                {
+                                    "_id": "65e5ad5157de6eafd59b34b3",
+                                    "productName": "Cow Milk",
+                                    "productImage": "uploads/products/DhuduImage3.png",
+                                    "productPrice": 45,
+                                    "categoryId": "65e5ca2ce38061b9daefa966",
+                                    "subCategoryId": "65e5aa9b57de6eafd59b34a9",
+                                    "productUOM": "1000ml",
+                                    "productDes": "this is healthy and good for health pure Cow Milk",
+                                    "productInventory": "100",
+                                    "activeStatus": "1",
+                                    "createdAt": "2024-03-04T11:15:29.480Z",
+                                    "updatedAt": "2024-03-04T11:15:29.480Z",
+                                    "tagLine": "PURE DESI",
+                                    "vatAmount": 2.25,
+                                    "quantity": 1,
+                                    "categoryDetails": {
+                                        "_id": "65e5ca2ce38061b9daefa966",
+                                        "category": "milk",
+                                        "categoryImg": "uploads/catsubcat/1713256498966-DhuduImage1.jpg",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T13:18:36.298Z",
+                                        "updatedAt": "2024-04-16T08:34:58.981Z"
+                                    },
+                                    "subcategoryDetails": {
+                                        "_id": "65e5aa9b57de6eafd59b34a9",
+                                        "subCategory": "ANIMAL BASED",
+                                        "categoryId": "65e5ca2ce38061b9daefa966",
+                                        "subCategoryImg": "uploads/catsubcat/1709552571697-DhuduImage3.png",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T11:03:55.471Z",
+                                        "updatedAt": "2024-04-16T07:38:23.456Z"
+                                    }
+                                }
+                            ]
+                        },
+                        "userDetails": {
+                            "_id": "6627707390d014bf385b46a9",
+                            "mobile": 9110088450,
+                            "Otp": 564092,
+                            "OtpsendDate": "2024-04-23T08:25:23.515Z",
+                            "isVerified": true,
+                            "userType": "User",
+                            "activeStatus": "1",
+                            "trialActive": false,
+                            "trialQuantity": 3,
+                            "createdAt": "2024-04-23T08:25:23.516Z",
+                            "updatedAt": "2024-04-24T12:35:51.451Z",
+                            "DOB": "2000-06-30T00:00:00.000Z",
+                            "email": "psah0605@gmail.com",
+                            "name": "Prakash Sahu5",
+                            "password": "$2b$10$IrchAuSgYZ9ZTb70dzyZyejKg1IydJq2V2co2yVLQAwX22wxJFnUu",
+                            "userImage": "uploads/user/1713860761993-prakashProfilepic.jpg"
+                        },
+                        "userAddressDetails": {
+                            "_id": "662770f1188d96df6fb5e312",
+                            "houseNo": "115",
+                            "buildingName": "testBuildingpk5",
+                            "city": "testcitypk5",
+                            "address": "testcity   wwwwwww qqqqqq pk5",
+                            "landmark": "testLandmarkpk5",
+                            "country": "india",
+                            "userId": "6627707390d014bf385b46a9",
+                            "activeStatus": "1",
+                            "location": {
+                                "type": "Point",
+                                "coordinates": [
+                                    100.5,
+                                    60
+                                ]
+                            },
+                            "lat": 60,
+                            "long": 100.5,
+                            "createdAt": "2024-04-23T08:27:29.366Z",
+                            "updatedAt": "2024-04-23T08:27:29.366Z",
+                            "deliveryLocationDetails": {
+                                "_id": "65defa05d8757e41baaa0752",
+                                "location": "Academic City",
+                                "activeStatus": "Active",
+                                "createdAt": "2024-02-28T09:16:53.889Z",
+                                "updatedAt": "2024-04-19T08:48:15.567Z",
+                                "deliveryZoneId": "660bdcc5cc48cba2ad662b46"
+                            }
+                        }
+                    }
+                },
+                {
+                    "bottleQunatity": 1,
+                    "productOrderDetails": {
+                        "_id": "66277c506367ecd4404eec58",
+                        "orderId": "fcd13f2b-d197-4a29-9a6c-04e7b814e7c4",
+                        "transactionId": "0",
+                        "product": [
+                            {
+                                "productId": "65e5ad5157de6eafd59b34b3",
+                                "qty": 1,
+                                "_id": "66277c276367ecd4404eec48"
+                            }
+                        ],
+                        "freeProduct": [
+                            {
+                                "productId": "65e5ad5157de6eafd59b34b3",
+                                "qty": 1,
+                                "_id": "66277c276367ecd4404eec48"
+                            }
+                        ],
+                        "paymentstatus": false,
+                        "totalPrice": 0,
+                        "vatAmount": 0,
+                        "status": "Pending",
+                        "totalTaxablePrice": 0,
+                        "createdAt": "2024-04-23T09:16:00.263Z",
+                        "updatedAt": "2024-05-07T12:26:45.186Z",
+                        "products": {
+                            "productDetails": [
+                                {
+                                    "_id": "65e5ad5157de6eafd59b34b3",
+                                    "productName": "Cow Milk",
+                                    "productImage": "uploads/products/DhuduImage3.png",
+                                    "productPrice": 45,
+                                    "categoryId": "65e5ca2ce38061b9daefa966",
+                                    "subCategoryId": "65e5aa9b57de6eafd59b34a9",
+                                    "productUOM": "1000ml",
+                                    "productDes": "this is healthy and good for health pure Cow Milk",
+                                    "productInventory": "100",
+                                    "activeStatus": "1",
+                                    "createdAt": "2024-03-04T11:15:29.480Z",
+                                    "updatedAt": "2024-03-04T11:15:29.480Z",
+                                    "tagLine": "PURE DESI",
+                                    "vatAmount": 2.25,
+                                    "quantity": 1,
+                                    "categoryDetails": {
+                                        "_id": "65e5ca2ce38061b9daefa966",
+                                        "category": "milk",
+                                        "categoryImg": "uploads/catsubcat/1713256498966-DhuduImage1.jpg",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T13:18:36.298Z",
+                                        "updatedAt": "2024-04-16T08:34:58.981Z"
+                                    },
+                                    "subcategoryDetails": {
+                                        "_id": "65e5aa9b57de6eafd59b34a9",
+                                        "subCategory": "ANIMAL BASED",
+                                        "categoryId": "65e5ca2ce38061b9daefa966",
+                                        "subCategoryImg": "uploads/catsubcat/1709552571697-DhuduImage3.png",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T11:03:55.471Z",
+                                        "updatedAt": "2024-04-16T07:38:23.456Z"
+                                    }
+                                }
+                            ]
+                        },
+                        "userDetails": {
+                            "_id": "66276fd190d014bf385b46a3",
+                            "mobile": 9110088459,
+                            "Otp": 602088,
+                            "OtpsendDate": "2024-04-23T08:22:41.172Z",
+                            "isVerified": true,
+                            "userType": "User",
+                            "activeStatus": "1",
+                            "trialActive": false,
+                            "trialQuantity": 3,
+                            "createdAt": "2024-04-23T08:22:41.173Z",
+                            "updatedAt": "2024-04-23T09:16:01.498Z",
+                            "DOB": "1996-05-29T00:00:00.000Z",
+                            "email": "psah0604@gmail.com",
+                            "name": "Prakash Sahu4",
+                            "password": "$2b$10$W5A7Vq./5TN8StPnQ4JhseDOp0uLJMkk21QaqB3zT4wQyGgzGRaQq",
+                            "userImage": "uploads/user/1713860598984-prakashProfilepic.jpg"
+                        },
+                        "userAddressDetails": {
+                            "_id": "66277047188d96df6fb5e305",
+                            "houseNo": "114",
+                            "buildingName": "testBuildingpk4",
+                            "city": "testcitypk4",
+                            "address": "testcity   wwwwwww qqqqqq pk4",
+                            "landmark": "testLandmarkpk4",
+                            "country": "india",
+                            "userId": "66276fd190d014bf385b46a3",
+                            "activeStatus": "1",
+                            "location": {
+                                "type": "Point",
+                                "coordinates": [
+                                    95.5,
+                                    55
+                                ]
+                            },
+                            "lat": 55,
+                            "long": 95.5,
+                            "createdAt": "2024-04-23T08:24:39.153Z",
+                            "updatedAt": "2024-04-23T08:24:39.153Z",
+                            "deliveryLocationDetails": {
+                                "_id": "65defa05d8757e41baaa0752",
+                                "location": "Academic City",
+                                "activeStatus": "Active",
+                                "createdAt": "2024-02-28T09:16:53.889Z",
+                                "updatedAt": "2024-04-19T08:48:15.567Z",
+                                "deliveryZoneId": "660bdcc5cc48cba2ad662b46"
+                            }
+                        }
+                    }
+                },
+                {
+                    "bottleQunatity": 2,
+                    "productOrderDetails": {
+                        "_id": "66277bc66367ecd4404eec3a",
+                        "orderId": "fcd13f2b-d197-4a29-9a6c-04e7b814e7c4",
+                        "transactionId": "0",
+                        "product": [
+                            {
+                                "productId": "65e5ad5157de6eafd59b34b3",
+                                "qty": 2,
+                                "_id": "66277b916367ecd4404eec2a"
+                            }
+                        ],
+                        "freeProduct": [
+                            {
+                                "productId": "65e5ad5157de6eafd59b34b3",
+                                "qty": 2,
+                                "_id": "66277b916367ecd4404eec2a"
+                            }
+                        ],
+                        "paymentstatus": false,
+                        "totalPrice": 0,
+                        "vatAmount": 0,
+                        "status": "Pending",
+                        "totalTaxablePrice": 0,
+                        "createdAt": "2024-04-23T09:13:42.062Z",
+                        "updatedAt": "2024-05-07T12:26:45.186Z",
+                        "products": {
+                            "productDetails": [
+                                {
+                                    "_id": "65e5ad5157de6eafd59b34b3",
+                                    "productName": "Cow Milk",
+                                    "productImage": "uploads/products/DhuduImage3.png",
+                                    "productPrice": 45,
+                                    "categoryId": "65e5ca2ce38061b9daefa966",
+                                    "subCategoryId": "65e5aa9b57de6eafd59b34a9",
+                                    "productUOM": "1000ml",
+                                    "productDes": "this is healthy and good for health pure Cow Milk",
+                                    "productInventory": "100",
+                                    "activeStatus": "1",
+                                    "createdAt": "2024-03-04T11:15:29.480Z",
+                                    "updatedAt": "2024-03-04T11:15:29.480Z",
+                                    "tagLine": "PURE DESI",
+                                    "vatAmount": 2.25,
+                                    "quantity": 2,
+                                    "categoryDetails": {
+                                        "_id": "65e5ca2ce38061b9daefa966",
+                                        "category": "milk",
+                                        "categoryImg": "uploads/catsubcat/1713256498966-DhuduImage1.jpg",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T13:18:36.298Z",
+                                        "updatedAt": "2024-04-16T08:34:58.981Z"
+                                    },
+                                    "subcategoryDetails": {
+                                        "_id": "65e5aa9b57de6eafd59b34a9",
+                                        "subCategory": "ANIMAL BASED",
+                                        "categoryId": "65e5ca2ce38061b9daefa966",
+                                        "subCategoryImg": "uploads/catsubcat/1709552571697-DhuduImage3.png",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T11:03:55.471Z",
+                                        "updatedAt": "2024-04-16T07:38:23.456Z"
+                                    }
+                                }
+                            ]
+                        },
+                        "userDetails": {
+                            "_id": "66276fd190d014bf385b46a3",
+                            "mobile": 9110088459,
+                            "Otp": 602088,
+                            "OtpsendDate": "2024-04-23T08:22:41.172Z",
+                            "isVerified": true,
+                            "userType": "User",
+                            "activeStatus": "1",
+                            "trialActive": false,
+                            "trialQuantity": 3,
+                            "createdAt": "2024-04-23T08:22:41.173Z",
+                            "updatedAt": "2024-04-23T09:16:01.498Z",
+                            "DOB": "1996-05-29T00:00:00.000Z",
+                            "email": "psah0604@gmail.com",
+                            "name": "Prakash Sahu4",
+                            "password": "$2b$10$W5A7Vq./5TN8StPnQ4JhseDOp0uLJMkk21QaqB3zT4wQyGgzGRaQq",
+                            "userImage": "uploads/user/1713860598984-prakashProfilepic.jpg"
+                        },
+                        "userAddressDetails": {
+                            "_id": "66277047188d96df6fb5e305",
+                            "houseNo": "114",
+                            "buildingName": "testBuildingpk4",
+                            "city": "testcitypk4",
+                            "address": "testcity   wwwwwww qqqqqq pk4",
+                            "landmark": "testLandmarkpk4",
+                            "country": "india",
+                            "userId": "66276fd190d014bf385b46a3",
+                            "activeStatus": "1",
+                            "location": {
+                                "type": "Point",
+                                "coordinates": [
+                                    95.5,
+                                    55
+                                ]
+                            },
+                            "lat": 55,
+                            "long": 95.5,
+                            "createdAt": "2024-04-23T08:24:39.153Z",
+                            "updatedAt": "2024-04-23T08:24:39.153Z",
+                            "deliveryLocationDetails": {
+                                "_id": "65defa05d8757e41baaa0752",
+                                "location": "Academic City",
+                                "activeStatus": "Active",
+                                "createdAt": "2024-02-28T09:16:53.889Z",
+                                "updatedAt": "2024-04-19T08:48:15.567Z",
+                                "deliveryZoneId": "660bdcc5cc48cba2ad662b46"
+                            }
+                        }
+                    }
+                },
+                {
+                    "bottleQunatity": 7,
+                    "productOrderDetails": {
+                        "_id": "66277d416367ecd4404eec94",
+                        "orderId": "fcd13f2b-d197-4a29-9a6c-04e7b814e7c4",
+                        "transactionId": "qwertyuiop1",
+                        "product": [
+                            {
+                                "productId": "65e6c4ce21fcb2596d484cc9",
+                                "qty": 7,
+                                "_id": "66277d0c6367ecd4404eec84"
+                            }
+                        ],
+                        "freeProduct": [
+                            {
+                                "productId": "65e6c4ce21fcb2596d484cc9",
+                                "qty": 2,
+                                "_id": "66277d0c6367ecd4404eec84"
+                            }
+                        ],
+                        "paymentstatus": true,
+                        "totalPrice": 275,
+                        "vatAmount": 14,
+                        "status": "Pending",
+                        "totalTaxablePrice": 289,
+                        "createdAt": "2024-04-23T09:20:01.610Z",
+                        "updatedAt": "2024-05-07T12:26:45.186Z",
+                        "products": {
+                            "productDetails": [
+                                {
+                                    "_id": "65e6c4ce21fcb2596d484cc9",
+                                    "productName": "Coconut Skimmed Milk",
+                                    "productImage": "uploads/products/DhuduImage2.png",
+                                    "productPrice": 55,
+                                    "categoryId": "65e5ca2ce38061b9daefa966",
+                                    "subCategoryId": "65e5aab557de6eafd59b34ad",
+                                    "productUOM": "1000ml",
+                                    "productDes": "this is healthy and good for health pure Coconut Skimmed Milk",
+                                    "productInventory": "550",
+                                    "activeStatus": "1",
+                                    "createdAt": "2024-03-05T07:07:58.642Z",
+                                    "updatedAt": "2024-03-05T07:07:58.642Z",
+                                    "tagLine": "PURE DESI",
+                                    "vatAmount": 2.75,
+                                    "quantity": 7,
+                                    "categoryDetails": {
+                                        "_id": "65e5ca2ce38061b9daefa966",
+                                        "category": "milk",
+                                        "categoryImg": "uploads/catsubcat/1713256498966-DhuduImage1.jpg",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T13:18:36.298Z",
+                                        "updatedAt": "2024-04-16T08:34:58.981Z"
+                                    },
+                                    "subcategoryDetails": {
+                                        "_id": "65e5aab557de6eafd59b34ad",
+                                        "subCategory": "PLANT BASED",
+                                        "categoryId": "65e5ca2ce38061b9daefa966",
+                                        "subCategoryImg": "uploads/catsubcat/1709550261173-DhuduImage2.png",
+                                        "activeStatus": "1",
+                                        "createdAt": "2024-03-04T11:04:21.802Z",
+                                        "updatedAt": "2024-03-04T11:04:21.802Z"
+                                    }
+                                }
+                            ]
+                        },
+                        "userDetails": {
+                            "_id": "6627707390d014bf385b46a9",
+                            "mobile": 9110088450,
+                            "Otp": 564092,
+                            "OtpsendDate": "2024-04-23T08:25:23.515Z",
+                            "isVerified": true,
+                            "userType": "User",
+                            "activeStatus": "1",
+                            "trialActive": false,
+                            "trialQuantity": 3,
+                            "createdAt": "2024-04-23T08:25:23.516Z",
+                            "updatedAt": "2024-04-24T12:35:51.451Z",
+                            "DOB": "2000-06-30T00:00:00.000Z",
+                            "email": "psah0605@gmail.com",
+                            "name": "Prakash Sahu5",
+                            "password": "$2b$10$IrchAuSgYZ9ZTb70dzyZyejKg1IydJq2V2co2yVLQAwX22wxJFnUu",
+                            "userImage": "uploads/user/1713860761993-prakashProfilepic.jpg"
+                        },
+                        "userAddressDetails": {
+                            "_id": "662770f1188d96df6fb5e312",
+                            "houseNo": "115",
+                            "buildingName": "testBuildingpk5",
+                            "city": "testcitypk5",
+                            "address": "testcity   wwwwwww qqqqqq pk5",
+                            "landmark": "testLandmarkpk5",
+                            "country": "india",
+                            "userId": "6627707390d014bf385b46a9",
+                            "activeStatus": "1",
+                            "location": {
+                                "type": "Point",
+                                "coordinates": [
+                                    100.5,
+                                    60
+                                ]
+                            },
+                            "lat": 60,
+                            "long": 100.5,
+                            "createdAt": "2024-04-23T08:27:29.366Z",
+                            "updatedAt": "2024-04-23T08:27:29.366Z",
+                            "deliveryLocationDetails": {
+                                "_id": "65defa05d8757e41baaa0752",
+                                "location": "Academic City",
+                                "activeStatus": "Active",
+                                "createdAt": "2024-02-28T09:16:53.889Z",
+                                "updatedAt": "2024-04-19T08:48:15.567Z",
+                                "deliveryZoneId": "660bdcc5cc48cba2ad662b46"
+                            }
+                        }
+                    }
+                }
+            ],
+            "activeStatus": "AssignByAdmin",
+            "createdAt": "2024-05-07T12:26:41.480Z",
+            "updatedAt": "2024-05-07T13:32:54.407Z",
+            "assignorderQrCode": "uploads/assignorderqrcode/663a1e01cba7237f5de74aca.png",
+            "bikeDriverDetails": {
+                "_id": "662f91408b2cd6e4542cdf87",
+                "name": "Md Irshad",
+                "email": "mdirshad04@gmail.com",
+                "password": "$2b$10$BIC8V0.JR9gYb3LscHQEQOuGmo5uVuzj1nb6nz.4IwtBjEQz8kpwy",
+                "mobile": 8521661109,
+                "altMobile": 8521661109,
+                "nationality": "India",
+                "passportNumber": "PN8521661109",
+                "passportValidity": "2037-12-11T18:30:00.000Z",
+                "visaNumber": 8521661109101,
+                "visaValidity": "2037-12-11T18:30:00.000Z",
+                "emiratesId": "8521661109EID",
+                "emiratesIdValidity": "2038-02-09T18:30:00.000Z",
+                "InsuranceComp": "TATA CAPITAL",
+                "insuranceValidity": "2030-12-11T18:30:00.000Z",
+                "licenseNumber": "8521661109LN",
+                "licenseCity": "NOIDA UTTAR PRADESH",
+                "licenseType": "TWO WHEELER",
+                "licenseValidity": "2031-12-11T18:30:00.000Z",
+                "deliveryZoneId": "660bdcc5cc48cba2ad662b46",
+                "isVerified": true,
+                "driverType": "Bike",
+                "activeStatus": "2",
+                "createdAt": "2024-04-29T12:23:28.188Z",
+                "updatedAt": "2024-05-07T12:26:44.883Z",
+                "driverQrCodeData": "uploads/bikedriverqrcode/662f91408b2cd6e4542cdf87.png",
+                "Otp": 111973,
+                "OtpsendDate": "2024-05-02T12:42:15.182Z",
+                "bikeDetails": {
+                    "_id": "662f91408b2cd6e4542cdf89",
+                    "ownerName": "Md irshad",
+                    "vehicleNumber": "UP 16 X1111",
+                    "registrationZone": 11,
+                    "registrationDate": "2022-10-11T18:30:00.000Z",
+                    "vehicleColor": "Orange",
+                    "vehicleYear": "2021-10-11T18:30:00.000Z",
+                    "vehicleAge": 11,
+                    "chasisNumber": "CN8521661109XX",
+                    "bikeInsuranceValidity": "2033-12-11T18:30:00.000Z",
+                    "fitnessValidity": "2031-12-11T18:30:00.000Z",
+                    "mulkiyaValidity": "2032-12-11T18:30:00.000Z",
+                    "mulkiyaDocImg": {
+                        "frontImg": "uploads/bike/mulkiyatfront.jpg",
+                        "backImg": "uploads/bike/mulkiyatback.jpg",
+                        "_id": "662f91408b2cd6e4542cdf8a"
+                    },
+                    "vehicleImage": {
+                        "frontImage": "uploads/bike/shineLeft.jpg",
+                        "backImage": "uploads/bike/shineRight.jpg",
+                        "leftImage": "uploads/bike/shineLeft.jpg",
+                        "rightImage": "uploads/bike/shineRight.jpg",
+                        "_id": "662f91408b2cd6e4542cdf8b"
+                    },
+                    "activeStatus": "1",
+                    "createdAt": "2024-04-29T12:23:28.484Z",
+                    "updatedAt": "2024-04-29T12:23:28.484Z",
+                    "brandDetails": {
+                        "_id": "65b23e29f0c955ec88acbd0a",
+                        "bikeBrand": "Honda",
+                        "activeStatus": "1",
+                        "createdAt": "2024-01-25T10:55:37.829Z",
+                        "updatedAt": "2024-01-25T10:55:37.829Z"
+                    },
+                    "modelDetails": {
+                        "_id": "662f4529142492de0832db0d",
+                        "bikeModel": "Shine Sp",
+                        "bikeBrandId": "65b23e29f0c955ec88acbd0a",
+                        "activeStatus": "1",
+                        "createdAt": "2024-04-29T06:58:49.750Z",
+                        "updatedAt": "2024-04-29T06:58:49.750Z"
+                    }
+                },
+                "bankDetails": {
+                    "_id": "662f91418b2cd6e4542cdf97",
+                    "bankName": "test bankName101",
+                    "branchName": "KOTAK MAHINDRA BANK",
+                    "accountNumber": "account8521661109XXXX101",
+                    "accountHolderName": "Md Irshad",
+                    "IBAN": "test IBAN101",
+                    "driverId": "662f91408b2cd6e4542cdf87",
+                    "activeStatus": "1",
+                    "createdAt": "2024-04-29T12:23:29.310Z",
+                    "updatedAt": "2024-04-29T12:23:29.310Z"
+                },
+                "addressDetails": {
+                    "_id": "662f91408b2cd6e4542cdf8d",
+                    "localAddress": {
+                        "houseNo": "101",
+                        "buildingName": "test villa101",
+                        "street": "test street101",
+                        "landmark": "test landmark landmark101",
+                        "_id": "662f91408b2cd6e4542cdf8e"
+                    },
+                    "homeCountryAddress": {
+                        "houseNo": "111hcHouseNo101",
+                        "buildingName": "test hcBuildingName101",
+                        "street": "test hcStreet101",
+                        "landmark": "test hcLandmark101",
+                        "city": "test hcCity101",
+                        "state": "test hcState101",
+                        "pinCode": "test hcPinCode101",
+                        "_id": "662f91408b2cd6e4542cdf8f"
+                    },
+                    "emergencyContact": {
+                        "name": "test ecName101",
+                        "relation": "test ecRelation101",
+                        "mobile": 9110088455,
+                        "_id": "662f91408b2cd6e4542cdf90"
+                    },
+                    "driverId": "662f91408b2cd6e4542cdf87",
+                    "activeStatus": "1",
+                    "createdAt": "2024-04-29T12:23:28.764Z",
+                    "updatedAt": "2024-04-29T12:23:28.764Z"
+                },
+                "docDetails": {
+                    "_id": "662f91418b2cd6e4542cdf92",
+                    "passportImg": {
+                        "frontImg": "uploads/bike/passportfront.jpg",
+                        "backImg": "uploads/bike/passportback.jpg",
+                        "_id": "662f91418b2cd6e4542cdf93"
+                    },
+                    "emiratesIdImg": {
+                        "frontImg": "uploads/bike/passportback.jpg",
+                        "backImg": "uploads/bike/passportfront.jpg",
+                        "_id": "662f91418b2cd6e4542cdf94"
+                    },
+                    "licenseImg": {
+                        "frontImg": "uploads/bike/licenseImage.jpg",
+                        "backImg": "uploads/bike/licenseImage.jpg",
+                        "_id": "662f91418b2cd6e4542cdf95"
+                    },
+                    "visaImg": "uploads/bike/visaImage.jpg",
+                    "driverImg": "uploads/bike/driverImage.jpg",
+                    "driverId": "662f91408b2cd6e4542cdf87",
+                    "activeStatus": "1",
+                    "createdAt": "2024-04-29T12:23:29.044Z",
+                    "updatedAt": "2024-04-29T12:23:29.044Z"
+                }
+            }
+        }
+    ]
+}
