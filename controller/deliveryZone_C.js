@@ -16,20 +16,10 @@ module.exports = {
       );
       return next(err);
     }
-    // var find_deliverylocation = await DeliveryLocationModel.findOne({
-    //   locations: req.body.locations,
-    // });
-    // if (find_deliverylocation) {
-    //   const err = new customError(
-    //     global.CONFIGS.api.locationalreadyadded,
-    //     global.CONFIGS.responseCode.alreadyExist
-    //   );
-    //   return next(err);
-    // }
-    req.body.location = {
-      type: "Point",
-      coordinates: [req.body.lat, req.body.long],
-    };
+    // req.body.location = {
+    //   type: "Point",
+    //   coordinates: [req.body.lat, req.body.long],
+    // };
     var create_zoneName = await DeliveryZoneModel.create(req.body);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
@@ -69,12 +59,12 @@ module.exports = {
         return next(err);
       }
     }
-    if (req.body.lat != undefined && req.body.long != undefined) {
-      req.body.location = {
-        type: "Point",
-        coordinates: [req.body.lat, req.body.long],
-      };
-    }
+    // if (req.body.lat != undefined && req.body.long != undefined) {
+    //   req.body.location = {
+    //     type: "Point",
+    //     coordinates: [req.body.lat, req.body.long],
+    //   };
+    // }
     find_zoneName = await DeliveryZoneModel.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -128,9 +118,9 @@ module.exports = {
           _id: "$_id",
           deliveryZoneName: "$zoneName",
           countryName: "$country",
-          location: "$location",
-          latitude: "$lat",
-          longitude: "$long",
+          // location: "$location",
+          // latitude: "$lat",
+          // longitude: "$long",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",

@@ -3,7 +3,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var deliveryLocationSchema = new Schema(
   {
-    location: {
+    locationName: {
       type: String,
       required: true,
       trim: true,

@@ -20,9 +20,9 @@ module.exports = {
     }
     console.log(find_deliveryZone,"........find_deliveryZone");
 
-    const locationName = req.body.location.trim();
+    const locationNames = req.body.locationName.trim();
     var find_location = await DeliveryLocationModel.findOne({
-      location: { $regex: new RegExp("^" + locationName + "$", "i") },
+      locationName: { $regex: new RegExp("^" + locationNames + "$", "i") },
     });
     console.log(find_location,"..");
     if (find_location) {
@@ -32,6 +32,10 @@ module.exports = {
       );
       return next(err);
     }
+    req.body.location = {
+      type: "Point",
+      coordinates: [req.body.lat, req.body.long],
+    };
     var create_location = await DeliveryLocationModel.create(req.body);
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
@@ -50,12 +54,13 @@ module.exports = {
       );
       return next(err);
     }
-    const locationName=req.body.location.trim();
-    // const locationRegex = new RegExp('^\\s*' + req.body.location.replace(/\s/g, '\\s*') + '\\s*$', 'i');
+    // const locationNames=req.body.locationName.trim();
+    const locationNames=req.body.locationName ? req.body.locationName.trim() : undefined;
+    // const locationRegex = new RegExp('^\\s*' + req.body.locationName.replace(/\s/g, '\\s*') + '\\s*$', 'i');
     const existing_deliveryLocation = await DeliveryLocationModel.findOne({
-      // location: locationRegex,
-      location: { $regex: new RegExp("^" + locationName + "$", "i") },
-      // location: req.body.location,
+      // locationName: locationRegex,
+      locationName: { $regex: new RegExp("^" + locationNames + "$", "i") },
+      // locationName: req.body.locationName,
       _id: { $nin: [req.params.id] },
     });
     console.log(existing_deliveryLocation)
@@ -90,6 +95,12 @@ module.exports = {
         );
         return next(err);
       }
+    }
+    if (req.body.lat != undefined && req.body.long != undefined) {
+      req.body.location = {
+        type: "Point",
+        coordinates: [req.body.lat, req.body.long],
+      };
     }
 
     find_deliveryLocation = await DeliveryLocationModel.findByIdAndUpdate(
@@ -133,7 +144,7 @@ module.exports = {
     };
     if (searchText !== undefined) {
       query.$or = [
-        { location: { $regex: new RegExp(searchText), $options: "i" } },
+        { locationName: { $regex: new RegExp(searchText), $options: "i" } },
         { "deliveryzone.zoneName": { $regex: new RegExp(searchText), $options: "i" } },
       ];
     };
@@ -166,9 +177,12 @@ module.exports = {
       {
         $project: {
           _id: "$_id",
-          deliveryLocationName: "$location",
+          deliveryLocationName: "$locationName",
           deliveryZoneName: "$deliveryzone.zoneName",
           deliveryZoneId: "$deliveryzone._id",
+          location: "$location",
+          latitude: "$lat",
+          longitude: "$long",
           activeStatus: "$activeStatus",
           createdAt: "$createdAt",
           updatedAt: "$updatedAt",
@@ -203,7 +217,7 @@ module.exports = {
   locationListFront: async (req, res, next) => {
     var find_location = await DeliveryLocationModel.find({
       activeStatus: "Active",
-    }).sort({ location: 1 });
+    }).sort({ locationName: 1 });
     return res.status(global.CONFIGS.responseCode.success).json({
       success: true,
       message: global.CONFIGS.api.getDeliveryLocationSuccess,
